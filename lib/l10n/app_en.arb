@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
   "appTitle": "DIF Pass",
-  "homeWelcome": "Welcome to DIF Pass"
+  "homeWelcome": "Welcome to DIF Pass",
+  "eventsListTitle": "Events",
+  "eventsArchiveAction": "Archives",
+  "eventsEmptyState": "No events yet. Create one to get started.",
+  "eventsNewAction": "New event"
 }

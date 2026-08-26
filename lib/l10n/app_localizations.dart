@@ -109,6 +109,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome to DIF Pass'**
   String get homeWelcome;
+
+  /// No description provided for @eventsListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get eventsListTitle;
+
+  /// No description provided for @eventsArchiveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Archives'**
+  String get eventsArchiveAction;
+
+  /// No description provided for @eventsEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No events yet. Create one to get started.'**
+  String get eventsEmptyState;
+
+  /// No description provided for @eventsNewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get eventsNewAction;
 }
 
 class _AppLocalizationsDelegate

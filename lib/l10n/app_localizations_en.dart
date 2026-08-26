@@ -13,4 +13,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeWelcome => 'Welcome to DIF Pass';
+
+  @override
+  String get eventsListTitle => 'Events';
+
+  @override
+  String get eventsArchiveAction => 'Archives';
+
+  @override
+  String get eventsEmptyState => 'No events yet. Create one to get started.';
+
+  @override
+  String get eventsNewAction => 'New event';
 }
