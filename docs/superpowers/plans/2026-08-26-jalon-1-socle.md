@@ -338,10 +338,9 @@ Expected: FAIL (`package:dif_pass/l10n/app_localizations.dart` does not exist ye
 arb-dir: lib/l10n
 template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
-synthetic-package: false
 ```
 
-`synthetic-package: false` generates `app_localizations.dart` directly into `lib/l10n/` (alongside the ARB files, since no `output-dir` is set), importable as a normal package file: `package:dif_pass/l10n/app_localizations.dart`. This avoids the older, now-deprecated Flutter synthetic-package mechanism (`package:flutter_gen/...`), which is no longer generated automatically by current Flutter SDKs and would otherwise require hand-rolling a fake local `flutter_gen` package as a path dependency just to get that import path to resolve, a needless extra package for no real benefit.
+With no `output-dir` set, this generates `app_localizations.dart` directly into `lib/l10n/` (alongside the ARB files), importable as a normal package file: `package:dif_pass/l10n/app_localizations.dart`. This avoids the older, now-deprecated Flutter synthetic-package mechanism (`package:flutter_gen/...`), which is no longer generated automatically by current Flutter SDKs and would otherwise require hand-rolling a fake local `flutter_gen` package as a path dependency just to get that import path to resolve, a needless extra package for no real benefit. (An earlier version of this note also set `synthetic-package: false` explicitly; that flag is itself deprecated in current Flutter SDKs and emits a warning, and is unnecessary since non-synthetic output is already the default once no `output-dir` forces the old location, so it is omitted here.)
 
 ```json
 // lib/l10n/app_en.arb
