@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Flutter version: pinned via FVM to **3.47.1** (latest stable at plan time, confirmed via `fvm releases -c stable`). Every Flutter/Dart command is prefixed `fvm flutter` / `fvm dart`.
+- Flutter version: pinned via FVM to **3.44.7** (stable channel, already cached locally on this machine; chosen over the very recently released 3.47.1 for maturity and to avoid a slow SDK download). Every Flutter/Dart command is prefixed `fvm flutter` / `fvm dart`.
 - Application ID (Android `applicationId` and iOS `PRODUCT_BUNDLE_IDENTIFIER`): `com.difcorporation.difpass`.
 - Never hand-edit generated `.g.dart` files. Regenerate with `fvm dart run build_runner build --delete-conflicting-outputs`.
 - No em dashes (tirets cadratins) in code, comments, or commit messages.
@@ -28,7 +28,7 @@
 - Modify: `android/app/build.gradle.kts`, `ios/Runner.xcodeproj/project.pbxproj` (application id correction)
 
 **Interfaces:**
-- Produces: a Flutter project named `dif_pass` at the repo root, FVM-pinned to 3.47.1, with applicationId/bundle id `com.difcorporation.difpass`. All later tasks add files under this project's `lib/` and `test/`.
+- Produces: a Flutter project named `dif_pass` at the repo root, FVM-pinned to 3.44.7, with applicationId/bundle id `com.difcorporation.difpass`. All later tasks add files under this project's `lib/` and `test/`.
 
 - [ ] **Step 1: Create the milestone branch**
 
@@ -39,11 +39,11 @@ git checkout -b chore/jalon-1-socle
 - [ ] **Step 2: Install and pin the Flutter version with FVM**
 
 ```bash
-fvm install 3.47.1
-fvm use 3.47.1
+fvm install 3.44.7
+fvm use 3.44.7
 ```
 
-Expected: `.fvmrc` is created at the repo root containing `{"flutter": "3.47.1"}` (or equivalent FVM config).
+Expected: `.fvmrc` is created at the repo root containing `{"flutter": "3.44.7"}` (or equivalent FVM config).
 
 - [ ] **Step 3: Scaffold the Flutter project in place**
 
@@ -87,7 +87,7 @@ Append to `.gitignore`:
 
 ```bash
 git add -A
-git commit -m "Bootstrap dif_pass Flutter project via FVM 3.47.1"
+git commit -m "Bootstrap dif_pass Flutter project via FVM 3.44.7"
 ```
 
 ---
