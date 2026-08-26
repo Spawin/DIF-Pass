@@ -20,5 +20,13 @@
   "eventFormAddFieldAction": "Ajouter un champ",
   "eventFormFieldLabelHint": "Libelle",
   "eventFormCustomFieldsLocked": "Verrouille : des tickets existent deja pour cet evenement",
-  "eventFormSaveAction": "Enregistrer"
+  "eventFormSaveAction": "Enregistrer",
+  "eventsArchiveTitle": "Archives",
+  "eventsArchiveEmptyState": "Aucun evenement archive",
+  "eventsRestoreAction": "Restaurer",
+  "eventsDeletePermanentlyAction": "Supprimer definitivement",
+  "eventsDeleteConfirmTitle": "Supprimer definitivement ?",
+  "eventsDeleteConfirmBody": "Cette action est irreversible.",
+  "commonCancel": "Annuler",
+  "commonDelete": "Supprimer"
 }

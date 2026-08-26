@@ -20,5 +20,13 @@
   "eventFormAddFieldAction": "Add field",
   "eventFormFieldLabelHint": "Label",
   "eventFormCustomFieldsLocked": "Locked: tickets already exist for this event",
-  "eventFormSaveAction": "Save"
+  "eventFormSaveAction": "Save",
+  "eventsArchiveTitle": "Archives",
+  "eventsArchiveEmptyState": "No archived events",
+  "eventsRestoreAction": "Restore",
+  "eventsDeletePermanentlyAction": "Delete permanently",
+  "eventsDeleteConfirmTitle": "Delete permanently?",
+  "eventsDeleteConfirmBody": "This action cannot be undone.",
+  "commonCancel": "Cancel",
+  "commonDelete": "Delete"
 }

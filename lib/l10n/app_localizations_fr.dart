@@ -72,4 +72,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get eventFormSaveAction => 'Enregistrer';
+
+  @override
+  String get eventsArchiveTitle => 'Archives';
+
+  @override
+  String get eventsArchiveEmptyState => 'Aucun evenement archive';
+
+  @override
+  String get eventsRestoreAction => 'Restaurer';
+
+  @override
+  String get eventsDeletePermanentlyAction => 'Supprimer definitivement';
+
+  @override
+  String get eventsDeleteConfirmTitle => 'Supprimer definitivement ?';
+
+  @override
+  String get eventsDeleteConfirmBody => 'Cette action est irreversible.';
+
+  @override
+  String get commonCancel => 'Annuler';
+
+  @override
+  String get commonDelete => 'Supprimer';
 }

@@ -71,4 +71,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventFormSaveAction => 'Save';
+
+  @override
+  String get eventsArchiveTitle => 'Archives';
+
+  @override
+  String get eventsArchiveEmptyState => 'No archived events';
+
+  @override
+  String get eventsRestoreAction => 'Restore';
+
+  @override
+  String get eventsDeletePermanentlyAction => 'Delete permanently';
+
+  @override
+  String get eventsDeleteConfirmTitle => 'Delete permanently?';
+
+  @override
+  String get eventsDeleteConfirmBody => 'This action cannot be undone.';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonDelete => 'Delete';
 }

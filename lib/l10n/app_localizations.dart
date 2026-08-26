@@ -223,6 +223,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get eventFormSaveAction;
+
+  /// No description provided for @eventsArchiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archives'**
+  String get eventsArchiveTitle;
+
+  /// No description provided for @eventsArchiveEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived events'**
+  String get eventsArchiveEmptyState;
+
+  /// No description provided for @eventsRestoreAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get eventsRestoreAction;
+
+  /// No description provided for @eventsDeletePermanentlyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get eventsDeletePermanentlyAction;
+
+  /// No description provided for @eventsDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently?'**
+  String get eventsDeleteConfirmTitle;
+
+  /// No description provided for @eventsDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get eventsDeleteConfirmBody;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
+
+  /// No description provided for @commonDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commonDelete;
 }
 
 class _AppLocalizationsDelegate
