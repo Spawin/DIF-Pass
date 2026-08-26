@@ -30,4 +30,16 @@ class NewCustomField {
   final CustomFieldType type;
   final int sortOrder;
   final bool showOnTicket;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NewCustomField &&
+        other.label == label &&
+        other.type == type &&
+        other.sortOrder == sortOrder &&
+        other.showOnTicket == showOnTicket;
+  }
+
+  @override
+  int get hashCode => Object.hash(label, type, sortOrder, showOnTicket);
 }

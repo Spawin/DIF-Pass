@@ -7,6 +7,7 @@ import '../../domain/custom_field_type.dart';
 class CustomFieldEditor extends StatelessWidget {
   const CustomFieldEditor({
     required this.fields,
+    required this.keys,
     required this.locked,
     required this.onAdd,
     required this.onRemove,
@@ -15,6 +16,7 @@ class CustomFieldEditor extends StatelessWidget {
   });
 
   final List<NewCustomField> fields;
+  final List<int> keys;
   final bool locked;
   final VoidCallback onAdd;
   final ValueChanged<int> onRemove;
@@ -44,11 +46,14 @@ class CustomFieldEditor extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
-                    key: ValueKey('custom_field_label_$i'),
+                    key: ValueKey(keys[i]),
                     initialValue: fields[i].label,
                     enabled: !locked,
                     decoration:
                         InputDecoration(labelText: l10n.eventFormFieldLabelHint),
+                    validator: (value) => (value == null || value.trim().isEmpty)
+                        ? l10n.eventFormFieldLabelRequired
+                        : null,
                     onChanged: (value) => onChanged(
                       i,
                       NewCustomField(

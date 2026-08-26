@@ -25,9 +25,9 @@ void main() {
     }
 
     final fr = await loadFor(const Locale('fr'));
-    expect(fr.homeWelcome, 'Bienvenue sur DIF Pass');
+    expect(fr.eventsListTitle, 'Evenements');
 
     final en = await loadFor(const Locale('en'));
-    expect(en.homeWelcome, 'Welcome to DIF Pass');
+    expect(en.eventsListTitle, 'Events');
   });
 }

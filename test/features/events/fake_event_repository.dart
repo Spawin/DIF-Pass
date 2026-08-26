@@ -9,9 +9,14 @@ import 'package:dif_pass/features/events/domain/presence_mode.dart';
 /// In-memory EventRepository for widget/provider tests. Not shipped in the
 /// app, lives under test/ only.
 class FakeEventRepository implements EventRepository {
-  FakeEventRepository({List<Event>? events})
-      : _events = List.of(events ?? const []);
+  FakeEventRepository({
+    List<Event>? events,
+    this.customFieldsEditable = true,
+    this.presenceModeEditable = true,
+  }) : _events = List.of(events ?? const []);
 
+  final bool customFieldsEditable;
+  final bool presenceModeEditable;
   final List<Event> _events;
   final Map<int, List<CustomField>> _customFields = {};
   final _activeController = StreamController<List<Event>>.broadcast();
@@ -107,7 +112,12 @@ class FakeEventRepository implements EventRepository {
   }
 
   @override
-  Future<bool> canEditCustomFields(int eventId) async => true;
+  Future<bool> canEditCustomFields(int eventId) async => customFieldsEditable;
+
+  /// Test-only accessor so tests can assert what a save wrote without a
+  /// full round-trip through [watchCustomFields].
+  List<CustomField> customFieldsFor(int eventId) =>
+      List.unmodifiable(_customFields[eventId] ?? const []);
 
   @override
   Future<void> replaceCustomFields(
@@ -128,7 +138,7 @@ class FakeEventRepository implements EventRepository {
   }
 
   @override
-  Future<bool> canEditPresenceMode(int eventId) async => true;
+  Future<bool> canEditPresenceMode(int eventId) async => presenceModeEditable;
 
   @override
   Future<void> archiveEvent(int id) async {

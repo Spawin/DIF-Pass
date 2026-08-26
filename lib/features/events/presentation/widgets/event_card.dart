@@ -2,16 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/event.dart';
 
 class EventCard extends StatelessWidget {
-  const EventCard({required this.event, required this.onTap, super.key});
+  const EventCard({
+    required this.event,
+    required this.onTap,
+    required this.onArchive,
+    super.key,
+  });
 
   final Event event;
   final VoidCallback onTap;
+  final VoidCallback onArchive;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
     final dateLabel = DateFormat.yMMMMd(locale).format(event.date);
     final subtitleParts = [
@@ -32,6 +40,11 @@ class EventCard extends StatelessWidget {
           child: event.logo == null
               ? const Icon(Icons.event, color: AppColors.indigo)
               : null,
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.archive_outlined),
+          tooltip: l10n.eventsArchiveEventAction,
+          onPressed: onArchive,
         ),
       ),
     );

@@ -47,12 +47,22 @@ class EventsListScreen extends ConsumerWidget {
               return EventCard(
                 event: event,
                 onTap: () => context.push('/events/${event.id}/edit'),
+                onArchive: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  try {
+                    await ref
+                        .read(eventRepositoryProvider)
+                        .archiveEvent(event.id);
+                  } catch (e) {
+                    messenger.showSnackBar(SnackBar(content: Text('$e')));
+                  }
+                },
               );
             },
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('$error')),
+        error: (error, stack) => Center(child: Text(l10n.eventsLoadError)),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/events/new'),

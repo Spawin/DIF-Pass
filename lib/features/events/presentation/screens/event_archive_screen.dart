@@ -38,8 +38,16 @@ class EventArchiveScreen extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(Icons.restore),
                         tooltip: l10n.eventsRestoreAction,
-                        onPressed: () =>
-                            ref.read(eventRepositoryProvider).restoreEvent(event.id),
+                        onPressed: () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          try {
+                            await ref
+                                .read(eventRepositoryProvider)
+                                .restoreEvent(event.id);
+                          } catch (e) {
+                            messenger.showSnackBar(SnackBar(content: Text('$e')));
+                          }
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_forever_outlined),
@@ -54,13 +62,15 @@ class EventArchiveScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('$error')),
+        error: (error, stack) => Center(child: Text(l10n.eventsLoadError)),
       ),
     );
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref, Event event) async {
     final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final repository = ref.read(eventRepositoryProvider);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -79,7 +89,11 @@ class EventArchiveScreen extends ConsumerWidget {
       ),
     );
     if (confirmed == true) {
-      await ref.read(eventRepositoryProvider).deleteEventPermanently(event.id);
+      try {
+        await repository.deleteEventPermanently(event.id);
+      } catch (e) {
+        messenger.showSnackBar(SnackBar(content: Text('$e')));
+      }
     }
   }
 }

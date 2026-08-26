@@ -17,6 +17,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/events/:id/edit',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        return id == null ? '/' : null;
+      },
       builder: (context, state) => EventFormScreen(
         eventId: int.parse(state.pathParameters['id']!),
       ),

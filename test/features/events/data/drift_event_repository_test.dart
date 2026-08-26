@@ -201,6 +201,47 @@ void main() {
     expect(await repository.watchArchivedEvents().first, isEmpty);
     expect(await (db.select(db.customFields)).get(), isEmpty);
   });
+
+  test(
+      'deleteEventPermanently cascades through beneficiaries, tickets, check-ins, and beneficiary values',
+      () async {
+    final id = await repository.createEvent(
+      name: 'Gala DIF 2026',
+      date: DateTime(2026, 12, 1),
+      presenceMode: PresenceMode.simple,
+      customFields: const [NewCustomFieldFixture()],
+    );
+    final customFieldId = (await repository.watchCustomFields(id).first).single.id;
+    final beneficiaryId = await db.into(db.beneficiaries).insert(
+          BeneficiariesCompanion.insert(eventId: id, name: 'Jane Doe'),
+        );
+    final ticketId = await db.into(db.tickets).insert(
+          TicketsCompanion.insert(
+            beneficiaryId: beneficiaryId,
+            eventId: id,
+            readableId: '0001',
+            randomPart: 'X7K9',
+            qrPayload: 'EVT-0001-X7K9',
+          ),
+        );
+    await db.into(db.checkIns).insert(
+          CheckInsCompanion.insert(ticketId: ticketId, eventId: id),
+        );
+    await db.into(db.beneficiaryValues).insert(
+          BeneficiaryValuesCompanion.insert(
+            beneficiaryId: beneficiaryId,
+            customFieldId: customFieldId,
+            value: '12',
+          ),
+        );
+
+    await repository.deleteEventPermanently(id);
+
+    expect(await db.select(db.beneficiaries).get(), isEmpty);
+    expect(await db.select(db.tickets).get(), isEmpty);
+    expect(await db.select(db.checkIns).get(), isEmpty);
+    expect(await db.select(db.beneficiaryValues).get(), isEmpty);
+  });
 }
 
 // Small named fixture so every test that just needs "one custom field"

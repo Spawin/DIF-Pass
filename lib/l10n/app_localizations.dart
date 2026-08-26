@@ -104,12 +104,6 @@ abstract class AppLocalizations {
   /// **'DIF Pass'**
   String get appTitle;
 
-  /// No description provided for @homeWelcome.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to DIF Pass'**
-  String get homeWelcome;
-
   /// No description provided for @eventsListTitle.
   ///
   /// In en, this message translates to:
@@ -122,6 +116,12 @@ abstract class AppLocalizations {
   /// **'Archives'**
   String get eventsArchiveAction;
 
+  /// No description provided for @eventsArchiveEventAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get eventsArchiveEventAction;
+
   /// No description provided for @eventsEmptyState.
   ///
   /// In en, this message translates to:
@@ -133,6 +133,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New event'**
   String get eventsNewAction;
+
+  /// No description provided for @eventsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong loading events.'**
+  String get eventsLoadError;
 
   /// No description provided for @eventFormTitleCreate.
   ///
@@ -211,6 +217,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Label'**
   String get eventFormFieldLabelHint;
+
+  /// No description provided for @eventFormFieldLabelRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Field label is required'**
+  String get eventFormFieldLabelRequired;
 
   /// No description provided for @eventFormCustomFieldsLocked.
   ///

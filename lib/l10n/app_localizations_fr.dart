@@ -12,13 +12,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appTitle => 'DIF Pass';
 
   @override
-  String get homeWelcome => 'Bienvenue sur DIF Pass';
-
-  @override
   String get eventsListTitle => 'Evenements';
 
   @override
   String get eventsArchiveAction => 'Archives';
+
+  @override
+  String get eventsArchiveEventAction => 'Archiver';
 
   @override
   String get eventsEmptyState =>
@@ -26,6 +26,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get eventsNewAction => 'Nouvel evenement';
+
+  @override
+  String get eventsLoadError =>
+      'Un probleme est survenu lors du chargement des evenements.';
 
   @override
   String get eventFormTitleCreate => 'Nouvel evenement';
@@ -65,6 +69,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get eventFormFieldLabelHint => 'Libelle';
+
+  @override
+  String get eventFormFieldLabelRequired =>
+      'Le libelle du champ est obligatoire';
 
   @override
   String get eventFormCustomFieldsLocked =>

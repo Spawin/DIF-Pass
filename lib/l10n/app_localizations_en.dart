@@ -12,19 +12,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'DIF Pass';
 
   @override
-  String get homeWelcome => 'Welcome to DIF Pass';
-
-  @override
   String get eventsListTitle => 'Events';
 
   @override
   String get eventsArchiveAction => 'Archives';
 
   @override
+  String get eventsArchiveEventAction => 'Archive';
+
+  @override
   String get eventsEmptyState => 'No events yet. Create one to get started.';
 
   @override
   String get eventsNewAction => 'New event';
+
+  @override
+  String get eventsLoadError => 'Something went wrong loading events.';
 
   @override
   String get eventFormTitleCreate => 'New event';
@@ -64,6 +67,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventFormFieldLabelHint => 'Label';
+
+  @override
+  String get eventFormFieldLabelRequired => 'Field label is required';
 
   @override
   String get eventFormCustomFieldsLocked =>
