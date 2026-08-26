@@ -5,5 +5,20 @@
   "eventsListTitle": "Events",
   "eventsArchiveAction": "Archives",
   "eventsEmptyState": "No events yet. Create one to get started.",
-  "eventsNewAction": "New event"
+  "eventsNewAction": "New event",
+  "eventFormTitleCreate": "New event",
+  "eventFormTitleEdit": "Edit event",
+  "eventFormNameLabel": "Name",
+  "eventFormNameRequired": "Name is required",
+  "eventFormDateLabel": "Date",
+  "eventFormLocationLabel": "Location",
+  "eventFormLogoAction": "Choose a logo",
+  "eventFormPresenceModeLabel": "Presence mode",
+  "eventFormPresenceModeSimple": "Simple presence",
+  "eventFormPresenceModeMultiple": "Multiple entries",
+  "eventFormCustomFieldsLabel": "Custom fields",
+  "eventFormAddFieldAction": "Add field",
+  "eventFormFieldLabelHint": "Label",
+  "eventFormCustomFieldsLocked": "Locked: tickets already exist for this event",
+  "eventFormSaveAction": "Save"
 }

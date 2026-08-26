@@ -5,5 +5,20 @@
   "eventsListTitle": "Evenements",
   "eventsArchiveAction": "Archives",
   "eventsEmptyState": "Aucun evenement pour l'instant. Creez-en un pour commencer.",
-  "eventsNewAction": "Nouvel evenement"
+  "eventsNewAction": "Nouvel evenement",
+  "eventFormTitleCreate": "Nouvel evenement",
+  "eventFormTitleEdit": "Modifier l'evenement",
+  "eventFormNameLabel": "Nom",
+  "eventFormNameRequired": "Le nom est obligatoire",
+  "eventFormDateLabel": "Date",
+  "eventFormLocationLabel": "Lieu",
+  "eventFormLogoAction": "Choisir un logo",
+  "eventFormPresenceModeLabel": "Mode de presence",
+  "eventFormPresenceModeSimple": "Presence simple",
+  "eventFormPresenceModeMultiple": "Entrees et sorties multiples",
+  "eventFormCustomFieldsLabel": "Champs personnalises",
+  "eventFormAddFieldAction": "Ajouter un champ",
+  "eventFormFieldLabelHint": "Libelle",
+  "eventFormCustomFieldsLocked": "Verrouille : des tickets existent deja pour cet evenement",
+  "eventFormSaveAction": "Enregistrer"
 }

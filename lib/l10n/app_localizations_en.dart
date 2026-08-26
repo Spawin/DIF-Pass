@@ -25,4 +25,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsNewAction => 'New event';
+
+  @override
+  String get eventFormTitleCreate => 'New event';
+
+  @override
+  String get eventFormTitleEdit => 'Edit event';
+
+  @override
+  String get eventFormNameLabel => 'Name';
+
+  @override
+  String get eventFormNameRequired => 'Name is required';
+
+  @override
+  String get eventFormDateLabel => 'Date';
+
+  @override
+  String get eventFormLocationLabel => 'Location';
+
+  @override
+  String get eventFormLogoAction => 'Choose a logo';
+
+  @override
+  String get eventFormPresenceModeLabel => 'Presence mode';
+
+  @override
+  String get eventFormPresenceModeSimple => 'Simple presence';
+
+  @override
+  String get eventFormPresenceModeMultiple => 'Multiple entries';
+
+  @override
+  String get eventFormCustomFieldsLabel => 'Custom fields';
+
+  @override
+  String get eventFormAddFieldAction => 'Add field';
+
+  @override
+  String get eventFormFieldLabelHint => 'Label';
+
+  @override
+  String get eventFormCustomFieldsLocked =>
+      'Locked: tickets already exist for this event';
+
+  @override
+  String get eventFormSaveAction => 'Save';
 }

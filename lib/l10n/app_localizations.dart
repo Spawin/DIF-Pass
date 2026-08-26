@@ -133,6 +133,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New event'**
   String get eventsNewAction;
+
+  /// No description provided for @eventFormTitleCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get eventFormTitleCreate;
+
+  /// No description provided for @eventFormTitleEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event'**
+  String get eventFormTitleEdit;
+
+  /// No description provided for @eventFormNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get eventFormNameLabel;
+
+  /// No description provided for @eventFormNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get eventFormNameRequired;
+
+  /// No description provided for @eventFormDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get eventFormDateLabel;
+
+  /// No description provided for @eventFormLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get eventFormLocationLabel;
+
+  /// No description provided for @eventFormLogoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a logo'**
+  String get eventFormLogoAction;
+
+  /// No description provided for @eventFormPresenceModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Presence mode'**
+  String get eventFormPresenceModeLabel;
+
+  /// No description provided for @eventFormPresenceModeSimple.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple presence'**
+  String get eventFormPresenceModeSimple;
+
+  /// No description provided for @eventFormPresenceModeMultiple.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple entries'**
+  String get eventFormPresenceModeMultiple;
+
+  /// No description provided for @eventFormCustomFieldsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom fields'**
+  String get eventFormCustomFieldsLabel;
+
+  /// No description provided for @eventFormAddFieldAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add field'**
+  String get eventFormAddFieldAction;
+
+  /// No description provided for @eventFormFieldLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get eventFormFieldLabelHint;
+
+  /// No description provided for @eventFormCustomFieldsLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked: tickets already exist for this event'**
+  String get eventFormCustomFieldsLocked;
+
+  /// No description provided for @eventFormSaveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get eventFormSaveAction;
 }
 
 class _AppLocalizationsDelegate
