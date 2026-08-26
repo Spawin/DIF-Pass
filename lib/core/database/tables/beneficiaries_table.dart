@@ -5,7 +5,8 @@ import 'events_table.dart';
 @DataClassName('BeneficiaryEntity')
 class Beneficiaries extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get eventId => integer().references(Events, #id)();
+  IntColumn get eventId =>
+      integer().references(Events, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

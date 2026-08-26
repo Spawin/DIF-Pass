@@ -582,7 +582,7 @@ class $CustomFieldsTable extends CustomFields
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES events (id)',
+      'REFERENCES events (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _labelMeta = const VerificationMeta('label');
@@ -990,7 +990,7 @@ class $BeneficiariesTable extends Beneficiaries
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES events (id)',
+      'REFERENCES events (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
@@ -1290,7 +1290,7 @@ class $BeneficiaryValuesTable extends BeneficiaryValues
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES beneficiaries (id)',
+      'REFERENCES beneficiaries (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _customFieldIdMeta = const VerificationMeta(
@@ -1304,7 +1304,7 @@ class $BeneficiaryValuesTable extends BeneficiaryValues
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES custom_fields (id)',
+      'REFERENCES custom_fields (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _valueMeta = const VerificationMeta('value');
@@ -1611,7 +1611,7 @@ class $TicketsTable extends Tickets
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES beneficiaries (id)',
+      'REFERENCES beneficiaries (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _eventIdMeta = const VerificationMeta(
@@ -1625,7 +1625,7 @@ class $TicketsTable extends Tickets
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES events (id)',
+      'REFERENCES events (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _readableIdMeta = const VerificationMeta(
@@ -2082,7 +2082,7 @@ class $CheckInsTable extends CheckIns
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES tickets (id)',
+      'REFERENCES tickets (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _eventIdMeta = const VerificationMeta(
@@ -2096,7 +2096,7 @@ class $CheckInsTable extends CheckIns
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES events (id)',
+      'REFERENCES events (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _scannedAtMeta = const VerificationMeta(
@@ -2378,6 +2378,65 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     tickets,
     checkIns,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'events',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('custom_fields', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'events',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('beneficiaries', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'beneficiaries',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('beneficiary_values', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'custom_fields',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('beneficiary_values', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'beneficiaries',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('tickets', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'events',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('tickets', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tickets',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('check_ins', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'events',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('check_ins', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$EventsTableCreateCompanionBuilder =

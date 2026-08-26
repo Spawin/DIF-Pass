@@ -41,4 +41,31 @@ void main() {
       throwsA(anything),
     );
   });
+
+  test('deleting an event cascades to its custom fields', () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+
+    final eventId = await db.into(db.events).insert(
+          EventsCompanion.insert(
+            shortCode: 'EVT1',
+            name: 'Gala DIF 2026',
+            date: DateTime(2026, 12, 1),
+            presenceMode: 'simple',
+          ),
+        );
+    await db.into(db.customFields).insert(
+          CustomFieldsCompanion.insert(
+            eventId: eventId,
+            label: 'Table number',
+            fieldType: 'text',
+            sortOrder: 0,
+          ),
+        );
+
+    await (db.delete(db.events)..where((tbl) => tbl.id.equals(eventId))).go();
+
+    final remainingFields = await db.select(db.customFields).get();
+    expect(remainingFields, isEmpty);
+  });
 }

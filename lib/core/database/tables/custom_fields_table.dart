@@ -5,7 +5,8 @@ import 'events_table.dart';
 @DataClassName('CustomFieldEntity')
 class CustomFields extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get eventId => integer().references(Events, #id)();
+  IntColumn get eventId =>
+      integer().references(Events, #id, onDelete: KeyAction.cascade)();
   TextColumn get label => text()();
   // plain text ('text' | 'number'), same reasoning as Events.presenceMode.
   TextColumn get fieldType => text()();
