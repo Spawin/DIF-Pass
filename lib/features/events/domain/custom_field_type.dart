@@ -1,0 +1,1 @@
+enum CustomFieldType { text, number }
