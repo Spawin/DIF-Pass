@@ -1,4 +1,3 @@
-// test/core/router/app_router_test.dart
 import 'package:dif_pass/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:dif_pass/l10n/app_localizations.dart';

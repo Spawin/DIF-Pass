@@ -1,4 +1,3 @@
-// test/core/database/app_database_test.dart
 import 'package:dif_pass/core/database/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,5 +23,22 @@ void main() {
     expect(saved.name, 'Gala DIF 2026');
     expect(saved.presenceMode, 'simple');
     expect(saved.archivedAt, isNull);
+  });
+
+  test('foreign keys are enforced', () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+
+    expect(
+      () => db.into(db.customFields).insert(
+            CustomFieldsCompanion.insert(
+              eventId: 999999,
+              label: 'Table number',
+              fieldType: 'text',
+              sortOrder: 0,
+            ),
+          ),
+      throwsA(anything),
+    );
   });
 }

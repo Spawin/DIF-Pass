@@ -1,4 +1,3 @@
-// test/core/theme/app_theme_test.dart
 import 'package:dif_pass/core/theme/app_colors.dart';
 import 'package:dif_pass/core/theme/app_theme.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,5 +9,6 @@ void main() {
     expect(theme.colorScheme.primary, AppColors.indigo);
     expect(theme.scaffoldBackgroundColor, AppColors.paper);
     expect(theme.useMaterial3, isTrue);
+    expect(theme.colorScheme.onTertiary, AppColors.ink);
   });
 }

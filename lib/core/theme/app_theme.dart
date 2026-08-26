@@ -10,6 +10,7 @@ ThemeData buildAppTheme() {
     primary: AppColors.indigo,
     secondary: AppColors.teal,
     tertiary: AppColors.ochre,
+    onTertiary: AppColors.ink,
     surface: AppColors.paper,
     onSurface: AppColors.ink,
   );

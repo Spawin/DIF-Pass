@@ -1,4 +1,3 @@
-// lib/core/database/tables/tickets_table.dart
 import 'package:drift/drift.dart';
 
 import 'beneficiaries_table.dart';

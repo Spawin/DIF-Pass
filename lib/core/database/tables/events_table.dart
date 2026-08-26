@@ -1,4 +1,3 @@
-// lib/core/database/tables/events_table.dart
 import 'package:drift/drift.dart';
 
 @DataClassName('EventEntity')

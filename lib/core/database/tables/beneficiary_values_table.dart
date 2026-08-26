@@ -1,4 +1,3 @@
-// lib/core/database/tables/beneficiary_values_table.dart
 import 'package:drift/drift.dart';
 
 import 'beneficiaries_table.dart';
