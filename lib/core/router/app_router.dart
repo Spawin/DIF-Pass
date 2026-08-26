@@ -1,27 +1,29 @@
-import 'package:flutter/material.dart';
-import 'package:dif_pass/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../features/events/presentation/screens/event_archive_screen.dart';
+import '../../features/events/presentation/screens/event_form_screen.dart';
+import '../../features/events/presentation/screens/events_list_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const _PlaceholderHomeScreen(),
+      builder: (context, state) => const EventsListScreen(),
+    ),
+    GoRoute(
+      path: '/events/new',
+      builder: (context, state) => const EventFormScreen(),
+    ),
+    GoRoute(
+      path: '/events/:id/edit',
+      builder: (context, state) => EventFormScreen(
+        eventId: int.parse(state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/events/archives',
+      builder: (context, state) => const EventArchiveScreen(),
     ),
   ],
 );
-
-// ponytail: temporary landing screen, replaced by the real events list
-// screen in jalon 2 (Evenements).
-class _PlaceholderHomeScreen extends StatelessWidget {
-  const _PlaceholderHomeScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: Center(child: Text(l10n.homeWelcome)),
-    );
-  }
-}
