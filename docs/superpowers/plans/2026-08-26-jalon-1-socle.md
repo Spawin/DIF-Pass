@@ -282,14 +282,14 @@ git commit -m "Add DIF Pass theme"
 
 **Interfaces:**
 - Consumes: `flutter_localizations`, `intl` (Task 2).
-- Produces: generated `AppLocalizations` class, importable as `package:flutter_gen/gen_l10n/app_localizations.dart`, exposing `AppLocalizations.localizationsDelegates`, `AppLocalizations.supportedLocales`, and getters `appTitle` and `homeWelcome`. Tasks 5 and 7 depend on this import path and these getters.
+- Produces: generated `AppLocalizations` class, importable as `package:dif_pass/l10n/app_localizations.dart`, exposing `AppLocalizations.localizationsDelegates`, `AppLocalizations.supportedLocales`, and getters `appTitle` and `homeWelcome`. Tasks 5 and 7 depend on this import path and these getters.
 
 - [ ] **Step 1: Write the failing test**
 
 ```dart
 // test/l10n_test.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:dif_pass/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -329,7 +329,7 @@ void main() {
 fvm flutter test test/l10n_test.dart
 ```
 
-Expected: FAIL (`package:flutter_gen/gen_l10n/app_localizations.dart` does not exist yet).
+Expected: FAIL (`package:dif_pass/l10n/app_localizations.dart` does not exist yet).
 
 - [ ] **Step 3: Implement the ARB files and generate localizations**
 
@@ -338,7 +338,10 @@ Expected: FAIL (`package:flutter_gen/gen_l10n/app_localizations.dart` does not e
 arb-dir: lib/l10n
 template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
+synthetic-package: false
 ```
+
+`synthetic-package: false` generates `app_localizations.dart` directly into `lib/l10n/` (alongside the ARB files, since no `output-dir` is set), importable as a normal package file: `package:dif_pass/l10n/app_localizations.dart`. This avoids the older, now-deprecated Flutter synthetic-package mechanism (`package:flutter_gen/...`), which is no longer generated automatically by current Flutter SDKs and would otherwise require hand-rolling a fake local `flutter_gen` package as a path dependency just to get that import path to resolve, a needless extra package for no real benefit.
 
 ```json
 // lib/l10n/app_en.arb
@@ -406,7 +409,7 @@ git commit -m "Set up i18n with FR/EN ARB files"
 // test/core/router/app_router_test.dart
 import 'package:dif_pass/core/router/app_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:dif_pass/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -438,7 +441,7 @@ Expected: FAIL (`package:dif_pass/core/router/app_router.dart` does not exist).
 ```dart
 // lib/core/router/app_router.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:dif_pass/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(
@@ -781,7 +784,7 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 ```dart
 // lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:dif_pass/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/router/app_router.dart';
