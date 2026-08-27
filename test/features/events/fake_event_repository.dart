@@ -21,6 +21,7 @@ class FakeEventRepository implements EventRepository {
   final Map<int, List<CustomField>> _customFields = {};
   final _activeController = StreamController<List<Event>>.broadcast();
   final _archivedController = StreamController<List<Event>>.broadcast();
+  final Map<int, StreamController<List<CustomField>>> _customFieldsControllers = {};
   int _nextId = 1000;
 
   List<Event> get events => List.unmodifiable(_events);
@@ -28,6 +29,27 @@ class FakeEventRepository implements EventRepository {
   void _emit() {
     _activeController.add(_events.where((e) => !e.isArchived).toList());
     _archivedController.add(_events.where((e) => e.isArchived).toList());
+  }
+
+  StreamController<List<CustomField>> _customFieldsController(int eventId) {
+    return _customFieldsControllers.putIfAbsent(
+      eventId,
+      () => StreamController<List<CustomField>>.broadcast(),
+    );
+  }
+
+  // Snapshots the current value synchronously (so a caller that mutates
+  // state again before this is delivered can't change what gets sent), then
+  // delivers it a microtask later. Every emission - the replay in
+  // watchCustomFields and every later update - goes through this same
+  // helper so they all have the same "hops from call to delivery", which
+  // keeps them delivered in the order they were triggered. (A mix of
+  // synchronous and microtask-deferred add() calls on the same controller
+  // can otherwise deliver out of order: a later, undeferred add() reaches
+  // listeners in fewer hops and can overtake an earlier, deferred one.)
+  void _emitCustomFields(int eventId) {
+    final snapshot = List<CustomField>.of(_customFields[eventId] ?? const []);
+    Future.microtask(() => _customFieldsController(eventId).add(snapshot));
   }
 
   @override
@@ -47,8 +69,9 @@ class FakeEventRepository implements EventRepository {
       _events.firstWhere((e) => e.id == id);
 
   @override
-  Stream<List<CustomField>> watchCustomFields(int eventId) async* {
-    yield _customFields[eventId] ?? const [];
+  Stream<List<CustomField>> watchCustomFields(int eventId) {
+    _emitCustomFields(eventId);
+    return _customFieldsController(eventId).stream;
   }
 
   @override
@@ -82,6 +105,7 @@ class FakeEventRepository implements EventRepository {
           showOnTicket: field.showOnTicket,
         ),
     ];
+    _emitCustomFields(id);
     _emit();
     return id;
   }
@@ -135,6 +159,7 @@ class FakeEventRepository implements EventRepository {
           showOnTicket: field.showOnTicket,
         ),
     ];
+    _emitCustomFields(eventId);
   }
 
   @override
