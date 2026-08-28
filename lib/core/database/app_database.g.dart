@@ -81,6 +81,18 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _ticketTemplateMeta = const VerificationMeta(
+    'ticketTemplate',
+  );
+  @override
+  late final GeneratedColumn<String> ticketTemplate = GeneratedColumn<String>(
+    'ticket_template',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('standard'),
+  );
   static const VerificationMeta _archivedAtMeta = const VerificationMeta(
     'archivedAt',
   );
@@ -113,6 +125,7 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
     location,
     logo,
     presenceMode,
+    ticketTemplate,
     archivedAt,
     createdAt,
   ];
@@ -178,6 +191,15 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
     } else if (isInserting) {
       context.missing(_presenceModeMeta);
     }
+    if (data.containsKey('ticket_template')) {
+      context.handle(
+        _ticketTemplateMeta,
+        ticketTemplate.isAcceptableOrUnknown(
+          data['ticket_template']!,
+          _ticketTemplateMeta,
+        ),
+      );
+    }
     if (data.containsKey('archived_at')) {
       context.handle(
         _archivedAtMeta,
@@ -227,6 +249,10 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
         DriftSqlType.string,
         data['${effectivePrefix}presence_mode'],
       )!,
+      ticketTemplate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ticket_template'],
+      )!,
       archivedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}archived_at'],
@@ -252,6 +278,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
   final String? location;
   final Uint8List? logo;
   final String presenceMode;
+  final String ticketTemplate;
   final DateTime? archivedAt;
   final DateTime createdAt;
   const EventEntity({
@@ -262,6 +289,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     this.location,
     this.logo,
     required this.presenceMode,
+    required this.ticketTemplate,
     this.archivedAt,
     required this.createdAt,
   });
@@ -279,6 +307,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
       map['logo'] = Variable<Uint8List>(logo);
     }
     map['presence_mode'] = Variable<String>(presenceMode);
+    map['ticket_template'] = Variable<String>(ticketTemplate);
     if (!nullToAbsent || archivedAt != null) {
       map['archived_at'] = Variable<DateTime>(archivedAt);
     }
@@ -297,6 +326,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
           : Value(location),
       logo: logo == null && nullToAbsent ? const Value.absent() : Value(logo),
       presenceMode: Value(presenceMode),
+      ticketTemplate: Value(ticketTemplate),
       archivedAt: archivedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(archivedAt),
@@ -317,6 +347,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
       location: serializer.fromJson<String?>(json['location']),
       logo: serializer.fromJson<Uint8List?>(json['logo']),
       presenceMode: serializer.fromJson<String>(json['presenceMode']),
+      ticketTemplate: serializer.fromJson<String>(json['ticketTemplate']),
       archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -332,6 +363,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
       'location': serializer.toJson<String?>(location),
       'logo': serializer.toJson<Uint8List?>(logo),
       'presenceMode': serializer.toJson<String>(presenceMode),
+      'ticketTemplate': serializer.toJson<String>(ticketTemplate),
       'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -345,6 +377,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     Value<String?> location = const Value.absent(),
     Value<Uint8List?> logo = const Value.absent(),
     String? presenceMode,
+    String? ticketTemplate,
     Value<DateTime?> archivedAt = const Value.absent(),
     DateTime? createdAt,
   }) => EventEntity(
@@ -355,6 +388,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     location: location.present ? location.value : this.location,
     logo: logo.present ? logo.value : this.logo,
     presenceMode: presenceMode ?? this.presenceMode,
+    ticketTemplate: ticketTemplate ?? this.ticketTemplate,
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -369,6 +403,9 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
       presenceMode: data.presenceMode.present
           ? data.presenceMode.value
           : this.presenceMode,
+      ticketTemplate: data.ticketTemplate.present
+          ? data.ticketTemplate.value
+          : this.ticketTemplate,
       archivedAt: data.archivedAt.present
           ? data.archivedAt.value
           : this.archivedAt,
@@ -386,6 +423,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
           ..write('location: $location, ')
           ..write('logo: $logo, ')
           ..write('presenceMode: $presenceMode, ')
+          ..write('ticketTemplate: $ticketTemplate, ')
           ..write('archivedAt: $archivedAt, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -401,6 +439,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     location,
     $driftBlobEquality.hash(logo),
     presenceMode,
+    ticketTemplate,
     archivedAt,
     createdAt,
   );
@@ -415,6 +454,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
           other.location == this.location &&
           $driftBlobEquality.equals(other.logo, this.logo) &&
           other.presenceMode == this.presenceMode &&
+          other.ticketTemplate == this.ticketTemplate &&
           other.archivedAt == this.archivedAt &&
           other.createdAt == this.createdAt);
 }
@@ -427,6 +467,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
   final Value<String?> location;
   final Value<Uint8List?> logo;
   final Value<String> presenceMode;
+  final Value<String> ticketTemplate;
   final Value<DateTime?> archivedAt;
   final Value<DateTime> createdAt;
   const EventsCompanion({
@@ -437,6 +478,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     this.location = const Value.absent(),
     this.logo = const Value.absent(),
     this.presenceMode = const Value.absent(),
+    this.ticketTemplate = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
@@ -448,6 +490,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     this.location = const Value.absent(),
     this.logo = const Value.absent(),
     required String presenceMode,
+    this.ticketTemplate = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : shortCode = Value(shortCode),
@@ -462,6 +505,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     Expression<String>? location,
     Expression<Uint8List>? logo,
     Expression<String>? presenceMode,
+    Expression<String>? ticketTemplate,
     Expression<DateTime>? archivedAt,
     Expression<DateTime>? createdAt,
   }) {
@@ -473,6 +517,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
       if (location != null) 'location': location,
       if (logo != null) 'logo': logo,
       if (presenceMode != null) 'presence_mode': presenceMode,
+      if (ticketTemplate != null) 'ticket_template': ticketTemplate,
       if (archivedAt != null) 'archived_at': archivedAt,
       if (createdAt != null) 'created_at': createdAt,
     });
@@ -486,6 +531,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     Value<String?>? location,
     Value<Uint8List?>? logo,
     Value<String>? presenceMode,
+    Value<String>? ticketTemplate,
     Value<DateTime?>? archivedAt,
     Value<DateTime>? createdAt,
   }) {
@@ -497,6 +543,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
       location: location ?? this.location,
       logo: logo ?? this.logo,
       presenceMode: presenceMode ?? this.presenceMode,
+      ticketTemplate: ticketTemplate ?? this.ticketTemplate,
       archivedAt: archivedAt ?? this.archivedAt,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -526,6 +573,9 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     if (presenceMode.present) {
       map['presence_mode'] = Variable<String>(presenceMode.value);
     }
+    if (ticketTemplate.present) {
+      map['ticket_template'] = Variable<String>(ticketTemplate.value);
+    }
     if (archivedAt.present) {
       map['archived_at'] = Variable<DateTime>(archivedAt.value);
     }
@@ -545,6 +595,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
           ..write('location: $location, ')
           ..write('logo: $logo, ')
           ..write('presenceMode: $presenceMode, ')
+          ..write('ticketTemplate: $ticketTemplate, ')
           ..write('archivedAt: $archivedAt, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -2448,6 +2499,7 @@ typedef $$EventsTableCreateCompanionBuilder =
       Value<String?> location,
       Value<Uint8List?> logo,
       required String presenceMode,
+      Value<String> ticketTemplate,
       Value<DateTime?> archivedAt,
       Value<DateTime> createdAt,
     });
@@ -2460,6 +2512,7 @@ typedef $$EventsTableUpdateCompanionBuilder =
       Value<String?> location,
       Value<Uint8List?> logo,
       Value<String> presenceMode,
+      Value<String> ticketTemplate,
       Value<DateTime?> archivedAt,
       Value<DateTime> createdAt,
     });
@@ -2582,6 +2635,11 @@ class $$EventsTableFilterComposer
 
   ColumnFilters<String> get presenceMode => $composableBuilder(
     column: $table.presenceMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ticketTemplate => $composableBuilder(
+    column: $table.ticketTemplate,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2740,6 +2798,11 @@ class $$EventsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get ticketTemplate => $composableBuilder(
+    column: $table.ticketTemplate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
     column: $table.archivedAt,
     builder: (column) => ColumnOrderings(column),
@@ -2780,6 +2843,11 @@ class $$EventsTableAnnotationComposer
 
   GeneratedColumn<String> get presenceMode => $composableBuilder(
     column: $table.presenceMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get ticketTemplate => $composableBuilder(
+    column: $table.ticketTemplate,
     builder: (column) => column,
   );
 
@@ -2932,6 +3000,7 @@ class $$EventsTableTableManager
                 Value<String?> location = const Value.absent(),
                 Value<Uint8List?> logo = const Value.absent(),
                 Value<String> presenceMode = const Value.absent(),
+                Value<String> ticketTemplate = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => EventsCompanion(
@@ -2942,6 +3011,7 @@ class $$EventsTableTableManager
                 location: location,
                 logo: logo,
                 presenceMode: presenceMode,
+                ticketTemplate: ticketTemplate,
                 archivedAt: archivedAt,
                 createdAt: createdAt,
               ),
@@ -2954,6 +3024,7 @@ class $$EventsTableTableManager
                 Value<String?> location = const Value.absent(),
                 Value<Uint8List?> logo = const Value.absent(),
                 required String presenceMode,
+                Value<String> ticketTemplate = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => EventsCompanion.insert(
@@ -2964,6 +3035,7 @@ class $$EventsTableTableManager
                 location: location,
                 logo: logo,
                 presenceMode: presenceMode,
+                ticketTemplate: ticketTemplate,
                 archivedAt: archivedAt,
                 createdAt: createdAt,
               ),

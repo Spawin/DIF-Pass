@@ -5,6 +5,7 @@ import 'package:dif_pass/features/events/data/event_repository.dart';
 import 'package:dif_pass/features/events/domain/custom_field.dart';
 import 'package:dif_pass/features/events/domain/event.dart';
 import 'package:dif_pass/features/events/domain/presence_mode.dart';
+import 'package:dif_pass/features/events/domain/ticket_template.dart';
 
 /// In-memory EventRepository for widget/provider tests. Not shipped in the
 /// app, lives under test/ only.
@@ -129,6 +130,7 @@ class FakeEventRepository implements EventRepository {
       location: location,
       logo: logo,
       presenceMode: presenceMode,
+      ticketTemplate: existing.ticketTemplate,
       archivedAt: existing.archivedAt,
       createdAt: existing.createdAt,
     );
@@ -166,6 +168,25 @@ class FakeEventRepository implements EventRepository {
   Future<bool> canEditPresenceMode(int eventId) async => presenceModeEditable;
 
   @override
+  Future<void> updateTicketTemplate(int eventId, TicketTemplate template) async {
+    final index = _events.indexWhere((e) => e.id == eventId);
+    final existing = _events[index];
+    _events[index] = Event(
+      id: existing.id,
+      shortCode: existing.shortCode,
+      name: existing.name,
+      date: existing.date,
+      location: existing.location,
+      logo: existing.logo,
+      presenceMode: existing.presenceMode,
+      ticketTemplate: template,
+      archivedAt: existing.archivedAt,
+      createdAt: existing.createdAt,
+    );
+    _emit();
+  }
+
+  @override
   Future<void> archiveEvent(int id) async {
     final index = _events.indexWhere((e) => e.id == id);
     final existing = _events[index];
@@ -177,6 +198,7 @@ class FakeEventRepository implements EventRepository {
       location: existing.location,
       logo: existing.logo,
       presenceMode: existing.presenceMode,
+      ticketTemplate: existing.ticketTemplate,
       archivedAt: DateTime.now(),
       createdAt: existing.createdAt,
     );
@@ -195,6 +217,7 @@ class FakeEventRepository implements EventRepository {
       location: existing.location,
       logo: existing.logo,
       presenceMode: existing.presenceMode,
+      ticketTemplate: existing.ticketTemplate,
       createdAt: existing.createdAt,
     );
     _emit();

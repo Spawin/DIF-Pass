@@ -19,7 +19,7 @@ final archivedEventsProvider = StreamProvider<List<Event>>((ref) {
   return ref.watch(eventRepositoryProvider).watchArchivedEvents();
 });
 
-final eventProvider = FutureProvider.family<Event, int>((ref, id) {
+final eventProvider = FutureProvider.autoDispose.family<Event, int>((ref, id) {
   return ref.watch(eventRepositoryProvider).getEvent(id);
 });
 

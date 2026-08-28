@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import '../domain/custom_field.dart';
 import '../domain/event.dart';
 import '../domain/presence_mode.dart';
+import '../domain/ticket_template.dart';
 
 abstract class EventRepository {
   Stream<List<Event>> watchActiveEvents();
@@ -32,6 +33,8 @@ abstract class EventRepository {
   Future<void> replaceCustomFields(int eventId, List<NewCustomField> customFields);
 
   Future<bool> canEditPresenceMode(int eventId);
+
+  Future<void> updateTicketTemplate(int eventId, TicketTemplate template);
 
   Future<void> archiveEvent(int id);
   Future<void> restoreEvent(int id);

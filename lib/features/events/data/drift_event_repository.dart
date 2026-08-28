@@ -5,6 +5,7 @@ import '../domain/custom_field.dart';
 import '../domain/custom_field_type.dart';
 import '../domain/event.dart';
 import '../domain/presence_mode.dart';
+import '../domain/ticket_template.dart';
 import 'event_repository.dart';
 
 class DriftEventRepository implements EventRepository {
@@ -126,6 +127,12 @@ class DriftEventRepository implements EventRepository {
   }
 
   @override
+  Future<void> updateTicketTemplate(int eventId, TicketTemplate template) async {
+    await (_db.update(_db.events)..where((tbl) => tbl.id.equals(eventId)))
+        .write(EventsCompanion(ticketTemplate: Value(template.name)));
+  }
+
+  @override
   Future<void> archiveEvent(int id) async {
     await (_db.update(_db.events)..where((tbl) => tbl.id.equals(id)))
         .write(EventsCompanion(archivedAt: Value(DateTime.now())));
@@ -168,6 +175,7 @@ class DriftEventRepository implements EventRepository {
       location: row.location,
       logo: row.logo,
       presenceMode: PresenceMode.values.byName(row.presenceMode),
+      ticketTemplate: TicketTemplate.values.byName(row.ticketTemplate),
       archivedAt: row.archivedAt,
       createdAt: row.createdAt,
     );

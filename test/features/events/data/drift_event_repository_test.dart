@@ -3,6 +3,7 @@ import 'package:dif_pass/features/events/data/drift_event_repository.dart';
 import 'package:dif_pass/features/events/domain/custom_field.dart';
 import 'package:dif_pass/features/events/domain/custom_field_type.dart';
 import 'package:dif_pass/features/events/domain/presence_mode.dart';
+import 'package:dif_pass/features/events/domain/ticket_template.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -241,6 +242,20 @@ void main() {
     expect(await db.select(db.tickets).get(), isEmpty);
     expect(await db.select(db.checkIns).get(), isEmpty);
     expect(await db.select(db.beneficiaryValues).get(), isEmpty);
+  });
+
+  test('updateTicketTemplate persists the chosen template, defaulting to standard', () async {
+    final id = await repository.createEvent(
+      name: 'Gala DIF 2026',
+      date: DateTime(2026, 12, 1),
+      presenceMode: PresenceMode.simple,
+      customFields: const [],
+    );
+    expect((await repository.getEvent(id)).ticketTemplate, TicketTemplate.standard);
+
+    await repository.updateTicketTemplate(id, TicketTemplate.elegant);
+
+    expect((await repository.getEvent(id)).ticketTemplate, TicketTemplate.elegant);
   });
 }
 

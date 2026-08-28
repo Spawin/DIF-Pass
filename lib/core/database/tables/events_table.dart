@@ -11,6 +11,10 @@ class Events extends Table {
   // ponytail: plain text ('simple' | 'multiple') instead of Drift's
   // textEnum<T>() sugar, converted to PresenceMode in the repository layer.
   TextColumn get presenceMode => text()();
+  // ponytail: plain text ('compact' | 'standard' | 'elegant') instead of
+  // Drift's textEnum<T>() sugar, same reasoning as presenceMode above.
+  TextColumn get ticketTemplate =>
+      text().withDefault(const Constant('standard'))();
   DateTimeColumn get archivedAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

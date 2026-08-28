@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'presence_mode.dart';
+import 'ticket_template.dart';
 
 class Event {
   const Event({
@@ -11,6 +12,7 @@ class Event {
     this.location,
     this.logo,
     required this.presenceMode,
+    this.ticketTemplate = TicketTemplate.standard,
     this.archivedAt,
     required this.createdAt,
   });
@@ -22,6 +24,7 @@ class Event {
   final String? location;
   final Uint8List? logo;
   final PresenceMode presenceMode;
+  final TicketTemplate ticketTemplate;
   final DateTime? archivedAt;
   final DateTime createdAt;
 
