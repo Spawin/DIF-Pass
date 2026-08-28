@@ -9,12 +9,14 @@ class EventCard extends StatelessWidget {
   const EventCard({
     required this.event,
     required this.onTap,
+    required this.onManageBeneficiaries,
     required this.onArchive,
     super.key,
   });
 
   final Event event;
   final VoidCallback onTap;
+  final VoidCallback onManageBeneficiaries;
   final VoidCallback onArchive;
 
   @override
@@ -41,10 +43,20 @@ class EventCard extends StatelessWidget {
               ? const Icon(Icons.event, color: AppColors.indigo)
               : null,
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.archive_outlined),
-          tooltip: l10n.eventsArchiveEventAction,
-          onPressed: onArchive,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.group_outlined),
+              tooltip: l10n.eventsBeneficiariesAction,
+              onPressed: onManageBeneficiaries,
+            ),
+            IconButton(
+              icon: const Icon(Icons.archive_outlined),
+              tooltip: l10n.eventsArchiveEventAction,
+              onPressed: onArchive,
+            ),
+          ],
         ),
       ),
     );

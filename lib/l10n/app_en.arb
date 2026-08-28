@@ -4,6 +4,7 @@
   "eventsListTitle": "Events",
   "eventsArchiveAction": "Archives",
   "eventsArchiveEventAction": "Archive",
+  "eventsBeneficiariesAction": "Beneficiaries",
   "eventsEmptyState": "No events yet. Create one to get started.",
   "eventsNewAction": "New event",
   "eventsLoadError": "Something went wrong loading events.",
