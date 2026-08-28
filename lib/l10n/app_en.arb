@@ -37,5 +37,8 @@
   "beneficiariesEmptyState": "No beneficiaries yet. Add one or import a CSV file.",
   "beneficiariesNewAction": "New beneficiary",
   "beneficiariesLoadError": "Something went wrong loading beneficiaries.",
-  "beneficiariesDeleteConfirmTitle": "Delete this beneficiary?"
+  "beneficiariesDeleteConfirmTitle": "Delete this beneficiary?",
+  "beneficiaryFormTitleCreate": "New beneficiary",
+  "beneficiaryFormTitleEdit": "Edit beneficiary",
+  "beneficiaryFormFieldNumberInvalid": "Enter a number"
 }

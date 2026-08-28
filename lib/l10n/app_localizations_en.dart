@@ -124,4 +124,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get beneficiariesDeleteConfirmTitle => 'Delete this beneficiary?';
+
+  @override
+  String get beneficiaryFormTitleCreate => 'New beneficiary';
+
+  @override
+  String get beneficiaryFormTitleEdit => 'Edit beneficiary';
+
+  @override
+  String get beneficiaryFormFieldNumberInvalid => 'Enter a number';
 }

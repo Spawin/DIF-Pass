@@ -127,4 +127,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get beneficiariesDeleteConfirmTitle => 'Supprimer ce beneficiaire ?';
+
+  @override
+  String get beneficiaryFormTitleCreate => 'Nouveau beneficiaire';
+
+  @override
+  String get beneficiaryFormTitleEdit => 'Modifier le beneficiaire';
+
+  @override
+  String get beneficiaryFormFieldNumberInvalid => 'Entrez un nombre';
 }

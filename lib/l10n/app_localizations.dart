@@ -325,6 +325,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete this beneficiary?'**
   String get beneficiariesDeleteConfirmTitle;
+
+  /// No description provided for @beneficiaryFormTitleCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'New beneficiary'**
+  String get beneficiaryFormTitleCreate;
+
+  /// No description provided for @beneficiaryFormTitleEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit beneficiary'**
+  String get beneficiaryFormTitleEdit;
+
+  /// No description provided for @beneficiaryFormFieldNumberInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number'**
+  String get beneficiaryFormFieldNumberInvalid;
 }
 
 class _AppLocalizationsDelegate
