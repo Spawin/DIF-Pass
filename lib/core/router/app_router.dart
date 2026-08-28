@@ -1,5 +1,8 @@
 import 'package:go_router/go_router.dart';
 
+import '../../features/beneficiaries/presentation/screens/beneficiaries_list_screen.dart';
+import '../../features/beneficiaries/presentation/screens/beneficiary_form_screen.dart';
+import '../../features/beneficiaries/presentation/screens/csv_import_screen.dart';
 import '../../features/events/presentation/screens/event_archive_screen.dart';
 import '../../features/events/presentation/screens/event_form_screen.dart';
 import '../../features/events/presentation/screens/events_list_screen.dart';
@@ -28,6 +31,48 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/events/archives',
       builder: (context, state) => const EventArchiveScreen(),
+    ),
+    GoRoute(
+      path: '/events/:id/beneficiaries',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        return id == null ? '/' : null;
+      },
+      builder: (context, state) => BeneficiariesListScreen(
+        eventId: int.parse(state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/events/:id/beneficiaries/new',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        return id == null ? '/' : null;
+      },
+      builder: (context, state) => BeneficiaryFormScreen(
+        eventId: int.parse(state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/events/:id/beneficiaries/:beneficiaryId/edit',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        final beneficiaryId = int.tryParse(state.pathParameters['beneficiaryId'] ?? '');
+        return (id == null || beneficiaryId == null) ? '/' : null;
+      },
+      builder: (context, state) => BeneficiaryFormScreen(
+        eventId: int.parse(state.pathParameters['id']!),
+        beneficiaryId: int.parse(state.pathParameters['beneficiaryId']!),
+      ),
+    ),
+    GoRoute(
+      path: '/events/:id/beneficiaries/import',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        return id == null ? '/' : null;
+      },
+      builder: (context, state) => CsvImportScreen(
+        eventId: int.parse(state.pathParameters['id']!),
+      ),
     ),
   ],
 );
