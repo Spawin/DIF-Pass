@@ -40,5 +40,17 @@
   "beneficiariesDeleteConfirmTitle": "Delete this beneficiary?",
   "beneficiaryFormTitleCreate": "New beneficiary",
   "beneficiaryFormTitleEdit": "Edit beneficiary",
-  "beneficiaryFormFieldNumberInvalid": "Enter a number"
+  "beneficiaryFormFieldNumberInvalid": "Enter a number",
+  "csvImportTitle": "Import beneficiaries",
+  "csvImportPickFileAction": "Choose a CSV file",
+  "csvImportMappingNameLabel": "Name column",
+  "csvImportIgnoreColumn": "Ignore",
+  "csvImportImportAction": "Import",
+  "csvImportResult": "{imported} beneficiaries imported, {skipped} skipped",
+  "@csvImportResult": {
+    "placeholders": {
+      "imported": {"type": "int"},
+      "skipped": {"type": "int"}
+    }
+  }
 }

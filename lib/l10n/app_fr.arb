@@ -40,5 +40,11 @@
   "beneficiariesDeleteConfirmTitle": "Supprimer ce beneficiaire ?",
   "beneficiaryFormTitleCreate": "Nouveau beneficiaire",
   "beneficiaryFormTitleEdit": "Modifier le beneficiaire",
-  "beneficiaryFormFieldNumberInvalid": "Entrez un nombre"
+  "beneficiaryFormFieldNumberInvalid": "Entrez un nombre",
+  "csvImportTitle": "Importer des beneficiaires",
+  "csvImportPickFileAction": "Choisir un fichier CSV",
+  "csvImportMappingNameLabel": "Colonne Nom",
+  "csvImportIgnoreColumn": "Ignorer",
+  "csvImportImportAction": "Importer",
+  "csvImportResult": "{imported} beneficiaires importes, {skipped} ignores"
 }

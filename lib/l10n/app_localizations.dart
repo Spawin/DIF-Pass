@@ -343,6 +343,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a number'**
   String get beneficiaryFormFieldNumberInvalid;
+
+  /// No description provided for @csvImportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import beneficiaries'**
+  String get csvImportTitle;
+
+  /// No description provided for @csvImportPickFileAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a CSV file'**
+  String get csvImportPickFileAction;
+
+  /// No description provided for @csvImportMappingNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name column'**
+  String get csvImportMappingNameLabel;
+
+  /// No description provided for @csvImportIgnoreColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore'**
+  String get csvImportIgnoreColumn;
+
+  /// No description provided for @csvImportImportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get csvImportImportAction;
+
+  /// No description provided for @csvImportResult.
+  ///
+  /// In en, this message translates to:
+  /// **'{imported} beneficiaries imported, {skipped} skipped'**
+  String csvImportResult(int imported, int skipped);
 }
 
 class _AppLocalizationsDelegate

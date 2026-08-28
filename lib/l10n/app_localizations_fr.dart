@@ -136,4 +136,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get beneficiaryFormFieldNumberInvalid => 'Entrez un nombre';
+
+  @override
+  String get csvImportTitle => 'Importer des beneficiaires';
+
+  @override
+  String get csvImportPickFileAction => 'Choisir un fichier CSV';
+
+  @override
+  String get csvImportMappingNameLabel => 'Colonne Nom';
+
+  @override
+  String get csvImportIgnoreColumn => 'Ignorer';
+
+  @override
+  String get csvImportImportAction => 'Importer';
+
+  @override
+  String csvImportResult(int imported, int skipped) {
+    return '$imported beneficiaires importes, $skipped ignores';
+  }
 }
