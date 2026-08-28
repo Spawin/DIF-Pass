@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../events/presentation/providers/event_providers.dart';
 import '../../domain/beneficiary.dart';
 import '../providers/beneficiary_providers.dart';
 import '../widgets/beneficiary_list_tile.dart';
@@ -16,10 +17,26 @@ class BeneficiariesListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final beneficiariesAsync = ref.watch(beneficiariesProvider(eventId));
+    final eventAsync = ref.watch(eventProvider(eventId));
+    final customFieldsAsync = ref.watch(customFieldsProvider(eventId));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.beneficiariesListTitle),
+        title: eventAsync.when(
+          data: (event) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.beneficiariesListTitle),
+              Text(
+                event.name,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          loading: () => Text(l10n.beneficiariesListTitle),
+          error: (_, _) => Text(l10n.beneficiariesListTitle),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.upload_file_outlined),
@@ -49,6 +66,7 @@ class BeneficiariesListScreen extends ConsumerWidget {
               final beneficiary = beneficiaries[index];
               return BeneficiaryListTile(
                 beneficiary: beneficiary,
+                customFields: customFieldsAsync.valueOrNull ?? const [],
                 onTap: () => context
                     .push('/events/$eventId/beneficiaries/${beneficiary.id}/edit'),
                 onDelete: () => _confirmDelete(context, ref, beneficiary),
@@ -96,6 +114,7 @@ class BeneficiariesListScreen extends ConsumerWidget {
       try {
         await repository.deleteBeneficiary(beneficiary.id);
       } catch (e) {
+        if (!context.mounted) return;
         messenger.showSnackBar(SnackBar(content: Text('$e')));
       }
     }

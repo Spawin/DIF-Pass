@@ -24,9 +24,9 @@ class FakeBeneficiaryRepository implements BeneficiaryRepository {
   }
 
   void _emit(int eventId) {
-    _controllerFor(eventId).add(
-      _beneficiaries.where((b) => b.eventId == eventId).toList(),
-    );
+    final list = _beneficiaries.where((b) => b.eventId == eventId).toList()
+      ..sort((a, b) => a.name.compareTo(b.name));
+    _controllerFor(eventId).add(list);
   }
 
   @override

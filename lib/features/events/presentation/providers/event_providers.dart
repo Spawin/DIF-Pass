@@ -19,6 +19,10 @@ final archivedEventsProvider = StreamProvider<List<Event>>((ref) {
   return ref.watch(eventRepositoryProvider).watchArchivedEvents();
 });
 
+final eventProvider = FutureProvider.family<Event, int>((ref, id) {
+  return ref.watch(eventRepositoryProvider).getEvent(id);
+});
+
 final customFieldsProvider =
     StreamProvider.family<List<CustomField>, int>((ref, eventId) {
   return ref.watch(eventRepositoryProvider).watchCustomFields(eventId);

@@ -56,6 +56,7 @@ class EventsListScreen extends ConsumerWidget {
                         .read(eventRepositoryProvider)
                         .archiveEvent(event.id);
                   } catch (e) {
+                    if (!context.mounted) return;
                     messenger.showSnackBar(SnackBar(content: Text('$e')));
                   }
                 },

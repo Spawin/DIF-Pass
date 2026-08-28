@@ -1,16 +1,29 @@
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/providers/beneficiary_providers.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/screens/beneficiaries_list_screen.dart';
+import 'package:dif_pass/features/events/domain/custom_field.dart';
+import 'package:dif_pass/features/events/domain/custom_field_type.dart';
+import 'package:dif_pass/features/events/domain/event.dart';
+import 'package:dif_pass/features/events/domain/presence_mode.dart';
+import 'package:dif_pass/features/events/presentation/providers/event_providers.dart';
 import 'package:dif_pass/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../events/fake_event_repository.dart';
 import '../../fake_beneficiary_repository.dart';
 
-Widget _wrap(Widget child, FakeBeneficiaryRepository fake) {
+Widget _wrap(
+  Widget child,
+  FakeBeneficiaryRepository fakeBeneficiaries,
+  FakeEventRepository fakeEvents,
+) {
   return ProviderScope(
-    overrides: [beneficiaryRepositoryProvider.overrideWithValue(fake)],
+    overrides: [
+      beneficiaryRepositoryProvider.overrideWithValue(fakeBeneficiaries),
+      eventRepositoryProvider.overrideWithValue(fakeEvents),
+    ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -19,11 +32,28 @@ Widget _wrap(Widget child, FakeBeneficiaryRepository fake) {
   );
 }
 
+FakeEventRepository _fakeEventsWithOneEvent() {
+  return FakeEventRepository(events: [
+    Event(
+      id: 1,
+      shortCode: 'EVT1',
+      name: 'Gala DIF 2026',
+      date: DateTime(2026, 12, 1),
+      presenceMode: PresenceMode.simple,
+      createdAt: DateTime(2026, 1, 1),
+    ),
+  ]);
+}
+
 void main() {
   testWidgets('shows the empty state when there are no beneficiaries',
       (tester) async {
     await tester.pumpWidget(
-      _wrap(const BeneficiariesListScreen(eventId: 1), FakeBeneficiaryRepository()),
+      _wrap(
+        const BeneficiariesListScreen(eventId: 1),
+        FakeBeneficiaryRepository(),
+        _fakeEventsWithOneEvent(),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -44,7 +74,9 @@ void main() {
       ),
     ]);
 
-    await tester.pumpWidget(_wrap(const BeneficiariesListScreen(eventId: 1), fake));
+    await tester.pumpWidget(
+      _wrap(const BeneficiariesListScreen(eventId: 1), fake, _fakeEventsWithOneEvent()),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Jane Doe'), findsOneWidget);
@@ -62,7 +94,9 @@ void main() {
       ),
     ]);
 
-    await tester.pumpWidget(_wrap(const BeneficiariesListScreen(eventId: 1), fake));
+    await tester.pumpWidget(
+      _wrap(const BeneficiariesListScreen(eventId: 1), fake, _fakeEventsWithOneEvent()),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('Delete'));
@@ -75,5 +109,33 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(fake.beneficiaries, isEmpty);
+  });
+
+  testWidgets(
+      'shows the event name in the header and a custom field preview on the tile',
+      (tester) async {
+    final fakeEvents = _fakeEventsWithOneEvent();
+    await fakeEvents.replaceCustomFields(1, const [
+      NewCustomField(label: 'Table number', type: CustomFieldType.text, sortOrder: 0),
+    ]);
+    final customFieldId = (await fakeEvents.watchCustomFields(1).first).single.id;
+
+    final fakeBeneficiaries = FakeBeneficiaryRepository(beneficiaries: [
+      Beneficiary(
+        id: 1,
+        eventId: 1,
+        name: 'Jane Doe',
+        customFieldValues: {customFieldId: 'Table 5'},
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    ]);
+
+    await tester.pumpWidget(
+      _wrap(const BeneficiariesListScreen(eventId: 1), fakeBeneficiaries, fakeEvents),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Gala DIF 2026'), findsOneWidget);
+    expect(find.text('Table 5'), findsOneWidget);
   });
 }

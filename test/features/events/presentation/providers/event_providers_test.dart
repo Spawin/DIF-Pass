@@ -43,20 +43,29 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    final stream = container.read(customFieldsProvider(eventId).stream);
-    final expectation = expectLater(
-      stream,
-      emitsInOrder([
-        predicate<List<CustomField>>((list) => list.isEmpty),
-        predicate<List<CustomField>>(
-            (list) => list.length == 1 && list.single.label == 'Table number'),
-      ]),
+    final emissions = <List<CustomField>>[];
+    final subscription = container.listen(
+      customFieldsProvider(eventId),
+      (previous, next) {
+        final value = next.valueOrNull;
+        if (value != null) emissions.add(value);
+      },
+      fireImmediately: true,
     );
+    addTearDown(subscription.close);
 
     await fake.replaceCustomFields(eventId, const [
       NewCustomField(label: 'Table number', type: CustomFieldType.text, sortOrder: 0),
     ]);
+    // Let the microtask-scheduled emission land. If one delayed(Duration.zero)
+    // isn't enough to observe both emissions, add one or two more, this is
+    // waiting for a known-to-arrive event, not racing an ordering bug.
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
 
-    await expectation;
+    expect(emissions, isNotEmpty);
+    expect(emissions.first, isEmpty);
+    expect(emissions.last, hasLength(1));
+    expect(emissions.last.single.label, 'Table number');
   });
 }

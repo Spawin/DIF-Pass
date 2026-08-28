@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -27,18 +27,25 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
   int? _skippedCount;
 
   Future<void> _pickFile() async {
-    final file = await FilePicker.pickFile(
-      type: FileType.custom,
-      allowedExtensions: ['csv'],
-    );
-    if (file == null || file.path == null) return;
-    final content = await File(file.path!).readAsString();
-    final parsed = parseCsvContent(content);
-    if (!mounted) return;
-    setState(() {
-      _headers = parsed.headers;
-      _dataRows = parsed.rows;
-    });
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      final content = utf8.decode(bytes, allowMalformed: true);
+      final parsed = parseCsvContent(content);
+      if (!mounted) return;
+      setState(() {
+        _headers = parsed.headers;
+        _dataRows = parsed.rows;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
   }
 
   Future<void> _handleImport(List<NewBeneficiary> beneficiaries, int skipped) async {
@@ -53,6 +60,7 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
         _skippedCount = skipped;
       });
     } catch (e) {
+      if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text('$e')));
     }
   }
