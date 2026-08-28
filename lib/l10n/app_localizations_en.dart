@@ -104,4 +104,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonDelete => 'Delete';
+
+  @override
+  String get beneficiariesListTitle => 'Beneficiaries';
+
+  @override
+  String get beneficiariesImportAction => 'Import CSV';
+
+  @override
+  String get beneficiariesEmptyState =>
+      'No beneficiaries yet. Add one or import a CSV file.';
+
+  @override
+  String get beneficiariesNewAction => 'New beneficiary';
+
+  @override
+  String get beneficiariesLoadError =>
+      'Something went wrong loading beneficiaries.';
+
+  @override
+  String get beneficiariesDeleteConfirmTitle => 'Delete this beneficiary?';
 }

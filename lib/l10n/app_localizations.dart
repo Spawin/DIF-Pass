@@ -289,6 +289,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get commonDelete;
+
+  /// No description provided for @beneficiariesListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Beneficiaries'**
+  String get beneficiariesListTitle;
+
+  /// No description provided for @beneficiariesImportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import CSV'**
+  String get beneficiariesImportAction;
+
+  /// No description provided for @beneficiariesEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No beneficiaries yet. Add one or import a CSV file.'**
+  String get beneficiariesEmptyState;
+
+  /// No description provided for @beneficiariesNewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New beneficiary'**
+  String get beneficiariesNewAction;
+
+  /// No description provided for @beneficiariesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong loading beneficiaries.'**
+  String get beneficiariesLoadError;
+
+  /// No description provided for @beneficiariesDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this beneficiary?'**
+  String get beneficiariesDeleteConfirmTitle;
 }
 
 class _AppLocalizationsDelegate

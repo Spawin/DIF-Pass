@@ -31,5 +31,11 @@
   "eventsDeleteConfirmTitle": "Delete permanently?",
   "eventsDeleteConfirmBody": "This action cannot be undone.",
   "commonCancel": "Cancel",
-  "commonDelete": "Delete"
+  "commonDelete": "Delete",
+  "beneficiariesListTitle": "Beneficiaries",
+  "beneficiariesImportAction": "Import CSV",
+  "beneficiariesEmptyState": "No beneficiaries yet. Add one or import a CSV file.",
+  "beneficiariesNewAction": "New beneficiary",
+  "beneficiariesLoadError": "Something went wrong loading beneficiaries.",
+  "beneficiariesDeleteConfirmTitle": "Delete this beneficiary?"
 }

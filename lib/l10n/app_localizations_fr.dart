@@ -107,4 +107,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get commonDelete => 'Supprimer';
+
+  @override
+  String get beneficiariesListTitle => 'Beneficiaires';
+
+  @override
+  String get beneficiariesImportAction => 'Importer un CSV';
+
+  @override
+  String get beneficiariesEmptyState =>
+      'Aucun beneficiaire pour l\'instant. Ajoutez-en un ou importez un fichier CSV.';
+
+  @override
+  String get beneficiariesNewAction => 'Nouveau beneficiaire';
+
+  @override
+  String get beneficiariesLoadError =>
+      'Un probleme est survenu lors du chargement des beneficiaires.';
+
+  @override
+  String get beneficiariesDeleteConfirmTitle => 'Supprimer ce beneficiaire ?';
 }
