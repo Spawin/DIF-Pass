@@ -47,5 +47,13 @@
   "csvImportMappingNameLabel": "Colonne Nom",
   "csvImportIgnoreColumn": "Ignorer",
   "csvImportImportAction": "Importer",
-  "csvImportResult": "{imported} beneficiaires importes, {skipped} ignores"
+  "csvImportResult": "{imported} beneficiaires importes, {skipped} ignores",
+  "ticketsScreenTitle": "Tickets",
+  "ticketsTemplateLabel": "Modele de ticket",
+  "ticketsTemplateCompact": "Compact",
+  "ticketsTemplateStandard": "Standard",
+  "ticketsTemplateElegant": "Elegant",
+  "ticketsGenerateAction": "Generer les tickets",
+  "ticketsEmptyState": "Aucun ticket pour l'instant.",
+  "ticketsLoadError": "Un probleme est survenu lors du chargement des tickets."
 }

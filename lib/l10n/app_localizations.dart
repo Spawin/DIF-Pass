@@ -385,6 +385,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{imported} beneficiaries imported, {skipped} skipped'**
   String csvImportResult(int imported, int skipped);
+
+  /// No description provided for @ticketsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets'**
+  String get ticketsScreenTitle;
+
+  /// No description provided for @ticketsTemplateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket template'**
+  String get ticketsTemplateLabel;
+
+  /// No description provided for @ticketsTemplateCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get ticketsTemplateCompact;
+
+  /// No description provided for @ticketsTemplateStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get ticketsTemplateStandard;
+
+  /// No description provided for @ticketsTemplateElegant.
+  ///
+  /// In en, this message translates to:
+  /// **'Elegant'**
+  String get ticketsTemplateElegant;
+
+  /// No description provided for @ticketsGenerateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate tickets'**
+  String get ticketsGenerateAction;
+
+  /// No description provided for @ticketsEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No tickets yet.'**
+  String get ticketsEmptyState;
+
+  /// No description provided for @ticketsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong loading tickets.'**
+  String get ticketsLoadError;
 }
 
 class _AppLocalizationsDelegate

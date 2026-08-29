@@ -156,4 +156,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String csvImportResult(int imported, int skipped) {
     return '$imported beneficiaries imported, $skipped skipped';
   }
+
+  @override
+  String get ticketsScreenTitle => 'Tickets';
+
+  @override
+  String get ticketsTemplateLabel => 'Ticket template';
+
+  @override
+  String get ticketsTemplateCompact => 'Compact';
+
+  @override
+  String get ticketsTemplateStandard => 'Standard';
+
+  @override
+  String get ticketsTemplateElegant => 'Elegant';
+
+  @override
+  String get ticketsGenerateAction => 'Generate tickets';
+
+  @override
+  String get ticketsEmptyState => 'No tickets yet.';
+
+  @override
+  String get ticketsLoadError => 'Something went wrong loading tickets.';
 }

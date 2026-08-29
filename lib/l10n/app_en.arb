@@ -53,5 +53,13 @@
       "imported": {"type": "int"},
       "skipped": {"type": "int"}
     }
-  }
+  },
+  "ticketsScreenTitle": "Tickets",
+  "ticketsTemplateLabel": "Ticket template",
+  "ticketsTemplateCompact": "Compact",
+  "ticketsTemplateStandard": "Standard",
+  "ticketsTemplateElegant": "Elegant",
+  "ticketsGenerateAction": "Generate tickets",
+  "ticketsEmptyState": "No tickets yet.",
+  "ticketsLoadError": "Something went wrong loading tickets."
 }
