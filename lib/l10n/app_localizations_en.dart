@@ -222,4 +222,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkinManualEntryAction => 'Check in';
+
+  @override
+  String get checkinScreenTitle => 'Check-in';
+
+  @override
+  String get checkinManualEntryToggleAction => 'Manual entry';
+
+  @override
+  String get checkinBackToScanAction => 'Back to scanning';
+
+  @override
+  String checkinCounterLabel(int checkedIn, int total) {
+    return '$checkedIn/$total arrived';
+  }
+
+  @override
+  String checkinAlreadyRecordedMessage(String time) {
+    return 'Already checked in at $time';
+  }
+
+  @override
+  String get checkinNotFoundMessage => 'Ticket not found';
+
+  @override
+  String get checkinUnexpectedError =>
+      'Something went wrong recording the check-in.';
 }

@@ -77,5 +77,23 @@
   "ticketPreviewShareAction": "Share ticket",
   "ticketPreviewShareError": "Could not share the ticket.",
   "checkinManualEntryLabel": "Ticket ID",
-  "checkinManualEntryAction": "Check in"
+  "checkinManualEntryAction": "Check in",
+  "checkinScreenTitle": "Check-in",
+  "checkinManualEntryToggleAction": "Manual entry",
+  "checkinBackToScanAction": "Back to scanning",
+  "checkinCounterLabel": "{checkedIn}/{total} arrived",
+  "@checkinCounterLabel": {
+    "placeholders": {
+      "checkedIn": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "checkinAlreadyRecordedMessage": "Already checked in at {time}",
+  "@checkinAlreadyRecordedMessage": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "checkinNotFoundMessage": "Ticket not found",
+  "checkinUnexpectedError": "Something went wrong recording the check-in."
 }

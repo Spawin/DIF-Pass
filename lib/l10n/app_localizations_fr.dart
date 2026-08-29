@@ -226,4 +226,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get checkinManualEntryAction => 'Enregistrer';
+
+  @override
+  String get checkinScreenTitle => 'Controle de presence';
+
+  @override
+  String get checkinManualEntryToggleAction => 'Saisie manuelle';
+
+  @override
+  String get checkinBackToScanAction => 'Revenir au scan';
+
+  @override
+  String checkinCounterLabel(int checkedIn, int total) {
+    return '$checkedIn/$total arrives';
+  }
+
+  @override
+  String checkinAlreadyRecordedMessage(String time) {
+    return 'Deja enregistre a $time';
+  }
+
+  @override
+  String get checkinNotFoundMessage => 'Ticket introuvable';
+
+  @override
+  String get checkinUnexpectedError =>
+      'Un probleme est survenu lors de l\'enregistrement de la presence.';
 }

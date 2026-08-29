@@ -499,6 +499,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check in'**
   String get checkinManualEntryAction;
+
+  /// No description provided for @checkinScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in'**
+  String get checkinScreenTitle;
+
+  /// No description provided for @checkinManualEntryToggleAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual entry'**
+  String get checkinManualEntryToggleAction;
+
+  /// No description provided for @checkinBackToScanAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to scanning'**
+  String get checkinBackToScanAction;
+
+  /// No description provided for @checkinCounterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{checkedIn}/{total} arrived'**
+  String checkinCounterLabel(int checkedIn, int total);
+
+  /// No description provided for @checkinAlreadyRecordedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Already checked in at {time}'**
+  String checkinAlreadyRecordedMessage(String time);
+
+  /// No description provided for @checkinNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket not found'**
+  String get checkinNotFoundMessage;
+
+  /// No description provided for @checkinUnexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong recording the check-in.'**
+  String get checkinUnexpectedError;
 }
 
 class _AppLocalizationsDelegate
