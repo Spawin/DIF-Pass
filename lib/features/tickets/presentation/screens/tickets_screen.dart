@@ -58,7 +58,7 @@ class TicketsScreen extends ConsumerWidget {
             onPressed: canExport
                 ? () => _exportAllTickets(
                       context,
-                      event!,
+                      event,
                       tickets,
                       beneficiariesById,
                       customFields,
