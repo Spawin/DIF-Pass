@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:printing/printing.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../beneficiaries/domain/beneficiary.dart';
 import '../../../beneficiaries/presentation/providers/beneficiary_providers.dart';
+import '../../../events/domain/custom_field.dart';
+import '../../../events/domain/event.dart';
 import '../../../events/domain/ticket_template.dart';
 import '../../../events/presentation/providers/event_providers.dart';
+import '../../data/ticket_pdf_builder.dart';
+import '../../domain/ticket.dart';
 import '../providers/ticket_providers.dart';
 
 class TicketsScreen extends ConsumerWidget {
@@ -19,11 +25,17 @@ class TicketsScreen extends ConsumerWidget {
     final eventAsync = ref.watch(eventProvider(eventId));
     final beneficiariesAsync = ref.watch(beneficiariesProvider(eventId));
     final ticketsAsync = ref.watch(ticketsProvider(eventId));
+    final customFieldsAsync = ref.watch(customFieldsProvider(eventId));
 
     final event = eventAsync.valueOrNull;
     final beneficiaries = beneficiariesAsync.valueOrNull ?? const [];
     final tickets = ticketsAsync.valueOrNull ?? const [];
     final canGenerate = beneficiaries.length > tickets.length;
+    final customFields = customFieldsAsync.valueOrNull ?? const [];
+    final beneficiariesById = {
+      for (final beneficiary in beneficiaries) beneficiary.id: beneficiary,
+    };
+    final canExport = event != null && tickets.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -39,8 +51,25 @@ class TicketsScreen extends ConsumerWidget {
           loading: () => Text(l10n.ticketsScreenTitle),
           error: (_, _) => Text(l10n.ticketsScreenTitle),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.print_outlined),
+            tooltip: l10n.ticketsExportAction,
+            onPressed: canExport
+                ? () => _exportAllTickets(
+                      context,
+                      event!,
+                      tickets,
+                      beneficiariesById,
+                      customFields,
+                    )
+                : null,
+          ),
+        ],
       ),
-      body: eventAsync.hasError || beneficiariesAsync.hasError
+      body: eventAsync.hasError ||
+              beneficiariesAsync.hasError ||
+              customFieldsAsync.hasError
           ? Center(child: Text(l10n.ticketsLoadError))
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -167,6 +196,31 @@ class TicketsScreen extends ConsumerWidget {
         SnackBar(content: Text(l10n.ticketsGeneratedCount(created))),
       );
     } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
+  Future<void> _exportAllTickets(
+    BuildContext context,
+    Event event,
+    List<Ticket> tickets,
+    Map<int, Beneficiary> beneficiariesById,
+    List<CustomField> customFields,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final bytes = await buildEventTicketsPdf(
+        event: event,
+        tickets: tickets,
+        beneficiariesById: beneficiariesById,
+        customFields: customFields,
+      );
+      await Printing.layoutPdf(
+        onLayout: (format) async => bytes,
+        name: 'tickets-${event.shortCode}',
+      );
+    } catch (e) {
+      if (!context.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text('$e')));
     }
   }

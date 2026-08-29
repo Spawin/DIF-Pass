@@ -222,4 +222,87 @@ void main() {
       );
     },
   );
+
+  testWidgets('export action is disabled when there are no tickets', (
+    tester,
+  ) async {
+    final fakeBeneficiaries = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeTickets = FakeTicketRepository(
+      beneficiaryIdsForEvent: (eventId) => fakeBeneficiaries.beneficiaries
+          .where((b) => b.eventId == eventId)
+          .map((b) => b.id)
+          .toList(),
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketsScreen(eventId: 1),
+        _fakeEventsWithOneEvent(),
+        fakeBeneficiaries,
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Export tickets'), findsOneWidget);
+    final button = tester.widget<IconButton>(find.byType(IconButton));
+    expect(button.onPressed, isNull);
+  });
+
+  testWidgets('export action is enabled once at least one ticket exists', (
+    tester,
+  ) async {
+    final fakeBeneficiaries = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeTickets = FakeTicketRepository(
+      tickets: [
+        Ticket(
+          id: 1,
+          beneficiaryId: 1,
+          eventId: 1,
+          readableId: '0001',
+          randomPart: 'ABCD',
+          qrPayload: 'EVT1-0001-ABCD',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+      beneficiaryIdsForEvent: (eventId) => fakeBeneficiaries.beneficiaries
+          .where((b) => b.eventId == eventId)
+          .map((b) => b.id)
+          .toList(),
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketsScreen(eventId: 1),
+        _fakeEventsWithOneEvent(),
+        fakeBeneficiaries,
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Export tickets'), findsOneWidget);
+    final button = tester.widget<IconButton>(find.byType(IconButton));
+    expect(button.onPressed, isNotNull);
+  });
 }
