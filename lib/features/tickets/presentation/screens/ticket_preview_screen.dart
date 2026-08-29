@@ -31,6 +31,11 @@ class TicketPreviewScreen extends ConsumerWidget {
           if (!beneficiaryAsync.hasValue ||
               !eventAsync.hasValue ||
               !customFieldsAsync.hasValue) {
+            if (beneficiaryAsync.hasError ||
+                eventAsync.hasError ||
+                customFieldsAsync.hasError) {
+              return Center(child: Text(l10n.ticketsLoadError));
+            }
             return const Center(child: CircularProgressIndicator());
           }
 
