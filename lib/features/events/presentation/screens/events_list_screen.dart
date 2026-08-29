@@ -49,6 +49,8 @@ class EventsListScreen extends ConsumerWidget {
                 onTap: () => context.push('/events/${event.id}/edit'),
                 onManageBeneficiaries: () =>
                     context.push('/events/${event.id}/beneficiaries'),
+                onManageTickets: () =>
+                    context.push('/events/${event.id}/tickets'),
                 onArchive: () async {
                   final messenger = ScaffoldMessenger.of(context);
                   try {

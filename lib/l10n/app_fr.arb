@@ -5,6 +5,7 @@
   "eventsArchiveAction": "Archives",
   "eventsArchiveEventAction": "Archiver",
   "eventsBeneficiariesAction": "Beneficiaires",
+  "eventsTicketsAction": "Tickets",
   "eventsEmptyState": "Aucun evenement pour l'instant. Creez-en un pour commencer.",
   "eventsNewAction": "Nouvel evenement",
   "eventsLoadError": "Un probleme est survenu lors du chargement des evenements.",

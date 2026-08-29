@@ -24,6 +24,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventsBeneficiariesAction => 'Beneficiaires';
 
   @override
+  String get eventsTicketsAction => 'Tickets';
+
+  @override
   String get eventsEmptyState =>
       'Aucun evenement pour l\'instant. Creez-en un pour commencer.';
 

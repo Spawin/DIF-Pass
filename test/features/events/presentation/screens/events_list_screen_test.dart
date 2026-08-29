@@ -93,4 +93,22 @@ void main() {
 
     expect(find.byTooltip('Beneficiaries'), findsOneWidget);
   });
+
+  testWidgets('shows a tickets action for each event', (tester) async {
+    final fake = FakeEventRepository(events: [
+      Event(
+        id: 1,
+        shortCode: 'EVT1',
+        name: 'Gala DIF 2026',
+        date: DateTime(2026, 12, 1),
+        presenceMode: PresenceMode.simple,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    ]);
+
+    await tester.pumpWidget(_wrap(const EventsListScreen(), fake));
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Tickets'), findsOneWidget);
+  });
 }

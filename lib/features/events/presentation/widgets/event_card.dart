@@ -10,6 +10,7 @@ class EventCard extends StatelessWidget {
     required this.event,
     required this.onTap,
     required this.onManageBeneficiaries,
+    required this.onManageTickets,
     required this.onArchive,
     super.key,
   });
@@ -17,6 +18,7 @@ class EventCard extends StatelessWidget {
   final Event event;
   final VoidCallback onTap;
   final VoidCallback onManageBeneficiaries;
+  final VoidCallback onManageTickets;
   final VoidCallback onArchive;
 
   @override
@@ -50,6 +52,11 @@ class EventCard extends StatelessWidget {
               icon: const Icon(Icons.group_outlined),
               tooltip: l10n.eventsBeneficiariesAction,
               onPressed: onManageBeneficiaries,
+            ),
+            IconButton(
+              icon: const Icon(Icons.confirmation_number_outlined),
+              tooltip: l10n.eventsTicketsAction,
+              onPressed: onManageTickets,
             ),
             IconButton(
               icon: const Icon(Icons.archive_outlined),

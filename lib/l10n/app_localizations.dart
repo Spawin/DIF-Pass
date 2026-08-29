@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Beneficiaries'**
   String get eventsBeneficiariesAction;
 
+  /// No description provided for @eventsTicketsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets'**
+  String get eventsTicketsAction;
+
   /// No description provided for @eventsEmptyState.
   ///
   /// In en, this message translates to:
