@@ -203,8 +203,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ticketsExportAction => 'Export tickets';
 
   @override
+  String get ticketsExportError => 'Could not export the tickets.';
+
+  @override
   String get ticketPreviewTitle => 'Ticket';
 
   @override
   String get ticketPreviewShareAction => 'Share ticket';
+
+  @override
+  String get ticketPreviewShareError => 'Could not share the ticket.';
 }

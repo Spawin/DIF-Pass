@@ -95,6 +95,7 @@ class TicketPreviewScreen extends ConsumerWidget {
     WidgetRef ref,
     Ticket ticket,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     try {
       final beneficiary = await ref.read(
@@ -116,7 +117,9 @@ class TicketPreviewScreen extends ConsumerWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.ticketPreviewShareError)),
+      );
     }
   }
 }

@@ -35,7 +35,10 @@ class TicketsScreen extends ConsumerWidget {
     final beneficiariesById = {
       for (final beneficiary in beneficiaries) beneficiary.id: beneficiary,
     };
-    final canExport = event != null && tickets.isNotEmpty;
+    final canExport = event != null &&
+        tickets.isNotEmpty &&
+        beneficiariesAsync.hasValue &&
+        customFieldsAsync.hasValue;
 
     return Scaffold(
       appBar: AppBar(
@@ -207,6 +210,7 @@ class TicketsScreen extends ConsumerWidget {
     Map<int, Beneficiary> beneficiariesById,
     List<CustomField> customFields,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     try {
       final bytes = await buildEventTicketsPdf(
@@ -221,7 +225,7 @@ class TicketsScreen extends ConsumerWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.ticketsExportError)));
     }
   }
 }

@@ -71,6 +71,8 @@
     }
   },
   "ticketsExportAction": "Export tickets",
+  "ticketsExportError": "Could not export the tickets.",
   "ticketPreviewTitle": "Ticket",
-  "ticketPreviewShareAction": "Share ticket"
+  "ticketPreviewShareAction": "Share ticket",
+  "ticketPreviewShareError": "Could not share the ticket."
 }

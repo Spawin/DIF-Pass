@@ -458,6 +458,12 @@ abstract class AppLocalizations {
   /// **'Export tickets'**
   String get ticketsExportAction;
 
+  /// No description provided for @ticketsExportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export the tickets.'**
+  String get ticketsExportError;
+
   /// No description provided for @ticketPreviewTitle.
   ///
   /// In en, this message translates to:
@@ -469,6 +475,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share ticket'**
   String get ticketPreviewShareAction;
+
+  /// No description provided for @ticketPreviewShareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share the ticket.'**
+  String get ticketPreviewShareError;
 }
 
 class _AppLocalizationsDelegate
