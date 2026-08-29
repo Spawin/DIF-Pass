@@ -14,28 +14,35 @@ import 'tables/tickets_table.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [
-  Events,
-  CustomFields,
-  Beneficiaries,
-  BeneficiaryValues,
-  Tickets,
-  CheckIns,
-])
+@DriftDatabase(
+  tables: [
+    Events,
+    CustomFields,
+    Beneficiaries,
+    BeneficiaryValues,
+    Tickets,
+    CheckIns,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        beforeOpen: (details) async {
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
-      );
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.addColumn(events, events.ticketTemplate);
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 }
 
 LazyDatabase _openConnection() {
