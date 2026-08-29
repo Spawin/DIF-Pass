@@ -14,3 +14,7 @@ final beneficiariesProvider =
     StreamProvider.family<List<Beneficiary>, int>((ref, eventId) {
   return ref.watch(beneficiaryRepositoryProvider).watchBeneficiaries(eventId);
 });
+
+final beneficiaryProvider = FutureProvider.autoDispose.family<Beneficiary, int>((ref, id) {
+  return ref.watch(beneficiaryRepositoryProvider).getBeneficiary(id);
+});
