@@ -190,7 +190,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String ticketsGeneratedCount(int count) {
-    return '$count tickets created';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tickets created',
+      one: '1 ticket created',
+    );
+    return '$_temp0';
   }
 
   @override

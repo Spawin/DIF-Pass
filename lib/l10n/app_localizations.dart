@@ -449,7 +449,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsGeneratedCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} tickets created'**
+  /// **'{count, plural, =1{1 ticket created} other{{count} tickets created}}'**
   String ticketsGeneratedCount(int count);
 
   /// No description provided for @ticketPreviewTitle.

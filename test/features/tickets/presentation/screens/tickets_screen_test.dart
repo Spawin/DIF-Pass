@@ -177,7 +177,7 @@ void main() {
 
     expect(find.text('Jane Doe'), findsOneWidget);
     expect(fakeTickets.tickets, hasLength(1));
-    expect(find.text('1 tickets created'), findsOneWidget);
+    expect(find.text('1 ticket created'), findsOneWidget);
   });
 
   testWidgets(
