@@ -74,6 +74,25 @@ class DriftTicketRepository implements TicketRepository {
     });
   }
 
+  @override
+  Future<Ticket?> findTicketForCheckIn(int eventId, String rawInput) async {
+    final trimmed = rawInput.trim();
+    if (trimmed.isEmpty) return null;
+
+    final byPayload = await (_db.select(_db.tickets)
+          ..where((tbl) =>
+              tbl.eventId.equals(eventId) & tbl.qrPayload.equals(trimmed)))
+        .getSingleOrNull();
+    if (byPayload != null) return _toTicket(byPayload);
+
+    final byReadableId = await (_db.select(_db.tickets)
+          ..where((tbl) =>
+              tbl.eventId.equals(eventId) &
+              tbl.readableId.upper().equals(trimmed.toUpperCase())))
+        .getSingleOrNull();
+    return byReadableId == null ? null : _toTicket(byReadableId);
+  }
+
   Ticket _toTicket(TicketEntity row) {
     return Ticket(
       id: row.id,

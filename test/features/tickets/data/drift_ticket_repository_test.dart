@@ -90,4 +90,48 @@ void main() {
     final fetched = await repository.getTicket(ticket.id);
     expect(fetched.readableId, ticket.readableId);
   });
+
+  test('findTicketForCheckIn finds a ticket by its full QR payload', () async {
+    await insertBeneficiary('Jane Doe');
+    await repository.generateMissingTickets(eventId);
+    final ticket = (await repository.watchTicketsForEvent(eventId).first).single;
+
+    final found = await repository.findTicketForCheckIn(eventId, ticket.qrPayload);
+
+    expect(found?.id, ticket.id);
+  });
+
+  test('findTicketForCheckIn finds a ticket by its readable id alone', () async {
+    await insertBeneficiary('Jane Doe');
+    await repository.generateMissingTickets(eventId);
+    final ticket = (await repository.watchTicketsForEvent(eventId).first).single;
+
+    final found = await repository.findTicketForCheckIn(eventId, ticket.readableId);
+
+    expect(found?.id, ticket.id);
+  });
+
+  test('findTicketForCheckIn returns null for a ticket from another event', () async {
+    await insertBeneficiary('Jane Doe');
+    await repository.generateMissingTickets(eventId);
+    final ticket = (await repository.watchTicketsForEvent(eventId).first).single;
+    final otherEventId = await db.into(db.events).insert(
+          EventsCompanion.insert(
+            shortCode: 'EVT2',
+            name: 'Other event',
+            date: DateTime(2026, 12, 1),
+            presenceMode: 'simple',
+          ),
+        );
+
+    final found = await repository.findTicketForCheckIn(otherEventId, ticket.qrPayload);
+
+    expect(found, isNull);
+  });
+
+  test('findTicketForCheckIn returns null for an unknown identifier', () async {
+    final found = await repository.findTicketForCheckIn(eventId, 'nope');
+
+    expect(found, isNull);
+  });
 }

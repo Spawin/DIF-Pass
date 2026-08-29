@@ -81,4 +81,23 @@ class FakeTicketRepository implements TicketRepository {
     _emit(eventId);
     return created;
   }
+
+  @override
+  Future<Ticket?> findTicketForCheckIn(int eventId, String rawInput) async {
+    final trimmed = rawInput.trim();
+    if (trimmed.isEmpty) return null;
+
+    for (final ticket in _tickets) {
+      if (ticket.eventId == eventId && ticket.qrPayload == trimmed) {
+        return ticket;
+      }
+    }
+    for (final ticket in _tickets) {
+      if (ticket.eventId == eventId &&
+          ticket.readableId.toUpperCase() == trimmed.toUpperCase()) {
+        return ticket;
+      }
+    }
+    return null;
+  }
 }
