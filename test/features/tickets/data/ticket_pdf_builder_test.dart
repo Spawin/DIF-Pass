@@ -123,4 +123,78 @@ void main() {
       });
     }
   });
+
+  group('buildEventTicketsPdf', () {
+    test('a single ticket produces exactly one page', () async {
+      final beneficiary = _beneficiary();
+      final doc = buildEventTicketsDocument(
+        event: _event(),
+        tickets: [_ticket()],
+        beneficiariesById: {beneficiary.id: beneficiary},
+        customFields: const [],
+      );
+      await doc.save();
+
+      expect(doc.document.pdfPageList.pages.length, 1);
+    });
+
+    test(
+      'many more tickets than fit on one page produce multiple pages',
+      () async {
+        final beneficiary = _beneficiary();
+        // Comfortably more than the compact template's estimated columns per
+        // A4 page (see docs/superpowers/specs/2026-08-29-jalon-5-export-partage-design.md),
+        // to prove pw.Wrap/pw.MultiPage actually paginate rather than
+        // overflow silently or throw.
+        final tickets = [
+          for (var i = 1; i <= 40; i++)
+            Ticket(
+              id: i,
+              beneficiaryId: beneficiary.id,
+              eventId: 1,
+              readableId: i.toString().padLeft(4, '0'),
+              randomPart: 'ABCD',
+              qrPayload: 'EVT1-${i.toString().padLeft(4, '0')}-ABCD',
+              createdAt: DateTime(2026, 1, 1),
+            ),
+        ];
+        final doc = buildEventTicketsDocument(
+          event: _event(template: TicketTemplate.compact),
+          tickets: tickets,
+          beneficiariesById: {beneficiary.id: beneficiary},
+          customFields: const [],
+        );
+        await doc.save();
+
+        expect(doc.document.pdfPageList.pages.length, greaterThan(1));
+      },
+    );
+
+    test('a ticket with no matching beneficiary is skipped, not a crash', () async {
+      final doc = buildEventTicketsDocument(
+        event: _event(),
+        tickets: [_ticket()],
+        beneficiariesById: const {},
+        customFields: const [],
+      );
+      final bytes = await doc.save();
+
+      expect(_isPdf(bytes), isTrue);
+      expect(doc.document.pdfPageList.pages.length, 1);
+    });
+
+    for (final template in TicketTemplate.values) {
+      test('produces a valid document for the ${template.name} template', () async {
+        final beneficiary = _beneficiary();
+        final bytes = await buildEventTicketsPdf(
+          event: _event(template: template),
+          tickets: [_ticket()],
+          beneficiariesById: {beneficiary.id: beneficiary},
+          customFields: const [],
+        );
+
+        expect(_isPdf(bytes), isTrue);
+      });
+    }
+  });
 }

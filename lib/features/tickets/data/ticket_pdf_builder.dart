@@ -167,3 +167,56 @@ Future<Uint8List> buildSingleTicketPdf({
     customFields: customFields,
   ).save();
 }
+
+pw.Document buildEventTicketsDocument({
+  required Event event,
+  required List<Ticket> tickets,
+  required Map<int, Beneficiary> beneficiariesById,
+  required List<CustomField> customFields,
+}) {
+  final doc = pw.Document();
+  doc.addPage(
+    pw.MultiPage(
+      pageFormat: PdfPageFormat.a4,
+      margin: pw.EdgeInsets.all(_pageMarginMm * PdfPageFormat.mm),
+      build: (context) => [
+        pw.Wrap(
+          spacing: _cardSpacingMm * PdfPageFormat.mm,
+          runSpacing: _cardSpacingMm * PdfPageFormat.mm,
+          children: [
+            for (final ticket in tickets)
+              if (beneficiariesById[ticket.beneficiaryId] != null)
+                _ticketCardPdf(
+                  template: event.ticketTemplate,
+                  eventName: event.name,
+                  eventLogo: event.logo,
+                  beneficiaryName:
+                      beneficiariesById[ticket.beneficiaryId]!.name,
+                  readableId: ticket.readableId,
+                  qrPayload: ticket.qrPayload,
+                  visibleFieldLines: _visibleFieldLines(
+                    beneficiariesById[ticket.beneficiaryId]!,
+                    customFields,
+                  ),
+                ),
+          ],
+        ),
+      ],
+    ),
+  );
+  return doc;
+}
+
+Future<Uint8List> buildEventTicketsPdf({
+  required Event event,
+  required List<Ticket> tickets,
+  required Map<int, Beneficiary> beneficiariesById,
+  required List<CustomField> customFields,
+}) {
+  return buildEventTicketsDocument(
+    event: event,
+    tickets: tickets,
+    beneficiariesById: beneficiariesById,
+    customFields: customFields,
+  ).save();
+}
