@@ -239,4 +239,61 @@ void main() {
       expect(elegantShape, isNotNull);
     },
   );
+
+  testWidgets('shows an enabled share action once the ticket is loaded', (
+    tester,
+  ) async {
+    final fakeEvents = FakeEventRepository(
+      events: [
+        Event(
+          id: 1,
+          shortCode: 'EVT1',
+          name: 'Gala DIF 2026',
+          date: DateTime(2026, 12, 1),
+          presenceMode: PresenceMode.simple,
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeBeneficiaries = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeTickets = FakeTicketRepository(
+      tickets: [
+        Ticket(
+          id: 1,
+          beneficiaryId: 1,
+          eventId: 1,
+          readableId: '0001',
+          randomPart: 'ABCD',
+          qrPayload: 'EVT1-0001-ABCD',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketPreviewScreen(ticketId: 1),
+        fakeEvents,
+        fakeBeneficiaries,
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Share ticket'), findsOneWidget);
+    final buttons = find.byType(IconButton);
+    expect(buttons, findsOneWidget);
+    final button = tester.widget<IconButton>(buttons);
+    expect(button.onPressed, isNotNull);
+  });
 }

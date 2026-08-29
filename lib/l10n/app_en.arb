@@ -70,5 +70,7 @@
       "count": {"type": "int"}
     }
   },
-  "ticketPreviewTitle": "Ticket"
+  "ticketsExportAction": "Export tickets",
+  "ticketPreviewTitle": "Ticket",
+  "ticketPreviewShareAction": "Share ticket"
 }

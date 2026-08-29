@@ -452,11 +452,23 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 ticket created} other{{count} tickets created}}'**
   String ticketsGeneratedCount(int count);
 
+  /// No description provided for @ticketsExportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Export tickets'**
+  String get ticketsExportAction;
+
   /// No description provided for @ticketPreviewTitle.
   ///
   /// In en, this message translates to:
   /// **'Ticket'**
   String get ticketPreviewTitle;
+
+  /// No description provided for @ticketPreviewShareAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Share ticket'**
+  String get ticketPreviewShareAction;
 }
 
 class _AppLocalizationsDelegate

@@ -200,5 +200,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get ticketsExportAction => 'Export tickets';
+
+  @override
   String get ticketPreviewTitle => 'Ticket';
+
+  @override
+  String get ticketPreviewShareAction => 'Share ticket';
 }

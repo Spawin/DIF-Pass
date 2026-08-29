@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:printing/printing.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -10,6 +11,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../beneficiaries/presentation/providers/beneficiary_providers.dart';
 import '../../../events/domain/ticket_template.dart';
 import '../../../events/presentation/providers/event_providers.dart';
+import '../../data/ticket_pdf_builder.dart';
+import '../../domain/ticket.dart';
 import '../providers/ticket_providers.dart';
 
 class TicketPreviewScreen extends ConsumerWidget {
@@ -23,7 +26,18 @@ class TicketPreviewScreen extends ConsumerWidget {
     final ticketAsync = ref.watch(ticketProvider(ticketId));
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.ticketPreviewTitle)),
+      appBar: AppBar(
+        title: Text(l10n.ticketPreviewTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_outlined),
+            tooltip: l10n.ticketPreviewShareAction,
+            onPressed: ticketAsync.hasValue
+                ? () => _shareTicket(context, ref, ticketAsync.value!)
+                : null,
+          ),
+        ],
+      ),
       body: ticketAsync.when(
         data: (ticket) {
           final beneficiaryAsync = ref.watch(
@@ -74,6 +88,36 @@ class TicketPreviewScreen extends ConsumerWidget {
         error: (error, stack) => Center(child: Text(l10n.ticketsLoadError)),
       ),
     );
+  }
+
+  Future<void> _shareTicket(
+    BuildContext context,
+    WidgetRef ref,
+    Ticket ticket,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final beneficiary = await ref.read(
+        beneficiaryProvider(ticket.beneficiaryId).future,
+      );
+      final event = await ref.read(eventProvider(ticket.eventId).future);
+      final customFields = await ref.read(
+        customFieldsProvider(ticket.eventId).future,
+      );
+      final bytes = await buildSingleTicketPdf(
+        event: event,
+        ticket: ticket,
+        beneficiary: beneficiary,
+        customFields: customFields,
+      );
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: '${ticket.readableId}.pdf',
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
   }
 }
 
