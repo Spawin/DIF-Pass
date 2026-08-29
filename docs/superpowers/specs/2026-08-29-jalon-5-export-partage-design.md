@@ -98,37 +98,37 @@ affichees : nom/logo evenement, QR, nom du beneficiaire, identifiant
 lisible, champs personnalises coches `showOnTicket`), mais en widgets `pw`
 puisque le moteur de rendu PDF n'utilise pas l'arbre de widgets Flutter.
 
-`buildEventTicketsPdf` calcule d'abord, a partir de la taille de carte
-cible du modele et de `PdfPageFormat.a4` (marge de page fixe 10mm,
-espacement inter-cartes fixe 4mm), combien de colonnes tiennent sur la
-largeur utile de la page (`(largeurUtile + espacement) / (largeurCarte +
-espacement)`, arrondi au nombre entier inferieur, minimum 1) ; la liste de
-tickets est ensuite decoupee en groupes de cette taille, chaque groupe
-compose manuellement en une `pw.Row` de cartes, les lignes empilees dans
-une `pw.Column`, et `pw.MultiPage` gere le passage a la page suivante
-quand le contenu deborde de la hauteur utile (pas de calcul manuel de
-lignes par page, seul le nombre de colonnes est calcule, la pagination
-verticale est geree par `pw.MultiPage`). Cette composition manuelle
-(plutot que `pw.GridView`, pensee pour un nombre de colonnes fixe a
-l'avance) est ce qui permet au nombre de colonnes de varier selon le
-modele choisi.
+`buildEventTicketsPdf` place les cartes dans un `pw.Wrap` (espacement et
+espacement de ligne fixes a 4mm), lui-meme seul enfant d'un `pw.MultiPage`
+(page A4, marge fixe 10mm). Chaque carte a une largeur/hauteur fixe selon
+le modele (voir tableau), donc `pw.Wrap` calcule lui-meme, a partir de la
+largeur utile de la page, combien de cartes tiennent par ligne avant de
+passer a la ligne suivante ; `pw.Wrap` implemente le protocole de
+pagination de `pw.MultiPage` (`SpanningWidget`), donc le passage a la page
+suivante quand le contenu deborde de la hauteur utile est egalement gere
+nativement, sans calcul manuel de colonnes ni de lignes par page. Aucun
+algorithme de mise en page ecrit a la main : le nombre de colonnes varie
+naturellement selon le modele choisi parce que chaque carte a une largeur
+differente, pas parce qu'une grille differente est codee par modele.
 
-| Modele   | Taille de carte cible | Colonnes sur A4 portrait (calcul reel) |
-|----------|-----------------------|------------------------------------------|
-| Compact  | 60 x 38 mm             | 3                                          |
-| Standard | 90 x 58 mm             | 2                                          |
-| Elegant  | 130 x 80 mm            | 1 (carte pleine largeur, plus spacieuse)   |
+| Modele   | Taille de carte cible | Colonnes sur A4 portrait (largeur 210mm, marge 10mm, espacement 4mm) |
+|----------|-----------------------|--------------------------------------------------------------------------|
+| Compact  | 60 x 38 mm             | 3                                                                          |
+| Standard | 90 x 58 mm             | 2                                                                          |
+| Elegant  | 130 x 80 mm            | 1 (carte pleine largeur, plus spacieuse)                                  |
 
 Ces dimensions sont des cibles de mise en page pour l'export en masse, pas
 les dimensions d'impression exactes finales d'un ticket individuel decoupe
 (hors perimetre de ce jalon, l'export produit une grille imprimable
 raisonnable, pas un gabarit de decoupe certifie au dixieme de millimetre).
-Le nombre de colonnes ci-dessus est le resultat du calcul reel (largeur A4
-210mm, marge 10mm de chaque cote, espacement 4mm), pas une estimation a
-l'oeil : une carte "elegante" plus large ne tient qu'en une seule colonne
-sur une page A4, ce qui sert bien l'intention (rendu le plus spacieux/
-premium des trois modeles) plutot que de forcer une grille 2x2 qui
-n'aurait pas tenu dans la largeur de la page.
+Le nombre de colonnes ci-dessus est calcule a la main pour donner une
+idee du rendu (largeur utile 190mm / (largeur carte + 4mm), arrondi au
+nombre entier inferieur), le calcul reel au moment du rendu est fait par
+`pw.Wrap` lui-meme a partir de la largeur de chaque carte, pas par du code
+de ce jalon : une carte "elegante" plus large ne tient qu'en une seule
+colonne sur une page A4, ce qui sert bien l'intention (rendu le plus
+spacieux/premium des trois modeles) plutot que de forcer une grille 2x2
+qui n'aurait pas tenu dans la largeur de la page.
 
 `buildSingleTicketPdf` place une seule carte, centree, sur une page A4
 (reutilise `_ticketCard` avec la meme taille cible que ci-dessus selon le
@@ -157,13 +157,18 @@ modele).
 
 - `ticket_pdf_builder_test.dart` : les bytes retournes commencent par l'en-
   tete `%PDF` (verification qu'un document PDF valide a bien ete produit) ;
-  `buildEventTicketsPdf` avec N tickets produit un document dont le nombre
-  de pages correspond au nombre de cartes par page calcule (verifie via
-  `PdfDocument.openData` du package `printing`, qui expose `pagesCount`) ;
-  un ticket sans aucun champ personnalise coche `showOnTicket` ne fait pas
-  planter le rendu (liste vide geree) ; les trois modeles produisent chacun
-  un document valide (pas de crash de mise en page specifique a un
-  modele).
+  le nombre de pages se lit directement sur l'objet `pw.Document` apres
+  `save()` (`document.document.pdfPageList.pages.length`, API du package
+  `pdf` lui-meme, aucun besoin de reparser les bytes ni d'appeler une API
+  plateforme) ; `buildSingleTicketPdf` produit toujours exactement une page ;
+  `buildEventTicketsPdf` avec un petit nombre de tickets produit une seule
+  page, avec un nombre de tickets largement superieur a ce qui peut tenir
+  sur une page produit plusieurs pages (preuve que la pagination automatique
+  de `pw.Wrap`/`pw.MultiPage` fonctionne reellement, sans dependre d'un
+  calcul de capacite exact reproduit dans le test) ; un ticket sans aucun
+  champ personnalise coche `showOnTicket` ne fait pas planter le rendu
+  (liste vide geree) ; les trois modeles produisent chacun un document
+  valide (pas de crash de mise en page specifique a un modele).
 - Tests de widget legers sur `TicketsScreen` (icone d'export desactivee
   sans tickets, presente et activee des qu'au moins un ticket existe) et
   `TicketPreviewScreen` (icone de partage presente une fois le ticket
