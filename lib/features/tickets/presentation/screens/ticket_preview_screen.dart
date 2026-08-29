@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -24,9 +26,13 @@ class TicketPreviewScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.ticketPreviewTitle)),
       body: ticketAsync.when(
         data: (ticket) {
-          final beneficiaryAsync = ref.watch(beneficiaryProvider(ticket.beneficiaryId));
+          final beneficiaryAsync = ref.watch(
+            beneficiaryProvider(ticket.beneficiaryId),
+          );
           final eventAsync = ref.watch(eventProvider(ticket.eventId));
-          final customFieldsAsync = ref.watch(customFieldsProvider(ticket.eventId));
+          final customFieldsAsync = ref.watch(
+            customFieldsProvider(ticket.eventId),
+          );
 
           if (!beneficiaryAsync.hasValue ||
               !eventAsync.hasValue ||
@@ -41,8 +47,9 @@ class TicketPreviewScreen extends ConsumerWidget {
 
           final beneficiary = beneficiaryAsync.value!;
           final event = eventAsync.value!;
-          final visibleFields =
-              customFieldsAsync.value!.where((f) => f.showOnTicket).toList();
+          final visibleFields = customFieldsAsync.value!
+              .where((f) => f.showOnTicket)
+              .toList();
 
           return Center(
             child: Padding(
@@ -50,6 +57,7 @@ class TicketPreviewScreen extends ConsumerWidget {
               child: _TicketCard(
                 template: event.ticketTemplate,
                 eventName: event.name,
+                eventLogo: event.logo,
                 beneficiaryName: beneficiary.name,
                 readableId: ticket.readableId,
                 qrPayload: ticket.qrPayload,
@@ -73,6 +81,7 @@ class _TicketCard extends StatelessWidget {
   const _TicketCard({
     required this.template,
     required this.eventName,
+    this.eventLogo,
     required this.beneficiaryName,
     required this.readableId,
     required this.qrPayload,
@@ -81,6 +90,7 @@ class _TicketCard extends StatelessWidget {
 
   final TicketTemplate template;
   final String eventName;
+  final Uint8List? eventLogo;
   final String beneficiaryName;
   final String readableId;
   final String qrPayload;
@@ -93,19 +103,29 @@ class _TicketCard extends StatelessWidget {
 
     return Card(
       color: isElegant ? AppColors.indigo.withValues(alpha: 0.05) : null,
+      shape: isElegant
+          ? RoundedRectangleBorder(
+              side: const BorderSide(color: AppColors.indigo, width: 2),
+              borderRadius: BorderRadius.circular(12),
+            )
+          : null,
       child: Padding(
         padding: EdgeInsets.all(isCompact ? 12 : 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (eventLogo != null) ...[
+              Image.memory(eventLogo!, height: isCompact ? 24 : 40),
+              SizedBox(height: isCompact ? 4 : 8),
+            ],
             Text(eventName, style: Theme.of(context).textTheme.titleMedium),
             SizedBox(height: isCompact ? 8 : 16),
-            QrImageView(
-              data: qrPayload,
-              size: isCompact ? 120 : 180,
-            ),
+            QrImageView(data: qrPayload, size: isCompact ? 120 : 180),
             SizedBox(height: isCompact ? 8 : 16),
-            Text(beneficiaryName, style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              beneficiaryName,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             Text(
               readableId,
               style: ticketMonoStyle(Theme.of(context).colorScheme),
