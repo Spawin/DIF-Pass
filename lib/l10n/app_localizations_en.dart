@@ -213,4 +213,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketPreviewShareError => 'Could not share the ticket.';
+
+  @override
+  String get checkinManualEntryLabel => 'Ticket ID';
+
+  @override
+  String get checkinManualEntryAction => 'Check in';
 }

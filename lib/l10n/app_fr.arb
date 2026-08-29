@@ -63,5 +63,7 @@
   "ticketsExportError": "Impossible d'exporter les tickets.",
   "ticketPreviewTitle": "Ticket",
   "ticketPreviewShareAction": "Partager le ticket",
-  "ticketPreviewShareError": "Impossible de partager le ticket."
+  "ticketPreviewShareError": "Impossible de partager le ticket.",
+  "checkinManualEntryLabel": "Identifiant du ticket",
+  "checkinManualEntryAction": "Enregistrer"
 }

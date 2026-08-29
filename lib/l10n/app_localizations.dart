@@ -481,6 +481,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not share the ticket.'**
   String get ticketPreviewShareError;
+
+  /// No description provided for @checkinManualEntryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket ID'**
+  String get checkinManualEntryLabel;
+
+  /// No description provided for @checkinManualEntryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in'**
+  String get checkinManualEntryAction;
 }
 
 class _AppLocalizationsDelegate

@@ -74,5 +74,7 @@
   "ticketsExportError": "Could not export the tickets.",
   "ticketPreviewTitle": "Ticket",
   "ticketPreviewShareAction": "Share ticket",
-  "ticketPreviewShareError": "Could not share the ticket."
+  "ticketPreviewShareError": "Could not share the ticket.",
+  "checkinManualEntryLabel": "Ticket ID",
+  "checkinManualEntryAction": "Check in"
 }
