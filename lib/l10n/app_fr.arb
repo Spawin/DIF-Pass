@@ -55,5 +55,6 @@
   "ticketsTemplateElegant": "Elegant",
   "ticketsGenerateAction": "Generer les tickets",
   "ticketsEmptyState": "Aucun ticket pour l'instant.",
-  "ticketsLoadError": "Un probleme est survenu lors du chargement des tickets."
+  "ticketsLoadError": "Un probleme est survenu lors du chargement des tickets.",
+  "ticketPreviewTitle": "Ticket"
 }

@@ -61,5 +61,6 @@
   "ticketsTemplateElegant": "Elegant",
   "ticketsGenerateAction": "Generate tickets",
   "ticketsEmptyState": "No tickets yet.",
-  "ticketsLoadError": "Something went wrong loading tickets."
+  "ticketsLoadError": "Something went wrong loading tickets.",
+  "ticketPreviewTitle": "Ticket"
 }

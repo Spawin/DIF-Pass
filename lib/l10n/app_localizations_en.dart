@@ -180,4 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketsLoadError => 'Something went wrong loading tickets.';
+
+  @override
+  String get ticketPreviewTitle => 'Ticket';
 }

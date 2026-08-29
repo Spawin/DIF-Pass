@@ -433,6 +433,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong loading tickets.'**
   String get ticketsLoadError;
+
+  /// No description provided for @ticketPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket'**
+  String get ticketPreviewTitle;
 }
 
 class _AppLocalizationsDelegate

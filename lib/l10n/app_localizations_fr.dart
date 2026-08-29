@@ -184,4 +184,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get ticketsLoadError =>
       'Un probleme est survenu lors du chargement des tickets.';
+
+  @override
+  String get ticketPreviewTitle => 'Ticket';
 }
