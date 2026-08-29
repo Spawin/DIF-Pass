@@ -99,26 +99,36 @@ lisible, champs personnalises coches `showOnTicket`), mais en widgets `pw`
 puisque le moteur de rendu PDF n'utilise pas l'arbre de widgets Flutter.
 
 `buildEventTicketsPdf` calcule d'abord, a partir de la taille de carte
-cible du modele et de `PdfPageFormat.a4` (marge de page fixe 15mm,
+cible du modele et de `PdfPageFormat.a4` (marge de page fixe 10mm,
 espacement inter-cartes fixe 4mm), combien de colonnes tiennent sur la
-largeur utile de la page ; la liste de tickets est ensuite decoupee en
-groupes de cette taille, chaque groupe compose manuellement en une
-`pw.Row` de cartes, les lignes empilees dans une `pw.Column`, et
-`pw.MultiPage` gere le passage a la page suivante quand le contenu deborde
-de la hauteur utile. Cette composition manuelle (plutot que `pw.GridView`,
-pensee pour un nombre de colonnes fixe a l'avance) est ce qui permet au
-nombre de colonnes de varier selon le modele choisi.
+largeur utile de la page (`(largeurUtile + espacement) / (largeurCarte +
+espacement)`, arrondi au nombre entier inferieur, minimum 1) ; la liste de
+tickets est ensuite decoupee en groupes de cette taille, chaque groupe
+compose manuellement en une `pw.Row` de cartes, les lignes empilees dans
+une `pw.Column`, et `pw.MultiPage` gere le passage a la page suivante
+quand le contenu deborde de la hauteur utile (pas de calcul manuel de
+lignes par page, seul le nombre de colonnes est calcule, la pagination
+verticale est geree par `pw.MultiPage`). Cette composition manuelle
+(plutot que `pw.GridView`, pensee pour un nombre de colonnes fixe a
+l'avance) est ce qui permet au nombre de colonnes de varier selon le
+modele choisi.
 
-| Modele   | Taille de carte cible | Approx. par page A4 portrait |
-|----------|-----------------------|-------------------------------|
-| Compact  | 85 x 54 mm             | ~12 (grille 3x4)               |
-| Standard | 90 x 60 mm             | ~6 (grille 2x3)                |
-| Elegant  | 100 x 65 mm            | ~4 (grille 2x2)                |
+| Modele   | Taille de carte cible | Colonnes sur A4 portrait (calcul reel) |
+|----------|-----------------------|------------------------------------------|
+| Compact  | 60 x 38 mm             | 3                                          |
+| Standard | 90 x 58 mm             | 2                                          |
+| Elegant  | 130 x 80 mm            | 1 (carte pleine largeur, plus spacieuse)   |
 
 Ces dimensions sont des cibles de mise en page pour l'export en masse, pas
 les dimensions d'impression exactes finales d'un ticket individuel decoupe
 (hors perimetre de ce jalon, l'export produit une grille imprimable
 raisonnable, pas un gabarit de decoupe certifie au dixieme de millimetre).
+Le nombre de colonnes ci-dessus est le resultat du calcul reel (largeur A4
+210mm, marge 10mm de chaque cote, espacement 4mm), pas une estimation a
+l'oeil : une carte "elegante" plus large ne tient qu'en une seule colonne
+sur une page A4, ce qui sert bien l'intention (rendu le plus spacieux/
+premium des trois modeles) plutot que de forcer une grille 2x2 qui
+n'aurait pas tenu dans la largeur de la page.
 
 `buildSingleTicketPdf` place une seule carte, centree, sur une page A4
 (reutilise `_ticketCard` avec la meme taille cible que ci-dessus selon le
