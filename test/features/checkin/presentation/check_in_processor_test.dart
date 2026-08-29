@@ -73,6 +73,8 @@ void main() {
         rawInput: ticket.qrPayload,
       );
 
+      final firstScannedAt = fakeCheckIns.checkIns.first.scannedAt;
+
       final feedback = await processCheckIn(
         ticketRepository: ticketRepo,
         checkInRepository: fakeCheckIns,
@@ -84,6 +86,7 @@ void main() {
 
       expect(feedback, isA<CheckInFeedbackAlreadyRecorded>());
       expect((feedback as CheckInFeedbackAlreadyRecorded).beneficiaryName, 'Jane Doe');
+      expect((feedback as CheckInFeedbackAlreadyRecorded).scannedAt, firstScannedAt);
     },
   );
 
