@@ -6,6 +6,8 @@ import '../../features/beneficiaries/presentation/screens/csv_import_screen.dart
 import '../../features/events/presentation/screens/event_archive_screen.dart';
 import '../../features/events/presentation/screens/event_form_screen.dart';
 import '../../features/events/presentation/screens/events_list_screen.dart';
+import '../../features/tickets/presentation/screens/ticket_preview_screen.dart';
+import '../../features/tickets/presentation/screens/tickets_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -72,6 +74,27 @@ final appRouter = GoRouter(
       },
       builder: (context, state) => CsvImportScreen(
         eventId: int.parse(state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/events/:id/tickets',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        return id == null ? '/' : null;
+      },
+      builder: (context, state) => TicketsScreen(
+        eventId: int.parse(state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/events/:id/tickets/:ticketId',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        final ticketId = int.tryParse(state.pathParameters['ticketId'] ?? '');
+        return (id == null || ticketId == null) ? '/' : null;
+      },
+      builder: (context, state) => TicketPreviewScreen(
+        ticketId: int.parse(state.pathParameters['ticketId']!),
       ),
     ),
   ],
