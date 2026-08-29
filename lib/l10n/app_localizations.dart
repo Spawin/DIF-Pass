@@ -434,6 +434,24 @@ abstract class AppLocalizations {
   /// **'Something went wrong loading tickets.'**
   String get ticketsLoadError;
 
+  /// No description provided for @ticketsGenerateConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate tickets?'**
+  String get ticketsGenerateConfirmTitle;
+
+  /// No description provided for @ticketsGenerateConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will lock custom-field editing for this event. This action cannot be undone.'**
+  String get ticketsGenerateConfirmBody;
+
+  /// No description provided for @ticketsGeneratedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tickets created'**
+  String ticketsGeneratedCount(int count);
+
   /// No description provided for @ticketPreviewTitle.
   ///
   /// In en, this message translates to:

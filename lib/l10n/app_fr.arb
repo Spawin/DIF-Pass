@@ -56,5 +56,8 @@
   "ticketsGenerateAction": "Generer les tickets",
   "ticketsEmptyState": "Aucun ticket pour l'instant.",
   "ticketsLoadError": "Un probleme est survenu lors du chargement des tickets.",
+  "ticketsGenerateConfirmTitle": "Generer les tickets ?",
+  "ticketsGenerateConfirmBody": "Cette action verrouillera la modification des champs personnalises pour cet evenement. Cette action est irreversible.",
+  "ticketsGeneratedCount": "{count} tickets crees",
   "ticketPreviewTitle": "Ticket"
 }

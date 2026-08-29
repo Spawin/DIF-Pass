@@ -182,5 +182,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ticketsLoadError => 'Something went wrong loading tickets.';
 
   @override
+  String get ticketsGenerateConfirmTitle => 'Generate tickets?';
+
+  @override
+  String get ticketsGenerateConfirmBody =>
+      'This will lock custom-field editing for this event. This action cannot be undone.';
+
+  @override
+  String ticketsGeneratedCount(int count) {
+    return '$count tickets created';
+  }
+
+  @override
   String get ticketPreviewTitle => 'Ticket';
 }

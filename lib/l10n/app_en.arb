@@ -62,5 +62,13 @@
   "ticketsGenerateAction": "Generate tickets",
   "ticketsEmptyState": "No tickets yet.",
   "ticketsLoadError": "Something went wrong loading tickets.",
+  "ticketsGenerateConfirmTitle": "Generate tickets?",
+  "ticketsGenerateConfirmBody": "This will lock custom-field editing for this event. This action cannot be undone.",
+  "ticketsGeneratedCount": "{count} tickets created",
+  "@ticketsGeneratedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "ticketPreviewTitle": "Ticket"
 }

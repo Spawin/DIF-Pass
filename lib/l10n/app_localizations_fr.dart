@@ -186,5 +186,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un probleme est survenu lors du chargement des tickets.';
 
   @override
+  String get ticketsGenerateConfirmTitle => 'Generer les tickets ?';
+
+  @override
+  String get ticketsGenerateConfirmBody =>
+      'Cette action verrouillera la modification des champs personnalises pour cet evenement. Cette action est irreversible.';
+
+  @override
+  String ticketsGeneratedCount(int count) {
+    return '$count tickets crees';
+  }
+
+  @override
   String get ticketPreviewTitle => 'Ticket';
 }
