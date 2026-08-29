@@ -5,6 +5,7 @@
   "eventsArchiveAction": "Archives",
   "eventsArchiveEventAction": "Archiver",
   "eventsBeneficiariesAction": "Beneficiaires",
+  "eventsCheckInAction": "Controle",
   "eventsTicketsAction": "Tickets",
   "eventsEmptyState": "Aucun evenement pour l'instant. Creez-en un pour commencer.",
   "eventsNewAction": "Nouvel evenement",

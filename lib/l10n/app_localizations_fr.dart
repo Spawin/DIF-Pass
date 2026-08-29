@@ -24,6 +24,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventsBeneficiariesAction => 'Beneficiaires';
 
   @override
+  String get eventsCheckInAction => 'Controle';
+
+  @override
   String get eventsTicketsAction => 'Tickets';
 
   @override

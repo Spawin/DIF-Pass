@@ -24,6 +24,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsBeneficiariesAction => 'Beneficiaries';
 
   @override
+  String get eventsCheckInAction => 'Check-in';
+
+  @override
   String get eventsTicketsAction => 'Tickets';
 
   @override
