@@ -122,6 +122,26 @@ void main() {
         expect(_isPdf(bytes), isTrue);
       });
     }
+
+    test(
+      'does not crash on typographic quotes/apostrophes or non-Latin-1 characters',
+      () async {
+        final bytes = await buildSingleTicketPdf(
+          event: _event(),
+          ticket: _ticket(),
+          beneficiary: Beneficiary(
+            id: 1,
+            eventId: 1,
+            name: 'N’Diaye “VIP” Ɔ',
+            customFieldValues: const {},
+            createdAt: DateTime(2026, 1, 1),
+          ),
+          customFields: const [],
+        );
+
+        expect(_isPdf(bytes), isTrue);
+      },
+    );
   });
 
   group('buildEventTicketsPdf', () {

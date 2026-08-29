@@ -17,6 +17,24 @@ const _indigo = PdfColor.fromInt(0xFF5B6EE8);
 const _pageMarginMm = 10.0;
 const _cardSpacingMm = 4.0;
 
+// ponytail: the pdf package's base-14 fonts only support Latin-1. Full
+// Unicode support needs a bundled TTF font, deferred to a later polish
+// milestone. This stopgap normalizes the most common typographic
+// punctuation (which CSV/Word/Excel/smart-punctuation commonly produce)
+// and replaces anything else outside Latin-1 with a visible '?' so a
+// broken name is obviously wrong on the printed ticket, not silently
+// invisible.
+String _sanitizeForPdf(String text) {
+  return text
+      .replaceAll('’', "'")
+      .replaceAll('‘', "'")
+      .replaceAll('“', '"')
+      .replaceAll('”', '"')
+      .split('')
+      .map((c) => c.codeUnitAt(0) <= 0xFF ? c : '?')
+      .join();
+}
+
 double _cardWidthMm(TicketTemplate template) {
   switch (template) {
     case TicketTemplate.compact:
@@ -46,7 +64,9 @@ List<String> _visibleFieldLines(
   return [
     for (final field in customFields.where((f) => f.showOnTicket))
       if (beneficiary.customFieldValues[field.id] != null)
-        '${field.label}: ${beneficiary.customFieldValues[field.id]}',
+        _sanitizeForPdf(
+          '${field.label}: ${beneficiary.customFieldValues[field.id]}',
+        ),
   ];
 }
 
@@ -71,7 +91,10 @@ pw.Widget _ticketCardPdf({
     ),
     padding: pw.EdgeInsets.all((isCompact ? 3 : 5) * PdfPageFormat.mm),
     decoration: pw.BoxDecoration(
-      border: isElegant ? pw.Border.all(color: _indigo, width: 1.5) : null,
+      border: pw.Border.all(
+        color: isElegant ? _indigo : PdfColors.grey400,
+        width: isElegant ? 1.5 : 0.5,
+      ),
       borderRadius: pw.BorderRadius.all(const pw.Radius.circular(4)),
     ),
     child: pw.Column(
@@ -86,7 +109,7 @@ pw.Widget _ticketCardPdf({
           pw.SizedBox(height: 1 * PdfPageFormat.mm),
         ],
         pw.Text(
-          eventName,
+          _sanitizeForPdf(eventName),
           style: pw.TextStyle(
             fontSize: isCompact ? 8 : 11,
             fontWeight: pw.FontWeight.bold,
@@ -103,7 +126,7 @@ pw.Widget _ticketCardPdf({
         ),
         pw.SizedBox(height: 2 * PdfPageFormat.mm),
         pw.Text(
-          beneficiaryName,
+          _sanitizeForPdf(beneficiaryName),
           style: pw.TextStyle(fontSize: isCompact ? 8 : 10),
           textAlign: pw.TextAlign.center,
         ),
