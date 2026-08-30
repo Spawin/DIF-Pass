@@ -86,7 +86,7 @@ void main() {
 
       expect(feedback, isA<CheckInFeedbackAlreadyRecorded>());
       expect((feedback as CheckInFeedbackAlreadyRecorded).beneficiaryName, 'Jane Doe');
-      expect((feedback as CheckInFeedbackAlreadyRecorded).scannedAt, firstScannedAt);
+      expect(feedback.scannedAt, firstScannedAt);
     },
   );
 
