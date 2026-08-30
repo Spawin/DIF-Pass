@@ -66,7 +66,7 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
             HapticFeedback.heavyImpact();
           }
         }
-      } catch (e) {
+      } catch (_) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -91,8 +91,6 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
     setState(() => _manualEntry = !_manualEntry);
     if (_manualEntry) {
       _controller.stop();
-    } else {
-      _controller.start();
     }
   }
 
@@ -132,7 +130,29 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
       body: Stack(
         children: [
           if (!_manualEntry)
-            MobileScanner(controller: _controller, onDetect: _onDetect)
+            MobileScanner(
+              controller: _controller,
+              onDetect: _onDetect,
+              overlayBuilder: (context, constraints) {
+                final size = constraints.biggest;
+                final scanWindow = Rect.fromCenter(
+                  center: size.center(Offset.zero),
+                  width: size.width * 0.7,
+                  height: size.width * 0.7,
+                );
+                return ScanWindowOverlay(
+                  controller: _controller,
+                  scanWindow: scanWindow,
+                  borderColor: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  borderWidth: 3,
+                ).animate(onPlay: (controller) => controller.repeat(reverse: true)).scale(
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.03, 1.03),
+                      duration: 900.ms,
+                    );
+              },
+            )
           else
             Center(
               child: CheckInManualEntryField(
@@ -154,12 +174,14 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
                 ),
                 child: Text(
                   l10n.checkinCounterLabel(checkedIn, total),
-                  key: ValueKey(checkedIn),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
-                ).animate().scale(duration: 300.ms).fadeIn(duration: 300.ms),
+                )
+                    .animate(key: ValueKey(checkedIn))
+                    .scale(duration: 300.ms)
+                    .fadeIn(duration: 300.ms),
               ),
             ),
           ),
