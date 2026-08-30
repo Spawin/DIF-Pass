@@ -135,10 +135,11 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
               onDetect: _onDetect,
               overlayBuilder: (context, constraints) {
                 final size = constraints.biggest;
+                final windowSide = size.shortestSide * 0.7;
                 final scanWindow = Rect.fromCenter(
                   center: size.center(Offset.zero),
-                  width: size.width * 0.7,
-                  height: size.width * 0.7,
+                  width: windowSide,
+                  height: windowSide,
                 );
                 return ScanWindowOverlay(
                   controller: _controller,
