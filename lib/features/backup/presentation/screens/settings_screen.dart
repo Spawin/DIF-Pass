@@ -49,6 +49,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _import() async {
+    // Captured before any await: ProviderScope.containerOf needs a mounted
+    // context, and the container (unlike ref) stays safe to call
+    // invalidate() on even if this widget gets disposed while the import
+    // is in flight (e.g. the user navigates away mid-import).
+    final container = ProviderScope.containerOf(context, listen: false);
+
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['sqlite', 'db'],
@@ -68,11 +74,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final repository = await ref.read(backupRepositoryProvider.future);
       await ref.read(appDatabaseProvider).close();
       await repository.importBackup(bytes);
-      ref.invalidate(appDatabaseProvider);
+      container.invalidate(appDatabaseProvider);
       if (!mounted) return;
       context.go('/');
     } catch (e) {
-      ref.invalidate(appDatabaseProvider);
+      container.invalidate(appDatabaseProvider);
       if (!mounted) return;
       setState(() => _busy = false);
       messenger.showSnackBar(SnackBar(content: Text(l10n.settingsImportError)));
