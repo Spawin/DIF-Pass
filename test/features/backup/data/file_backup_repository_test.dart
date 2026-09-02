@@ -7,6 +7,7 @@ import 'package:dif_pass/features/backup/data/file_backup_repository.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart' as raw_sqlite3;
 
 void main() {
   late Directory tempDir;
@@ -106,4 +107,89 @@ void main() {
 
     expect(await targetFile.readAsBytes(), originalBytes);
   });
+
+  test(
+    'importBackup rejects a valid but never-initialized SQLite file and '
+    'leaves the target untouched',
+    () async {
+      final sourceFile = File(p.join(tempDir.path, 'source.sqlite'));
+      final rawDb = raw_sqlite3.sqlite3.open(sourceFile.path);
+      rawDb.close();
+      final backupBytes = await sourceFile.readAsBytes();
+
+      final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+      final originalBytes = utf8.encode('original database content');
+      await targetFile.writeAsBytes(originalBytes);
+      final repository = FileBackupRepository(targetFile);
+
+      await expectLater(
+        () => repository.importBackup(backupBytes),
+        throwsA(isA<FormatException>()),
+      );
+
+      expect(await targetFile.readAsBytes(), originalBytes);
+    },
+  );
+
+  test(
+    'importBackup rejects a valid SQLite file with no events table and '
+    'leaves the target untouched',
+    () async {
+      final sourceFile = File(p.join(tempDir.path, 'source.sqlite'));
+      final rawDb = raw_sqlite3.sqlite3.open(sourceFile.path);
+      rawDb.execute('CREATE TABLE unrelated (id INTEGER)');
+      rawDb.userVersion = 1;
+      rawDb.close();
+      final backupBytes = await sourceFile.readAsBytes();
+
+      final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+      final originalBytes = utf8.encode('original database content');
+      await targetFile.writeAsBytes(originalBytes);
+      final repository = FileBackupRepository(targetFile);
+
+      await expectLater(
+        () => repository.importBackup(backupBytes),
+        throwsA(isA<FormatException>()),
+      );
+
+      expect(await targetFile.readAsBytes(), originalBytes);
+    },
+  );
+
+  test(
+    'importBackup rejects a backup from a newer schema version and leaves '
+    'the target untouched',
+    () async {
+      final sourceFile = File(p.join(tempDir.path, 'source.sqlite'));
+      final sourceDb = AppDatabase.withExecutor(NativeDatabase(sourceFile));
+      await sourceDb
+          .into(sourceDb.events)
+          .insert(
+            EventsCompanion.insert(
+              shortCode: 'EVT1',
+              name: 'Gala DIF 2026',
+              date: DateTime(2026, 12, 1),
+              presenceMode: 'simple',
+            ),
+          );
+      await sourceDb.close();
+
+      final rawDb = raw_sqlite3.sqlite3.open(sourceFile.path);
+      rawDb.userVersion = 999;
+      rawDb.close();
+      final backupBytes = await sourceFile.readAsBytes();
+
+      final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+      final originalBytes = utf8.encode('original database content');
+      await targetFile.writeAsBytes(originalBytes);
+      final repository = FileBackupRepository(targetFile);
+
+      await expectLater(
+        () => repository.importBackup(backupBytes),
+        throwsA(isA<FormatException>()),
+      );
+
+      expect(await targetFile.readAsBytes(), originalBytes);
+    },
+  );
 }

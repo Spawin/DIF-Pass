@@ -53,6 +53,7 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
   image_picker: ^1.2.3
+  sqlite3: ^3.5.2
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +67,6 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.34.5
   build_runner: ^2.15.1
-  sqlite3: ^3.5.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
