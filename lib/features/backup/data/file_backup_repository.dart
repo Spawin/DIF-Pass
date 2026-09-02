@@ -11,25 +11,41 @@ class FileBackupRepository implements BackupRepository {
 
   final File _databaseFile;
 
+  static final _sqliteHeaderBytes = 'SQLite format 3\x00'.codeUnits;
+
+  bool _looksLikeSqliteFile(Uint8List bytes) {
+    if (bytes.length < _sqliteHeaderBytes.length) return false;
+    for (var i = 0; i < _sqliteHeaderBytes.length; i++) {
+      if (bytes[i] != _sqliteHeaderBytes[i]) return false;
+    }
+    return true;
+  }
+
   @override
   Future<Uint8List> exportBackup() => _databaseFile.readAsBytes();
 
   @override
   Future<void> importBackup(Uint8List bytes) async {
-    final tempFile = File('${_databaseFile.path}.import-tmp');
-    await tempFile.writeAsBytes(bytes, flush: true);
+    if (!_looksLikeSqliteFile(bytes)) {
+      throw const FormatException('Not a valid DIF Pass backup file');
+    }
 
-    final db = AppDatabase.withExecutor(NativeDatabase(tempFile));
+    final tempFile = File('${_databaseFile.path}.import-tmp');
     try {
-      await db.select(db.events).get();
+      await tempFile.writeAsBytes(bytes, flush: true);
+
+      final db = AppDatabase.withExecutor(NativeDatabase(tempFile));
+      try {
+        await db.select(db.events).get();
+      } finally {
+        await db.close();
+      }
     } catch (e) {
-      await db.close();
       if (await tempFile.exists()) {
         await tempFile.delete();
       }
-      throw const FormatException('Not a valid DIF Pass backup file');
+      throw FormatException('Not a valid DIF Pass backup file: $e');
     }
-    await db.close();
 
     await tempFile.rename(_databaseFile.path);
   }

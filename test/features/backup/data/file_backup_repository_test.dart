@@ -78,4 +78,32 @@ void main() {
       expect(await targetFile.readAsBytes(), originalBytes);
     },
   );
+
+  test('importBackup rejects an empty file and leaves the target untouched', () async {
+    final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+    final originalBytes = utf8.encode('original database content');
+    await targetFile.writeAsBytes(originalBytes);
+    final repository = FileBackupRepository(targetFile);
+
+    await expectLater(
+      () => repository.importBackup(Uint8List(0)),
+      throwsA(isA<FormatException>()),
+    );
+
+    expect(await targetFile.readAsBytes(), originalBytes);
+  });
+
+  test('importBackup rejects a truncated file and leaves the target untouched', () async {
+    final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+    final originalBytes = utf8.encode('original database content');
+    await targetFile.writeAsBytes(originalBytes);
+    final repository = FileBackupRepository(targetFile);
+
+    await expectLater(
+      () => repository.importBackup(Uint8List.fromList([1, 2, 3])),
+      throwsA(isA<FormatException>()),
+    );
+
+    expect(await targetFile.readAsBytes(), originalBytes);
+  });
 }
