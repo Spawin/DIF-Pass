@@ -73,6 +73,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context.go('/');
     } catch (e) {
       if (!mounted) return;
+      ref.invalidate(appDatabaseProvider);
       setState(() => _busy = false);
       messenger.showSnackBar(SnackBar(content: Text(l10n.settingsImportError)));
     }
