@@ -29,6 +29,12 @@ class AppDatabase extends _$AppDatabase {
 
   AppDatabase.forTesting(super.executor);
 
+  // ponytail: same body as forTesting, a separate name documents that this
+  // constructor is also used in production (lib/features/backup), not only
+  // in tests, so a reader isn't confused by production code calling
+  // something named "forTesting".
+  AppDatabase.withExecutor(super.executor);
+
   @override
   int get schemaVersion => 2;
 
@@ -45,10 +51,18 @@ class AppDatabase extends _$AppDatabase {
   );
 }
 
+/// Resolves the on-disk path of the app's database file. Shared by the
+/// normal app startup connection below and by the backup feature
+/// (lib/features/backup), which needs the same path to export/import the
+/// file directly.
+Future<File> resolveDatabaseFile() async {
+  final dbFolder = await getApplicationDocumentsDirectory();
+  return File(p.join(dbFolder.path, 'dif_pass.sqlite'));
+}
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'dif_pass.sqlite'));
+    final file = await resolveDatabaseFile();
     return NativeDatabase.createInBackground(file);
   });
 }
