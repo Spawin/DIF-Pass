@@ -14,6 +14,19 @@ class FileBackupRepository implements BackupRepository {
 
   static final _sqliteHeaderBytes = 'SQLite format 3\x00'.codeUnits;
 
+  // The six tables AppDatabase actually creates (see the $name constants in
+  // lib/core/database/app_database.g.dart). Requiring all of them, not just
+  // events, rejects a file where an unrelated or empty table merely happens
+  // to be named events.
+  static const _requiredTableNames = [
+    'events',
+    'custom_fields',
+    'beneficiaries',
+    'beneficiary_values',
+    'tickets',
+    'check_ins',
+  ];
+
   bool _looksLikeSqliteFile(Uint8List bytes) {
     if (bytes.length < _sqliteHeaderBytes.length) return false;
     for (var i = 0; i < _sqliteHeaderBytes.length; i++) {
@@ -33,18 +46,23 @@ class FileBackupRepository implements BackupRepository {
   void _validateBackupSchema(File tempFile) {
     final db = sqlite3.open(tempFile.path, mode: OpenMode.readOnly);
     try {
-      final hasEventsTable = db
+      final placeholders = List.filled(
+        _requiredTableNames.length,
+        '?',
+      ).join(', ');
+      final foundTableCount = db
           .select(
-            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'events'",
+            "SELECT COUNT(*) AS c FROM sqlite_master WHERE type = 'table' AND name IN ($placeholders)",
+            _requiredTableNames,
           )
-          .isNotEmpty;
+          .first['c'] as int;
       // Matches AppDatabase.schemaVersion in
       // lib/core/database/app_database.dart. Kept as a literal instead of
       // instantiating AppDatabase() here, which would create and leak a
       // second live database instance (drift warns about this) just to
       // read a constant int.
       const currentSchemaVersion = 2;
-      if (!hasEventsTable ||
+      if (foundTableCount != _requiredTableNames.length ||
           db.userVersion <= 0 ||
           db.userVersion > currentSchemaVersion) {
         throw const FormatException('Not a valid DIF Pass backup file');

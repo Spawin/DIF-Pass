@@ -157,6 +157,56 @@ void main() {
   );
 
   test(
+    'importBackup rejects a file with only an empty events table (no other '
+    'DIF Pass tables) and leaves the target untouched',
+    () async {
+      final sourceFile = File(p.join(tempDir.path, 'source.sqlite'));
+      final rawDb = raw_sqlite3.sqlite3.open(sourceFile.path);
+      rawDb.execute('CREATE TABLE events (foo TEXT, bar TEXT)');
+      rawDb.userVersion = 2;
+      rawDb.close();
+      final backupBytes = await sourceFile.readAsBytes();
+
+      final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+      final originalBytes = utf8.encode('original database content');
+      await targetFile.writeAsBytes(originalBytes);
+      final repository = FileBackupRepository(targetFile);
+
+      await expectLater(
+        () => repository.importBackup(backupBytes),
+        throwsA(isA<FormatException>()),
+      );
+
+      expect(await targetFile.readAsBytes(), originalBytes);
+    },
+  );
+
+  test(
+    'importBackup rejects a file with only an empty events table at '
+    'user_version 1 and leaves the target untouched',
+    () async {
+      final sourceFile = File(p.join(tempDir.path, 'source.sqlite'));
+      final rawDb = raw_sqlite3.sqlite3.open(sourceFile.path);
+      rawDb.execute('CREATE TABLE events (foo TEXT, bar TEXT)');
+      rawDb.userVersion = 1;
+      rawDb.close();
+      final backupBytes = await sourceFile.readAsBytes();
+
+      final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+      final originalBytes = utf8.encode('original database content');
+      await targetFile.writeAsBytes(originalBytes);
+      final repository = FileBackupRepository(targetFile);
+
+      await expectLater(
+        () => repository.importBackup(backupBytes),
+        throwsA(isA<FormatException>()),
+      );
+
+      expect(await targetFile.readAsBytes(), originalBytes);
+    },
+  );
+
+  test(
     'importBackup rejects a backup from a newer schema version and leaves '
     'the target untouched',
     () async {
