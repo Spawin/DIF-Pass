@@ -250,6 +250,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong recording the check-in.';
 
   @override
+  String get settingsAction => 'Settings';
+
+  @override
   String get settingsImportAction => 'Import backup';
 
   @override

@@ -129,4 +129,13 @@ void main() {
 
     expect(find.byTooltip('Check-in'), findsOneWidget);
   });
+
+  testWidgets('shows a settings action', (tester) async {
+    await tester.pumpWidget(
+      _wrap(const EventsListScreen(), FakeEventRepository()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Settings'), findsOneWidget);
+  });
 }

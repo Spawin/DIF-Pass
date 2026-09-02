@@ -542,6 +542,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong recording the check-in.'**
   String get checkinUnexpectedError;
 
+  /// No description provided for @settingsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsAction;
+
   /// No description provided for @settingsImportAction.
   ///
   /// In en, this message translates to:

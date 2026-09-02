@@ -96,6 +96,7 @@
   },
   "checkinNotFoundMessage": "Ticket not found",
   "checkinUnexpectedError": "Something went wrong recording the check-in.",
+  "settingsAction": "Settings",
   "settingsImportAction": "Import backup",
   "settingsImportConfirmTitle": "Import this backup?",
   "settingsImportConfirmBody": "This will replace all current data. This action cannot be undone."

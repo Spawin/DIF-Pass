@@ -23,6 +23,11 @@ class EventsListScreen extends ConsumerWidget {
             tooltip: l10n.eventsArchiveAction,
             onPressed: () => context.push('/events/archives'),
           ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: l10n.settingsAction,
+            onPressed: () => context.push('/settings'),
+          ),
         ],
       ),
       body: eventsAsync.when(

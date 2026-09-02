@@ -254,6 +254,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un probleme est survenu lors de l\'enregistrement de la presence.';
 
   @override
+  String get settingsAction => 'Reglages';
+
+  @override
   String get settingsImportAction => 'Importer une sauvegarde';
 
   @override
