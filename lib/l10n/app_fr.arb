@@ -77,5 +77,9 @@
   "settingsAction": "Reglages",
   "settingsImportAction": "Importer une sauvegarde",
   "settingsImportConfirmTitle": "Importer cette sauvegarde ?",
-  "settingsImportConfirmBody": "Cette action remplacera toutes les donnees actuelles. Cette action est irreversible."
+  "settingsImportConfirmBody": "Cette action remplacera toutes les donnees actuelles. Cette action est irreversible.",
+  "settingsScreenTitle": "Reglages",
+  "settingsExportAction": "Exporter la sauvegarde",
+  "settingsExportError": "Impossible d'exporter la sauvegarde.",
+  "settingsImportError": "Impossible d'importer ce fichier. Verifiez qu'il s'agit bien d'une sauvegarde DIF Pass valide."
 }

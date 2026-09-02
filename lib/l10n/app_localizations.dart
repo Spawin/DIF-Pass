@@ -565,6 +565,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This will replace all current data. This action cannot be undone.'**
   String get settingsImportConfirmBody;
+
+  /// No description provided for @settingsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsScreenTitle;
+
+  /// No description provided for @settingsExportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Export backup'**
+  String get settingsExportAction;
+
+  /// No description provided for @settingsExportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export the backup.'**
+  String get settingsExportError;
+
+  /// No description provided for @settingsImportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not import this file. Make sure it is a valid DIF Pass backup.'**
+  String get settingsImportError;
 }
 
 class _AppLocalizationsDelegate

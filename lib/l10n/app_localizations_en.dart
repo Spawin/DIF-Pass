@@ -261,4 +261,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsImportConfirmBody =>
       'This will replace all current data. This action cannot be undone.';
+
+  @override
+  String get settingsScreenTitle => 'Settings';
+
+  @override
+  String get settingsExportAction => 'Export backup';
+
+  @override
+  String get settingsExportError => 'Could not export the backup.';
+
+  @override
+  String get settingsImportError =>
+      'Could not import this file. Make sure it is a valid DIF Pass backup.';
 }

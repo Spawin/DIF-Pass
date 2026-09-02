@@ -265,4 +265,17 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsImportConfirmBody =>
       'Cette action remplacera toutes les donnees actuelles. Cette action est irreversible.';
+
+  @override
+  String get settingsScreenTitle => 'Reglages';
+
+  @override
+  String get settingsExportAction => 'Exporter la sauvegarde';
+
+  @override
+  String get settingsExportError => 'Impossible d\'exporter la sauvegarde.';
+
+  @override
+  String get settingsImportError =>
+      'Impossible d\'importer ce fichier. Verifiez qu\'il s\'agit bien d\'une sauvegarde DIF Pass valide.';
 }

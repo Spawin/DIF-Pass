@@ -99,5 +99,9 @@
   "settingsAction": "Settings",
   "settingsImportAction": "Import backup",
   "settingsImportConfirmTitle": "Import this backup?",
-  "settingsImportConfirmBody": "This will replace all current data. This action cannot be undone."
+  "settingsImportConfirmBody": "This will replace all current data. This action cannot be undone.",
+  "settingsScreenTitle": "Settings",
+  "settingsExportAction": "Export backup",
+  "settingsExportError": "Could not export the backup.",
+  "settingsImportError": "Could not import this file. Make sure it is a valid DIF Pass backup."
 }
