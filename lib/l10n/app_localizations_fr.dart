@@ -252,4 +252,14 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get checkinUnexpectedError =>
       'Un probleme est survenu lors de l\'enregistrement de la presence.';
+
+  @override
+  String get settingsImportAction => 'Importer une sauvegarde';
+
+  @override
+  String get settingsImportConfirmTitle => 'Importer cette sauvegarde ?';
+
+  @override
+  String get settingsImportConfirmBody =>
+      'Cette action remplacera toutes les donnees actuelles. Cette action est irreversible.';
 }

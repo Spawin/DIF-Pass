@@ -541,6 +541,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong recording the check-in.'**
   String get checkinUnexpectedError;
+
+  /// No description provided for @settingsImportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import backup'**
+  String get settingsImportAction;
+
+  /// No description provided for @settingsImportConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import this backup?'**
+  String get settingsImportConfirmTitle;
+
+  /// No description provided for @settingsImportConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will replace all current data. This action cannot be undone.'**
+  String get settingsImportConfirmBody;
 }
 
 class _AppLocalizationsDelegate

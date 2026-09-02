@@ -248,4 +248,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get checkinUnexpectedError =>
       'Something went wrong recording the check-in.';
+
+  @override
+  String get settingsImportAction => 'Import backup';
+
+  @override
+  String get settingsImportConfirmTitle => 'Import this backup?';
+
+  @override
+  String get settingsImportConfirmBody =>
+      'This will replace all current data. This action cannot be undone.';
 }

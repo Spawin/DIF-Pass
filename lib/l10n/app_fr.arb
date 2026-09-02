@@ -73,5 +73,8 @@
   "checkinCounterLabel": "{checkedIn}/{total} arrives",
   "checkinAlreadyRecordedMessage": "Deja enregistre a {time}",
   "checkinNotFoundMessage": "Ticket introuvable",
-  "checkinUnexpectedError": "Un probleme est survenu lors de l'enregistrement de la presence."
+  "checkinUnexpectedError": "Un probleme est survenu lors de l'enregistrement de la presence.",
+  "settingsImportAction": "Importer une sauvegarde",
+  "settingsImportConfirmTitle": "Importer cette sauvegarde ?",
+  "settingsImportConfirmBody": "Cette action remplacera toutes les donnees actuelles. Cette action est irreversible."
 }

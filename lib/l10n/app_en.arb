@@ -95,5 +95,8 @@
     }
   },
   "checkinNotFoundMessage": "Ticket not found",
-  "checkinUnexpectedError": "Something went wrong recording the check-in."
+  "checkinUnexpectedError": "Something went wrong recording the check-in.",
+  "settingsImportAction": "Import backup",
+  "settingsImportConfirmTitle": "Import this backup?",
+  "settingsImportConfirmBody": "This will replace all current data. This action cannot be undone."
 }
