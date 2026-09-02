@@ -207,6 +207,36 @@ void main() {
   );
 
   test(
+    'importBackup rejects a file with all six correct table names but the '
+    'wrong columns in every table and leaves the target untouched',
+    () async {
+      final sourceFile = File(p.join(tempDir.path, 'source.sqlite'));
+      final rawDb = raw_sqlite3.sqlite3.open(sourceFile.path);
+      rawDb.execute('CREATE TABLE events (junk TEXT)');
+      rawDb.execute('CREATE TABLE custom_fields (junk TEXT)');
+      rawDb.execute('CREATE TABLE beneficiaries (junk TEXT)');
+      rawDb.execute('CREATE TABLE beneficiary_values (junk TEXT)');
+      rawDb.execute('CREATE TABLE tickets (junk TEXT)');
+      rawDb.execute('CREATE TABLE check_ins (junk TEXT)');
+      rawDb.userVersion = 2;
+      rawDb.close();
+      final backupBytes = await sourceFile.readAsBytes();
+
+      final targetFile = File(p.join(tempDir.path, 'target.sqlite'));
+      final originalBytes = utf8.encode('original database content');
+      await targetFile.writeAsBytes(originalBytes);
+      final repository = FileBackupRepository(targetFile);
+
+      await expectLater(
+        () => repository.importBackup(backupBytes),
+        throwsA(isA<FormatException>()),
+      );
+
+      expect(await targetFile.readAsBytes(), originalBytes);
+    },
+  );
+
+  test(
     'importBackup rejects a backup from a newer schema version and leaves '
     'the target untouched',
     () async {

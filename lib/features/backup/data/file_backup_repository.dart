@@ -89,7 +89,17 @@ class FileBackupRepository implements BackupRepository {
 
       final db = AppDatabase.withExecutor(NativeDatabase(tempFile));
       try {
-        await db.select(db.events).get();
+        // db.select(db.events).get() is not enough here: drift emits a
+        // plain SELECT * with no column list, so a mismatched schema is
+        // only caught in row mapping, which never runs against an empty
+        // table. Selecting each table's real column names by name forces
+        // SQLite to validate the column shape even with zero rows.
+        for (final t in db.allTables) {
+          final cols = t.$columns.map((c) => c.name).join(', ');
+          await db.customSelect(
+            'SELECT $cols FROM ${t.actualTableName} LIMIT 1',
+          ).get();
+        }
       } finally {
         await db.close();
       }
