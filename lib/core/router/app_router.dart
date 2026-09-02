@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../../features/backup/presentation/screens/settings_screen.dart';
 import '../../features/beneficiaries/presentation/screens/beneficiaries_list_screen.dart';
 import '../../features/beneficiaries/presentation/screens/beneficiary_form_screen.dart';
 import '../../features/beneficiaries/presentation/screens/csv_import_screen.dart';
@@ -107,6 +108,10 @@ final appRouter = GoRouter(
       builder: (context, state) => CheckInScanScreen(
         eventId: int.parse(state.pathParameters['id']!),
       ),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );

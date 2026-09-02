@@ -97,4 +97,24 @@ void main() {
     expect(find.text('Tickets'), findsWidgets);
     expect(find.text('No tickets yet.'), findsOneWidget);
   });
+
+  testWidgets('app router shows the settings screen at /settings', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [eventRepositoryProvider.overrideWithValue(FakeEventRepository())],
+        child: MaterialApp.router(
+          routerConfig: appRouter,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    appRouter.go('/settings');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Export backup'), findsOneWidget);
+    expect(find.text('Import backup'), findsOneWidget);
+  });
 }
