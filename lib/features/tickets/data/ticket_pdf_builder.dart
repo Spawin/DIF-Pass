@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -9,31 +10,20 @@ import '../../events/domain/event.dart';
 import '../../events/domain/ticket_template.dart';
 import '../domain/ticket.dart';
 
-// ponytail: the pdf package's own base-14 fonts (Helvetica/Courier) need no
-// assets and no network access, unlike printing's PdfGoogleFonts (which
-// fetches from fonts.gstatic.com at runtime). Never call pdfDefaultTheme()
-// or PdfGoogleFonts.* here, it would break the offline-first requirement.
+// The same IBM Plex Sans / IBM Plex Mono files bundled for the UI
+// (assets/fonts/, jalon 8) are embedded directly in the PDF, giving it full
+// Unicode support with no network access, unlike printing's PdfGoogleFonts
+// (which fetches from fonts.gstatic.com at runtime). Never call
+// pdfDefaultTheme() or PdfGoogleFonts.* here, it would break the
+// offline-first requirement.
+Future<pw.Font> _loadFont(String assetPath) async {
+  final bytes = await rootBundle.load(assetPath);
+  return pw.Font.ttf(bytes);
+}
+
 const _indigo = PdfColor.fromInt(0xFF5B6EE8);
 const _pageMarginMm = 10.0;
 const _cardSpacingMm = 4.0;
-
-// ponytail: the pdf package's base-14 fonts only support Latin-1. Full
-// Unicode support needs a bundled TTF font, deferred to a later polish
-// milestone. This stopgap normalizes the most common typographic
-// punctuation (which CSV/Word/Excel/smart-punctuation commonly produce)
-// and replaces anything else outside Latin-1 with a visible '?' so a
-// broken name is obviously wrong on the printed ticket, not silently
-// invisible.
-String _sanitizeForPdf(String text) {
-  return text
-      .replaceAll('’', "'")
-      .replaceAll('‘', "'")
-      .replaceAll('“', '"')
-      .replaceAll('”', '"')
-      .split('')
-      .map((c) => c.codeUnitAt(0) <= 0xFF ? c : '?')
-      .join();
-}
 
 double _cardWidthMm(TicketTemplate template) {
   switch (template) {
@@ -64,9 +54,7 @@ List<String> _visibleFieldLines(
   return [
     for (final field in customFields.where((f) => f.showOnTicket))
       if (beneficiary.customFieldValues[field.id] != null)
-        _sanitizeForPdf(
-          '${field.label}: ${beneficiary.customFieldValues[field.id]}',
-        ),
+        '${field.label}: ${beneficiary.customFieldValues[field.id]}',
   ];
 }
 
@@ -78,6 +66,7 @@ pw.Widget _ticketCardPdf({
   required String readableId,
   required String qrPayload,
   required List<String> visibleFieldLines,
+  required pw.Font monoFont,
 }) {
   final isCompact = template == TicketTemplate.compact;
   final isElegant = template == TicketTemplate.elegant;
@@ -109,7 +98,7 @@ pw.Widget _ticketCardPdf({
           pw.SizedBox(height: 1 * PdfPageFormat.mm),
         ],
         pw.Text(
-          _sanitizeForPdf(eventName),
+          eventName,
           style: pw.TextStyle(
             fontSize: isCompact ? 8 : 11,
             fontWeight: pw.FontWeight.bold,
@@ -126,16 +115,13 @@ pw.Widget _ticketCardPdf({
         ),
         pw.SizedBox(height: 2 * PdfPageFormat.mm),
         pw.Text(
-          _sanitizeForPdf(beneficiaryName),
+          beneficiaryName,
           style: pw.TextStyle(fontSize: isCompact ? 8 : 10),
           textAlign: pw.TextAlign.center,
         ),
         pw.Text(
           readableId,
-          style: pw.TextStyle(
-            font: pw.Font.courier(),
-            fontSize: isCompact ? 7 : 9,
-          ),
+          style: pw.TextStyle(font: monoFont, fontSize: isCompact ? 7 : 9),
         ),
         for (final line in visibleFieldLines) ...[
           pw.SizedBox(height: 1 * PdfPageFormat.mm),
@@ -150,13 +136,17 @@ pw.Widget _ticketCardPdf({
   );
 }
 
-pw.Document buildSingleTicketDocument({
+Future<pw.Document> buildSingleTicketDocument({
   required Event event,
   required Ticket ticket,
   required Beneficiary beneficiary,
   required List<CustomField> customFields,
-}) {
-  final doc = pw.Document();
+}) async {
+  final sansFont = await _loadFont('assets/fonts/IBMPlexSans-Variable.ttf');
+  final monoFont = await _loadFont('assets/fonts/IBMPlexMono-Regular.ttf');
+  final doc = pw.Document(
+    theme: pw.ThemeData.withFont(base: sansFont, bold: sansFont),
+  );
   doc.addPage(
     pw.Page(
       pageFormat: PdfPageFormat.a4,
@@ -170,6 +160,7 @@ pw.Document buildSingleTicketDocument({
           readableId: ticket.readableId,
           qrPayload: ticket.qrPayload,
           visibleFieldLines: _visibleFieldLines(beneficiary, customFields),
+          monoFont: monoFont,
         ),
       ),
     ),
@@ -182,22 +173,27 @@ Future<Uint8List> buildSingleTicketPdf({
   required Ticket ticket,
   required Beneficiary beneficiary,
   required List<CustomField> customFields,
-}) {
-  return buildSingleTicketDocument(
+}) async {
+  final doc = await buildSingleTicketDocument(
     event: event,
     ticket: ticket,
     beneficiary: beneficiary,
     customFields: customFields,
-  ).save();
+  );
+  return doc.save();
 }
 
-pw.Document buildEventTicketsDocument({
+Future<pw.Document> buildEventTicketsDocument({
   required Event event,
   required List<Ticket> tickets,
   required Map<int, Beneficiary> beneficiariesById,
   required List<CustomField> customFields,
-}) {
-  final doc = pw.Document();
+}) async {
+  final sansFont = await _loadFont('assets/fonts/IBMPlexSans-Variable.ttf');
+  final monoFont = await _loadFont('assets/fonts/IBMPlexMono-Regular.ttf');
+  final doc = pw.Document(
+    theme: pw.ThemeData.withFont(base: sansFont, bold: sansFont),
+  );
   doc.addPage(
     pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -221,6 +217,7 @@ pw.Document buildEventTicketsDocument({
                     beneficiariesById[ticket.beneficiaryId]!,
                     customFields,
                   ),
+                  monoFont: monoFont,
                 ),
           ],
         ),
@@ -235,11 +232,12 @@ Future<Uint8List> buildEventTicketsPdf({
   required List<Ticket> tickets,
   required Map<int, Beneficiary> beneficiariesById,
   required List<CustomField> customFields,
-}) {
-  return buildEventTicketsDocument(
+}) async {
+  final doc = await buildEventTicketsDocument(
     event: event,
     tickets: tickets,
     beneficiariesById: beneficiariesById,
     customFields: customFields,
-  ).save();
+  );
+  return doc.save();
 }

@@ -46,9 +46,11 @@ bool _isPdf(List<int> bytes) =>
     bytes.length > 4 && String.fromCharCodes(bytes.take(4)) == '%PDF';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('buildSingleTicketPdf', () {
     test('produces a valid one-page PDF', () async {
-      final doc = buildSingleTicketDocument(
+      final doc = await buildSingleTicketDocument(
         event: _event(),
         ticket: _ticket(),
         beneficiary: _beneficiary(),
@@ -147,7 +149,7 @@ void main() {
   group('buildEventTicketsPdf', () {
     test('a single ticket produces exactly one page', () async {
       final beneficiary = _beneficiary();
-      final doc = buildEventTicketsDocument(
+      final doc = await buildEventTicketsDocument(
         event: _event(),
         tickets: [_ticket()],
         beneficiariesById: {beneficiary.id: beneficiary},
@@ -178,7 +180,7 @@ void main() {
               createdAt: DateTime(2026, 1, 1),
             ),
         ];
-        final doc = buildEventTicketsDocument(
+        final doc = await buildEventTicketsDocument(
           event: _event(template: TicketTemplate.compact),
           tickets: tickets,
           beneficiariesById: {beneficiary.id: beneficiary},
@@ -191,7 +193,7 @@ void main() {
     );
 
     test('a ticket with no matching beneficiary is skipped, not a crash', () async {
-      final doc = buildEventTicketsDocument(
+      final doc = await buildEventTicketsDocument(
         event: _event(),
         tickets: [_ticket()],
         beneficiariesById: const {},
