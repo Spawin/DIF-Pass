@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 TextTheme buildAppTextTheme(ColorScheme colorScheme) {
   final base = ThemeData(colorScheme: colorScheme).textTheme;
-  final display = GoogleFonts.bigShouldersTextTheme(base);
-  final body = GoogleFonts.ibmPlexSansTextTheme(base);
+  final display = base.apply(fontFamily: 'BigShouldersDisplay');
+  final body = base.apply(fontFamily: 'IBMPlexSans');
 
   return body.copyWith(
     displayLarge: display.displayLarge,
@@ -19,5 +18,5 @@ TextTheme buildAppTextTheme(ColorScheme colorScheme) {
 
 // Used for ticket identifiers, live counters, and other data-like text.
 TextStyle ticketMonoStyle(ColorScheme colorScheme) {
-  return GoogleFonts.ibmPlexMono(color: colorScheme.onSurface);
+  return TextStyle(fontFamily: 'IBMPlexMono', color: colorScheme.onSurface);
 }
