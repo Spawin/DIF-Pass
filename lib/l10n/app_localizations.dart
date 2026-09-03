@@ -302,6 +302,12 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get commonDelete;
 
+  /// No description provided for @commonRetryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get commonRetryAction;
+
   /// No description provided for @beneficiariesListTitle.
   ///
   /// In en, this message translates to:

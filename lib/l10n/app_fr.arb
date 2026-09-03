@@ -34,6 +34,7 @@
   "eventsDeleteConfirmBody": "Cette action est irreversible.",
   "commonCancel": "Annuler",
   "commonDelete": "Supprimer",
+  "commonRetryAction": "Reessayer",
   "beneficiariesListTitle": "Beneficiaires",
   "beneficiariesImportAction": "Importer un CSV",
   "beneficiariesEmptyState": "Aucun beneficiaire pour l'instant. Ajoutez-en un ou importez un fichier CSV.",

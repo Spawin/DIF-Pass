@@ -112,6 +112,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonDelete => 'Delete';
 
   @override
+  String get commonRetryAction => 'Retry';
+
+  @override
   String get beneficiariesListTitle => 'Beneficiaries';
 
   @override

@@ -34,6 +34,7 @@
   "eventsDeleteConfirmBody": "This action cannot be undone.",
   "commonCancel": "Cancel",
   "commonDelete": "Delete",
+  "commonRetryAction": "Retry",
   "beneficiariesListTitle": "Beneficiaries",
   "beneficiariesImportAction": "Import CSV",
   "beneficiariesEmptyState": "No beneficiaries yet. Add one or import a CSV file.",

@@ -115,6 +115,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commonDelete => 'Supprimer';
 
   @override
+  String get commonRetryAction => 'Reessayer';
+
+  @override
   String get beneficiariesListTitle => 'Beneficiaires';
 
   @override
