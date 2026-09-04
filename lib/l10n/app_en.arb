@@ -117,5 +117,6 @@
   "settingsScreenTitle": "Settings",
   "settingsExportAction": "Export backup",
   "settingsExportError": "Could not export the backup.",
+  "settingsExportSuccess": "Backup exported.",
   "settingsImportError": "Could not import this file. Make sure it is a valid DIF Pass backup."
 }

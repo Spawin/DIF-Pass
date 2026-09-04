@@ -668,6 +668,12 @@ abstract class AppLocalizations {
   /// **'Could not export the backup.'**
   String get settingsExportError;
 
+  /// No description provided for @settingsExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup exported.'**
+  String get settingsExportSuccess;
+
   /// No description provided for @settingsImportError.
   ///
   /// In en, this message translates to:

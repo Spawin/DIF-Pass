@@ -95,5 +95,6 @@
   "settingsScreenTitle": "Reglages",
   "settingsExportAction": "Exporter la sauvegarde",
   "settingsExportError": "Impossible d'exporter la sauvegarde.",
+  "settingsExportSuccess": "Sauvegarde exportee.",
   "settingsImportError": "Impossible d'importer ce fichier. Verifiez qu'il s'agit bien d'une sauvegarde DIF Pass valide."
 }

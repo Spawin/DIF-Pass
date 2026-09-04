@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +16,19 @@ import '../providers/backup_providers.dart';
 import '../widgets/import_confirm_dialog.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({this.pickFile = FilePicker.pickFile, super.key});
+
+  // Injectable for tests: FilePicker.pickFile talks to the platform and
+  // cannot be exercised in flutter test, same reason AppDatabase.forTesting
+  // exists as its own constructor (jalon 7). Every other screen that calls
+  // FilePicker.pickFile in this app calls it directly and stays untested at
+  // that boundary; this screen is the one exception because the sequence
+  // that follows the picked file (close db, import, invalidate, navigate)
+  // is the most failure-sensitive code in the app, per jalon 7's review.
+  final Future<PlatformFile?> Function({
+    FileType type,
+    List<String>? allowedExtensions,
+  }) pickFile;
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
@@ -40,6 +53,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await SharePlus.instance.share(
         ShareParams(files: [XFile(exportFile.path)]),
       );
+      if (!mounted) return;
+      HapticFeedback.lightImpact();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.settingsExportSuccess)),
+      );
     } catch (e) {
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.settingsExportError)));
@@ -54,21 +72,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // invalidate() on even if this widget gets disposed while the import
     // is in flight (e.g. the user navigates away mid-import).
     final container = ProviderScope.containerOf(context, listen: false);
+    setState(() => _busy = true);
 
-    final file = await FilePicker.pickFile(
+    final file = await widget.pickFile(
       type: FileType.custom,
       allowedExtensions: ['sqlite', 'db'],
     );
-    if (file == null) return;
+    if (file == null) {
+      if (mounted) setState(() => _busy = false);
+      return;
+    }
     if (!mounted) return;
 
     final confirmed = await showImportConfirmDialog(context);
-    if (!confirmed) return;
+    if (!confirmed) {
+      if (mounted) setState(() => _busy = false);
+      return;
+    }
     if (!mounted) return;
 
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
-    setState(() => _busy = true);
     try {
       final bytes = await file.readAsBytes();
       final repository = await ref.read(backupRepositoryProvider.future);
@@ -76,6 +100,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await repository.importBackup(bytes);
       container.invalidate(appDatabaseProvider);
       if (!mounted) return;
+      HapticFeedback.lightImpact();
       context.go('/');
     } catch (e) {
       container.invalidate(appDatabaseProvider);

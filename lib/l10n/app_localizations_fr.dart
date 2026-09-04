@@ -323,6 +323,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsExportError => 'Impossible d\'exporter la sauvegarde.';
 
   @override
+  String get settingsExportSuccess => 'Sauvegarde exportee.';
+
+  @override
   String get settingsImportError =>
       'Impossible d\'importer ce fichier. Verifiez qu\'il s\'agit bien d\'une sauvegarde DIF Pass valide.';
 }

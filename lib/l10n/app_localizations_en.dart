@@ -315,6 +315,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsExportError => 'Could not export the backup.';
 
   @override
+  String get settingsExportSuccess => 'Backup exported.';
+
+  @override
   String get settingsImportError =>
       'Could not import this file. Make sure it is a valid DIF Pass backup.';
 }
