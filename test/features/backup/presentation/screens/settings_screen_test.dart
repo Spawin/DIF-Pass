@@ -103,6 +103,31 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('recovers both buttons when the file picker itself throws', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SettingsScreen(
+          pickFile: ({FileType type = FileType.any, allowedExtensions}) =>
+              throw Exception('picker failed'),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Import backup'));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<OutlinedButton>(find.byType(OutlinedButton)).onPressed,
+      isNotNull,
+    );
+    expect(
+      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+      isNotNull,
+    );
+  });
+
   testWidgets('cancelling the confirm dialog does not call importBackup', (
     tester,
   ) async {

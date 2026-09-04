@@ -72,12 +72,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // invalidate() on even if this widget gets disposed while the import
     // is in flight (e.g. the user navigates away mid-import).
     final container = ProviderScope.containerOf(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     setState(() => _busy = true);
 
-    final file = await widget.pickFile(
-      type: FileType.custom,
-      allowedExtensions: ['sqlite', 'db'],
-    );
+    PlatformFile? file;
+    try {
+      file = await widget.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['sqlite', 'db'],
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _busy = false);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsImportError)));
+      return;
+    }
     if (file == null) {
       if (mounted) setState(() => _busy = false);
       return;
@@ -91,8 +101,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
     if (!mounted) return;
 
-    final l10n = AppLocalizations.of(context)!;
-    final messenger = ScaffoldMessenger.of(context);
     try {
       final bytes = await file.readAsBytes();
       final repository = await ref.read(backupRepositoryProvider.future);
