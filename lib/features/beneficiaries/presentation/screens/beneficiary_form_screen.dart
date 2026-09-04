@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../../../events/domain/custom_field.dart';
 import '../../../events/domain/custom_field_type.dart';
 import '../../../events/presentation/providers/event_providers.dart';
@@ -146,7 +147,10 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.beneficiariesLoadError)),
+        error: (error, stack) => ErrorState(
+          message: l10n.beneficiariesLoadError,
+          onRetry: () => ref.invalidate(customFieldsProvider(widget.eventId)),
+        ),
       ),
     );
   }

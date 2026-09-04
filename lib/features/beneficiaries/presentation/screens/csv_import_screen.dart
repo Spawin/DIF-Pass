@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../../data/csv_parser.dart';
 import '../../domain/new_beneficiary.dart';
 import '../../../events/presentation/providers/event_providers.dart';
@@ -77,17 +78,24 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
     Widget body;
     if (_importedCount != null) {
       body = Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.primary,
-            ).animate().scale(duration: 300.ms).fadeIn(duration: 300.ms),
-            const SizedBox(height: 16),
-            Text(l10n.csvImportResult(_importedCount!, _skippedCount!)),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.check_circle_outline,
+                size: 48,
+                color: Theme.of(context).colorScheme.secondary,
+              ).animate().scale(duration: 300.ms).fadeIn(duration: 300.ms),
+              const SizedBox(height: 16),
+              Text(
+                l10n.csvImportResult(_importedCount!, _skippedCount!),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
         ),
       );
     } else if (_headers != null && _dataRows != null) {
@@ -100,7 +108,10 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
           onImport: _handleImport,
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.beneficiariesLoadError)),
+        error: (error, stack) => ErrorState(
+          message: l10n.beneficiariesLoadError,
+          onRetry: () => ref.invalidate(customFieldsProvider(widget.eventId)),
+        ),
       );
     } else {
       body = Center(

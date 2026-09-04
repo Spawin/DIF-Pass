@@ -7,6 +7,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../../../beneficiaries/presentation/providers/beneficiary_providers.dart';
 import '../../../events/domain/ticket_template.dart';
 import '../../../events/presentation/providers/event_providers.dart';
@@ -53,7 +54,14 @@ class TicketPreviewScreen extends ConsumerWidget {
             if (beneficiaryAsync.hasError ||
                 eventAsync.hasError ||
                 customFieldsAsync.hasError) {
-              return Center(child: Text(l10n.ticketsLoadError));
+              return ErrorState(
+                message: l10n.ticketsLoadError,
+                onRetry: () {
+                  ref.invalidate(beneficiaryProvider(ticket.beneficiaryId));
+                  ref.invalidate(eventProvider(ticket.eventId));
+                  ref.invalidate(customFieldsProvider(ticket.eventId));
+                },
+              );
             }
             return const Center(child: CircularProgressIndicator());
           }
@@ -84,7 +92,10 @@ class TicketPreviewScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.ticketsLoadError)),
+        error: (error, stack) => ErrorState(
+          message: l10n.ticketsLoadError,
+          onRetry: () => ref.invalidate(ticketProvider(ticketId)),
+        ),
       ),
     );
   }
