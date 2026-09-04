@@ -242,6 +242,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ticketsExportError => 'Could not export the tickets.';
 
   @override
+  String get ticketsTemplateUpdateError =>
+      'Could not change the ticket template.';
+
+  @override
+  String get ticketsGenerateError => 'Could not generate tickets.';
+
+  @override
   String get ticketPreviewTitle => 'Ticket';
 
   @override
@@ -249,6 +256,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketPreviewShareError => 'Could not share the ticket.';
+
+  @override
+  String get ticketPreviewShareSuccess => 'Ticket shared.';
 
   @override
   String get checkinManualEntryLabel => 'Ticket ID';

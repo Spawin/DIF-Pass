@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:printing/printing.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -114,6 +113,11 @@ class TicketPreviewScreen extends ConsumerWidget {
       await Printing.sharePdf(
         bytes: bytes,
         filename: '${ticket.readableId}.pdf',
+      );
+      if (!context.mounted) return;
+      HapticFeedback.lightImpact();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.ticketPreviewShareSuccess)),
       );
     } catch (e) {
       if (!context.mounted) return;

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:printing/printing.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../../../beneficiaries/domain/beneficiary.dart';
 import '../../../beneficiaries/presentation/providers/beneficiary_providers.dart';
 import '../../../events/domain/custom_field.dart';
@@ -73,7 +75,14 @@ class TicketsScreen extends ConsumerWidget {
       body: eventAsync.hasError ||
               beneficiariesAsync.hasError ||
               customFieldsAsync.hasError
-          ? Center(child: Text(l10n.ticketsLoadError))
+          ? ErrorState(
+              message: l10n.ticketsLoadError,
+              onRetry: () {
+                ref.invalidate(eventProvider(eventId));
+                ref.invalidate(beneficiariesProvider(eventId));
+                ref.invalidate(customFieldsProvider(eventId));
+              },
+            )
           : Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -110,7 +119,9 @@ class TicketsScreen extends ConsumerWidget {
                           ref.invalidate(eventProvider(eventId));
                         } catch (e) {
                           if (!context.mounted) return;
-                          messenger.showSnackBar(SnackBar(content: Text('$e')));
+                          messenger.showSnackBar(
+                            SnackBar(content: Text(l10n.ticketsTemplateUpdateError)),
+                          );
                         }
                       },
                     ),
@@ -127,12 +138,9 @@ class TicketsScreen extends ConsumerWidget {
                     child: ticketsAsync.when(
                       data: (tickets) {
                         if (tickets.isEmpty) {
-                          return Center(
-                            child: Text(
-                              l10n.ticketsEmptyState,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                          return EmptyState(
+                            icon: Icons.confirmation_number_outlined,
+                            message: l10n.ticketsEmptyState,
                           );
                         }
                         final beneficiaryNames = {
@@ -160,8 +168,10 @@ class TicketsScreen extends ConsumerWidget {
                       },
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
-                      error: (error, stack) =>
-                          Center(child: Text(l10n.ticketsLoadError)),
+                      error: (error, stack) => ErrorState(
+                        message: l10n.ticketsLoadError,
+                        onRetry: () => ref.invalidate(ticketsProvider(eventId)),
+                      ),
                     ),
                   ),
                 ],
@@ -195,11 +205,12 @@ class TicketsScreen extends ConsumerWidget {
       final created = await ref
           .read(ticketRepositoryProvider)
           .generateMissingTickets(eventId);
+      HapticFeedback.lightImpact();
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.ticketsGeneratedCount(created))),
       );
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.ticketsGenerateError)));
     }
   }
 
