@@ -151,6 +151,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un probleme est survenu lors du chargement des beneficiaires.';
 
   @override
+  String get beneficiariesDeleteError =>
+      'Impossible de supprimer ce beneficiaire.';
+
+  @override
   String get beneficiariesDeleteConfirmTitle => 'Supprimer ce beneficiaire ?';
 
   @override
@@ -161,6 +165,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get beneficiaryFormFieldNumberInvalid => 'Entrez un nombre';
+
+  @override
+  String get beneficiaryFormLoadError =>
+      'Impossible de charger ce beneficiaire.';
+
+  @override
+  String get beneficiaryFormSaveError =>
+      'Impossible d\'enregistrer ce beneficiaire.';
 
   @override
   String get csvImportTitle => 'Importer des beneficiaires';
@@ -181,6 +193,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String csvImportResult(int imported, int skipped) {
     return '$imported beneficiaires importes, $skipped ignores';
   }
+
+  @override
+  String get csvImportPickError => 'Impossible de lire ce fichier CSV.';
+
+  @override
+  String get csvImportSaveError => 'Impossible d\'importer les beneficiaires.';
 
   @override
   String get ticketsScreenTitle => 'Tickets';

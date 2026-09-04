@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -27,6 +29,7 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
   int? _skippedCount;
 
   Future<void> _pickFile() async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     try {
       final file = await FilePicker.pickFile(
@@ -44,24 +47,26 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.csvImportPickError)));
     }
   }
 
   Future<void> _handleImport(List<NewBeneficiary> beneficiaries, int skipped) async {
+    final l10n = AppLocalizations.of(context)!;
     final repository = ref.read(beneficiaryRepositoryProvider);
     final messenger = ScaffoldMessenger.of(context);
     try {
       final imported =
           await repository.importBeneficiaries(widget.eventId, beneficiaries);
       if (!mounted) return;
+      HapticFeedback.lightImpact();
       setState(() {
         _importedCount = imported;
         _skippedCount = skipped;
       });
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.csvImportSaveError)));
     }
   }
 
@@ -72,7 +77,18 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
     Widget body;
     if (_importedCount != null) {
       body = Center(
-        child: Text(l10n.csvImportResult(_importedCount!, _skippedCount!)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              size: 64,
+              color: Theme.of(context).colorScheme.primary,
+            ).animate().scale(duration: 300.ms).fadeIn(duration: 300.ms),
+            const SizedBox(height: 16),
+            Text(l10n.csvImportResult(_importedCount!, _skippedCount!)),
+          ],
+        ),
       );
     } else if (_headers != null && _dataRows != null) {
       final customFieldsAsync = ref.watch(customFieldsProvider(widget.eventId));

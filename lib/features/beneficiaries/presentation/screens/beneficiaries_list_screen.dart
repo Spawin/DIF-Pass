@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../../../events/presentation/providers/event_providers.dart';
 import '../../domain/beneficiary.dart';
 import '../providers/beneficiary_providers.dart';
@@ -48,15 +49,11 @@ class BeneficiariesListScreen extends ConsumerWidget {
       body: beneficiariesAsync.when(
         data: (beneficiaries) {
           if (beneficiaries.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  l10n.beneficiariesEmptyState,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
+            return EmptyState(
+              icon: Icons.people_outline,
+              message: l10n.beneficiariesEmptyState,
+              actionLabel: l10n.beneficiariesNewAction,
+              onAction: () => context.push('/events/$eventId/beneficiaries/new'),
             );
           }
           return ListView.builder(
@@ -75,7 +72,10 @@ class BeneficiariesListScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.beneficiariesLoadError)),
+        error: (error, stack) => ErrorState(
+          message: l10n.beneficiariesLoadError,
+          onRetry: () => ref.invalidate(beneficiariesProvider(eventId)),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/events/$eventId/beneficiaries/new'),
@@ -115,7 +115,9 @@ class BeneficiariesListScreen extends ConsumerWidget {
         await repository.deleteBeneficiary(beneficiary.id);
       } catch (e) {
         if (!context.mounted) return;
-        messenger.showSnackBar(SnackBar(content: Text('$e')));
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.beneficiariesDeleteError)),
+        );
       }
     }
   }

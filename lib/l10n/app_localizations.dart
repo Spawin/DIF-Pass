@@ -368,6 +368,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong loading beneficiaries.'**
   String get beneficiariesLoadError;
 
+  /// No description provided for @beneficiariesDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete this beneficiary.'**
+  String get beneficiariesDeleteError;
+
   /// No description provided for @beneficiariesDeleteConfirmTitle.
   ///
   /// In en, this message translates to:
@@ -391,6 +397,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a number'**
   String get beneficiaryFormFieldNumberInvalid;
+
+  /// No description provided for @beneficiaryFormLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this beneficiary.'**
+  String get beneficiaryFormLoadError;
+
+  /// No description provided for @beneficiaryFormSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this beneficiary.'**
+  String get beneficiaryFormSaveError;
 
   /// No description provided for @csvImportTitle.
   ///
@@ -427,6 +445,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{imported} beneficiaries imported, {skipped} skipped'**
   String csvImportResult(int imported, int skipped);
+
+  /// No description provided for @csvImportPickError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read this CSV file.'**
+  String get csvImportPickError;
+
+  /// No description provided for @csvImportSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not import beneficiaries.'**
+  String get csvImportSaveError;
 
   /// No description provided for @ticketsScreenTitle.
   ///

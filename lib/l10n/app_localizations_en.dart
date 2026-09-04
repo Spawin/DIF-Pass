@@ -147,6 +147,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong loading beneficiaries.';
 
   @override
+  String get beneficiariesDeleteError => 'Could not delete this beneficiary.';
+
+  @override
   String get beneficiariesDeleteConfirmTitle => 'Delete this beneficiary?';
 
   @override
@@ -157,6 +160,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get beneficiaryFormFieldNumberInvalid => 'Enter a number';
+
+  @override
+  String get beneficiaryFormLoadError => 'Could not load this beneficiary.';
+
+  @override
+  String get beneficiaryFormSaveError => 'Could not save this beneficiary.';
 
   @override
   String get csvImportTitle => 'Import beneficiaries';
@@ -177,6 +186,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String csvImportResult(int imported, int skipped) {
     return '$imported beneficiaries imported, $skipped skipped';
   }
+
+  @override
+  String get csvImportPickError => 'Could not read this CSV file.';
+
+  @override
+  String get csvImportSaveError => 'Could not import beneficiaries.';
 
   @override
   String get ticketsScreenTitle => 'Tickets';

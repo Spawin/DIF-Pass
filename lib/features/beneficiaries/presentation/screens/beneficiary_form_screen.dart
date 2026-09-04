@@ -47,7 +47,9 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.beneficiaryFormLoadError)));
     }
   }
 
@@ -65,6 +67,7 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
   }
 
   Future<void> _save(List<CustomField> customFields) async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     final repository = ref.read(beneficiaryRepositoryProvider);
@@ -87,7 +90,9 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
         Navigator.of(context).pop();
       }
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.beneficiaryFormSaveError)),
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
