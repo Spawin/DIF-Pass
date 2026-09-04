@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:printing/printing.dart';
 
+import '../../../../core/theme/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../beneficiaries/domain/beneficiary.dart';
@@ -159,7 +160,16 @@ class TicketsScreen extends ConsumerWidget {
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
-                                subtitle: Text(ticket.readableId),
+                                subtitle: Text(
+                                  ticket.readableId,
+                                  style: ticketMonoStyle(
+                                    Theme.of(context).colorScheme,
+                                  ).copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                                ),
                                 onTap: () => context.push(
                                   '/events/$eventId/tickets/${ticket.id}',
                                 ),
