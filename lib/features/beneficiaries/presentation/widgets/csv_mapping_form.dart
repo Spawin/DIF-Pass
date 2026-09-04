@@ -62,6 +62,7 @@ class _CsvMappingFormState extends State<CsvMappingForm> {
       padding: const EdgeInsets.all(16),
       children: [
         Text(l10n.csvImportMappingNameLabel, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
         DropdownButton<int?>(
           value: _nameColumnIndex,
           items: columnOptions,
@@ -70,6 +71,7 @@ class _CsvMappingFormState extends State<CsvMappingForm> {
         const SizedBox(height: 16),
         for (final field in widget.customFields) ...[
           Text(field.label, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
           DropdownButton<int?>(
             value: _customFieldColumnIndex[field.id],
             items: columnOptions,
