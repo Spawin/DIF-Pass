@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../providers/event_providers.dart';
 import '../widgets/event_card.dart';
 
@@ -33,15 +35,11 @@ class EventsListScreen extends ConsumerWidget {
       body: eventsAsync.when(
         data: (events) {
           if (events.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  l10n.eventsEmptyState,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
+            return EmptyState(
+              icon: Icons.event_outlined,
+              message: l10n.eventsEmptyState,
+              actionLabel: l10n.eventsNewAction,
+              onAction: () => context.push('/events/new'),
             );
           }
           return ListView.builder(
@@ -63,9 +61,12 @@ class EventsListScreen extends ConsumerWidget {
                     await ref
                         .read(eventRepositoryProvider)
                         .archiveEvent(event.id);
+                    HapticFeedback.lightImpact();
                   } catch (e) {
                     if (!context.mounted) return;
-                    messenger.showSnackBar(SnackBar(content: Text('$e')));
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.eventsArchiveError)),
+                    );
                   }
                 },
               );
@@ -73,7 +74,10 @@ class EventsListScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.eventsLoadError)),
+        error: (error, stack) => ErrorState(
+          message: l10n.eventsLoadError,
+          onRetry: () => ref.invalidate(activeEventsProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/events/new'),

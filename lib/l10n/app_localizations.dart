@@ -158,6 +158,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong loading events.'**
   String get eventsLoadError;
 
+  /// No description provided for @eventsArchiveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not archive this event.'**
+  String get eventsArchiveError;
+
   /// No description provided for @eventFormTitleCreate.
   ///
   /// In en, this message translates to:
@@ -254,6 +260,18 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get eventFormSaveAction;
 
+  /// No description provided for @eventFormLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this event.'**
+  String get eventFormLoadError;
+
+  /// No description provided for @eventFormSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this event.'**
+  String get eventFormSaveError;
+
   /// No description provided for @eventsArchiveTitle.
   ///
   /// In en, this message translates to:
@@ -272,6 +290,12 @@ abstract class AppLocalizations {
   /// **'Restore'**
   String get eventsRestoreAction;
 
+  /// No description provided for @eventsRestoreError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not restore this event.'**
+  String get eventsRestoreError;
+
   /// No description provided for @eventsDeletePermanentlyAction.
   ///
   /// In en, this message translates to:
@@ -289,6 +313,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This action cannot be undone.'**
   String get eventsDeleteConfirmBody;
+
+  /// No description provided for @eventsDeletePermanentlyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete this event.'**
+  String get eventsDeletePermanentlyError;
 
   /// No description provided for @commonCancel.
   ///

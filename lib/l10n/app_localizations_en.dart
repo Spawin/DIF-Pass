@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsLoadError => 'Something went wrong loading events.';
 
   @override
+  String get eventsArchiveError => 'Could not archive this event.';
+
+  @override
   String get eventFormTitleCreate => 'New event';
 
   @override
@@ -88,6 +91,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventFormSaveAction => 'Save';
 
   @override
+  String get eventFormLoadError => 'Could not load this event.';
+
+  @override
+  String get eventFormSaveError => 'Could not save this event.';
+
+  @override
   String get eventsArchiveTitle => 'Archives';
 
   @override
@@ -97,6 +106,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsRestoreAction => 'Restore';
 
   @override
+  String get eventsRestoreError => 'Could not restore this event.';
+
+  @override
   String get eventsDeletePermanentlyAction => 'Delete permanently';
 
   @override
@@ -104,6 +116,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsDeleteConfirmBody => 'This action cannot be undone.';
+
+  @override
+  String get eventsDeletePermanentlyError => 'Could not delete this event.';
 
   @override
   String get commonCancel => 'Cancel';

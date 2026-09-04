@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -82,7 +81,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.eventFormLoadError)));
       }
     }
   }
@@ -139,6 +140,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
@@ -181,6 +183,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       }
 
       if (!mounted) return;
+      HapticFeedback.lightImpact();
       // Guarded: in a widget test (or any context where this screen is the
       // only route), there is nothing to pop back to.
       if (Navigator.of(context).canPop()) {
@@ -188,7 +191,8 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.eventFormSaveError)));
       }
     } finally {
       if (mounted) setState(() => _loading = false);

@@ -41,6 +41,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un probleme est survenu lors du chargement des evenements.';
 
   @override
+  String get eventsArchiveError => 'Impossible d\'archiver cet evenement.';
+
+  @override
   String get eventFormTitleCreate => 'Nouvel evenement';
 
   @override
@@ -91,6 +94,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventFormSaveAction => 'Enregistrer';
 
   @override
+  String get eventFormLoadError => 'Impossible de charger cet evenement.';
+
+  @override
+  String get eventFormSaveError => 'Impossible d\'enregistrer cet evenement.';
+
+  @override
   String get eventsArchiveTitle => 'Archives';
 
   @override
@@ -100,6 +109,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventsRestoreAction => 'Restaurer';
 
   @override
+  String get eventsRestoreError => 'Impossible de restaurer cet evenement.';
+
+  @override
   String get eventsDeletePermanentlyAction => 'Supprimer definitivement';
 
   @override
@@ -107,6 +119,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get eventsDeleteConfirmBody => 'Cette action est irreversible.';
+
+  @override
+  String get eventsDeletePermanentlyError =>
+      'Impossible de supprimer cet evenement.';
 
   @override
   String get commonCancel => 'Annuler';

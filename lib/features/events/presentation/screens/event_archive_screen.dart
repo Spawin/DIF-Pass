@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../../domain/event.dart';
 import '../providers/event_providers.dart';
 
@@ -20,7 +21,10 @@ class EventArchiveScreen extends ConsumerWidget {
       body: eventsAsync.when(
         data: (events) {
           if (events.isEmpty) {
-            return Center(child: Text(l10n.eventsArchiveEmptyState));
+            return EmptyState(
+              icon: Icons.archive_outlined,
+              message: l10n.eventsArchiveEmptyState,
+            );
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -45,7 +49,9 @@ class EventArchiveScreen extends ConsumerWidget {
                                 .read(eventRepositoryProvider)
                                 .restoreEvent(event.id);
                           } catch (e) {
-                            messenger.showSnackBar(SnackBar(content: Text('$e')));
+                            messenger.showSnackBar(
+                              SnackBar(content: Text(l10n.eventsRestoreError)),
+                            );
                           }
                         },
                       ),
@@ -62,7 +68,10 @@ class EventArchiveScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.eventsLoadError)),
+        error: (error, stack) => ErrorState(
+          message: l10n.eventsLoadError,
+          onRetry: () => ref.invalidate(archivedEventsProvider),
+        ),
       ),
     );
   }
@@ -92,7 +101,9 @@ class EventArchiveScreen extends ConsumerWidget {
       try {
         await repository.deleteEventPermanently(event.id);
       } catch (e) {
-        messenger.showSnackBar(SnackBar(content: Text('$e')));
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.eventsDeletePermanentlyError)),
+        );
       }
     }
   }
