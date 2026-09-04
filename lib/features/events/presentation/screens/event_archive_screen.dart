@@ -34,7 +34,10 @@ class EventArchiveScreen extends ConsumerWidget {
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  title: Text(event.name),
+                  title: Text(
+                    event.name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   subtitle: Text(DateFormat.yMMMMd(locale).format(event.date)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

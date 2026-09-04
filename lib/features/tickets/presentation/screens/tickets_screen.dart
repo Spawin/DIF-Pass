@@ -156,6 +156,8 @@ class TicketsScreen extends ConsumerWidget {
                               child: ListTile(
                                 title: Text(
                                   beneficiaryNames[ticket.beneficiaryId] ?? '',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 subtitle: Text(ticket.readableId),
                                 onTap: () => context.push(

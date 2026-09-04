@@ -31,7 +31,10 @@ class BeneficiaryListTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         onTap: onTap,
-        title: Text(beneficiary.name),
+        title: Text(
+          beneficiary.name,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         subtitle: preview.isEmpty ? null : Text(preview),
         trailing: IconButton(
           icon: const Icon(Icons.delete_outline),
