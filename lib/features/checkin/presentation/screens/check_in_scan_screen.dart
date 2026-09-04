@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../beneficiaries/presentation/providers/beneficiary_providers.dart';
 import '../../../events/presentation/providers/event_providers.dart';
@@ -170,15 +172,19 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.black54,
+                  color: AppColors.ink.withValues(alpha: 0.72),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   l10n.checkinCounterLabel(checkedIn, total),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.merge(ticketMonoStyle(Theme.of(context).colorScheme))
+                      .copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                 )
                     .animate(key: ValueKey(checkedIn))
                     .scale(duration: 300.ms)
@@ -203,8 +209,9 @@ class _CheckInFeedbackOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final isSuccess = feedback is CheckInFeedbackRecorded;
-    final color = isSuccess ? Colors.green : Colors.red;
+    final color = isSuccess ? AppColors.teal : theme.colorScheme.error;
     final icon = isSuccess ? Icons.check_circle : Icons.error;
 
     String? name;
@@ -225,26 +232,29 @@ class _CheckInFeedbackOverlay extends StatelessWidget {
       child: ColoredBox(
         color: color.withValues(alpha: 0.85),
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: Colors.white, size: 64),
-              const SizedBox(height: 16),
-              if (name != null)
-                Text(
-                  name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: Colors.white, size: 48),
+                const SizedBox(height: 16),
+                if (name != null)
+                  Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineSmall
+                        ?.copyWith(color: Colors.white),
                   ),
-                ),
-              if (message != null)
-                Text(
-                  message,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-            ],
+                if (message != null)
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge
+                        ?.copyWith(color: Colors.white),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
