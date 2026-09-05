@@ -332,6 +332,12 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get commonDelete;
 
+  /// No description provided for @commonOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get commonOk;
+
   /// No description provided for @commonRetryAction.
   ///
   /// In en, this message translates to:
@@ -625,6 +631,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong recording the check-in.'**
   String get checkinUnexpectedError;
+
+  /// No description provided for @checkinSkipAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get checkinSkipAction;
 
   /// No description provided for @settingsAction.
   ///

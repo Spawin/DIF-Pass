@@ -127,6 +127,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonDelete => 'Delete';
 
   @override
+  String get commonOk => 'OK';
+
+  @override
   String get commonRetryAction => 'Retry';
 
   @override
@@ -291,6 +294,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get checkinUnexpectedError =>
       'Something went wrong recording the check-in.';
+
+  @override
+  String get checkinSkipAction => 'Skip';
 
   @override
   String get settingsAction => 'Settings';

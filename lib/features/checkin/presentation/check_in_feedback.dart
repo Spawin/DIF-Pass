@@ -21,3 +21,9 @@ class CheckInFeedbackAlreadyRecorded extends CheckInFeedback {
 class CheckInFeedbackNotFound extends CheckInFeedback {
   const CheckInFeedbackNotFound();
 }
+
+// Whether this feedback should close itself automatically after a delay
+// (the success case, to keep an entrance queue moving) or wait for an
+// explicit tap (the two exception cases, which need the agent's attention).
+bool checkInFeedbackAutoDismisses(CheckInFeedback feedback) =>
+    feedback is CheckInFeedbackRecorded;

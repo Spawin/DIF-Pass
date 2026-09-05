@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../../../core/settings/settings_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -49,10 +50,11 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
     setState(() => _busy = true);
     await _controller.stop();
 
+    CheckInFeedback? feedback;
     if (mounted) {
       try {
         final event = await ref.read(eventProvider(widget.eventId).future);
-        final feedback = await processCheckIn(
+        feedback = await processCheckIn(
           ticketRepository: ref.read(ticketRepositoryProvider),
           checkInRepository: ref.read(checkInRepositoryProvider),
           beneficiaryRepository: ref.read(beneficiaryRepositoryProvider),
@@ -75,17 +77,28 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
             SnackBar(content: Text(l10n.checkinUnexpectedError)),
           );
         }
+        _dismissFeedback();
+        return;
       }
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 1800));
+    if (feedback != null && checkInFeedbackAutoDismisses(feedback)) {
+      final delayMs = ref.read(appSettingsProvider).checkinFeedbackDelayMs;
+      await Future<void>.delayed(Duration(milliseconds: delayMs));
+      _dismissFeedback();
+    }
+    // Exceptions (already recorded / not found) wait for the overlay's OK
+    // button to call _dismissFeedback instead of a timer.
+  }
+
+  void _dismissFeedback() {
     if (!mounted) return;
     setState(() {
       _feedback = null;
       _busy = false;
     });
     if (!_manualEntry) {
-      await _controller.start();
+      _controller.start();
     }
   }
 
@@ -193,7 +206,7 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
             ),
           ),
           if (_feedback != null)
-            _CheckInFeedbackOverlay(feedback: _feedback!, locale: locale),
+            _CheckInFeedbackOverlay(feedback: _feedback!, locale: locale, onDismiss: _dismissFeedback),
         ],
       ),
     );
@@ -201,10 +214,15 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
 }
 
 class _CheckInFeedbackOverlay extends StatelessWidget {
-  const _CheckInFeedbackOverlay({required this.feedback, required this.locale});
+  const _CheckInFeedbackOverlay({
+    required this.feedback,
+    required this.locale,
+    required this.onDismiss,
+  });
 
   final CheckInFeedback feedback;
   final String locale;
+  final VoidCallback onDismiss;
 
   @override
   Widget build(BuildContext context) {
@@ -253,6 +271,14 @@ class _CheckInFeedbackOverlay extends StatelessWidget {
                     style: theme.textTheme.bodyLarge
                         ?.copyWith(color: Colors.white),
                   ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: onDismiss,
+                  child: Text(
+                    isSuccess ? l10n.checkinSkipAction : l10n.commonOk,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
             ),
           ),

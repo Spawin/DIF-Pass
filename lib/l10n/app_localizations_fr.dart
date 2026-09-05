@@ -131,6 +131,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commonDelete => 'Supprimer';
 
   @override
+  String get commonOk => 'OK';
+
+  @override
   String get commonRetryAction => 'Reessayer';
 
   @override
@@ -299,6 +302,9 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get checkinUnexpectedError =>
       'Un probleme est survenu lors de l\'enregistrement de la presence.';
+
+  @override
+  String get checkinSkipAction => 'Passer';
 
   @override
   String get settingsAction => 'Reglages';
