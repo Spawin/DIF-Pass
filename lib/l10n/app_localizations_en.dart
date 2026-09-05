@@ -318,6 +318,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsExportSuccess => 'Backup exported.';
 
   @override
+  String get settingsCheckinDelayLabel => 'Check-in confirmation delay';
+
+  @override
+  String get settingsLanguageLabel => 'Language';
+
+  @override
+  String get settingsLanguageAuto => 'Automatic';
+
+  @override
+  String get settingsLanguageFrench => 'French';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
   String get settingsImportError =>
       'Could not import this file. Make sure it is a valid DIF Pass backup.';
 }

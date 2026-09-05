@@ -674,6 +674,36 @@ abstract class AppLocalizations {
   /// **'Backup exported.'**
   String get settingsExportSuccess;
 
+  /// No description provided for @settingsCheckinDelayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in confirmation delay'**
+  String get settingsCheckinDelayLabel;
+
+  /// No description provided for @settingsLanguageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguageLabel;
+
+  /// No description provided for @settingsLanguageAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get settingsLanguageAuto;
+
+  /// No description provided for @settingsLanguageFrench.
+  ///
+  /// In en, this message translates to:
+  /// **'French'**
+  String get settingsLanguageFrench;
+
+  /// No description provided for @settingsLanguageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEnglish;
+
   /// No description provided for @settingsImportError.
   ///
   /// In en, this message translates to:

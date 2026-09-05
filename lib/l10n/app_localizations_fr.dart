@@ -326,6 +326,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsExportSuccess => 'Sauvegarde exportee.';
 
   @override
+  String get settingsCheckinDelayLabel => 'Delai de confirmation check-in';
+
+  @override
+  String get settingsLanguageLabel => 'Langue';
+
+  @override
+  String get settingsLanguageAuto => 'Automatique';
+
+  @override
+  String get settingsLanguageFrench => 'Francais';
+
+  @override
+  String get settingsLanguageEnglish => 'Anglais';
+
+  @override
   String get settingsImportError =>
       'Impossible d\'importer ce fichier. Verifiez qu\'il s\'agit bien d\'une sauvegarde DIF Pass valide.';
 }

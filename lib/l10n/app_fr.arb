@@ -96,5 +96,10 @@
   "settingsExportAction": "Exporter la sauvegarde",
   "settingsExportError": "Impossible d'exporter la sauvegarde.",
   "settingsExportSuccess": "Sauvegarde exportee.",
+  "settingsCheckinDelayLabel": "Delai de confirmation check-in",
+  "settingsLanguageLabel": "Langue",
+  "settingsLanguageAuto": "Automatique",
+  "settingsLanguageFrench": "Francais",
+  "settingsLanguageEnglish": "Anglais",
   "settingsImportError": "Impossible d'importer ce fichier. Verifiez qu'il s'agit bien d'une sauvegarde DIF Pass valide."
 }

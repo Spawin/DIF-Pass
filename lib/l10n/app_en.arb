@@ -118,5 +118,10 @@
   "settingsExportAction": "Export backup",
   "settingsExportError": "Could not export the backup.",
   "settingsExportSuccess": "Backup exported.",
+  "settingsCheckinDelayLabel": "Check-in confirmation delay",
+  "settingsLanguageLabel": "Language",
+  "settingsLanguageAuto": "Automatic",
+  "settingsLanguageFrench": "French",
+  "settingsLanguageEnglish": "English",
   "settingsImportError": "Could not import this file. Make sure it is a valid DIF Pass backup."
 }

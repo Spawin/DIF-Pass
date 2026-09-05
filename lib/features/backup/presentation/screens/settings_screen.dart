@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/database/database_provider.dart';
+import '../../../../core/settings/settings_providers.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/backup_providers.dart';
 import '../widgets/import_confirm_dialog.dart';
@@ -121,6 +122,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final settings = ref.watch(appSettingsProvider);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsScreenTitle)),
       body: Padding(
@@ -138,6 +140,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onPressed: _busy ? null : _import,
               icon: const Icon(Icons.download_outlined),
               label: Text(l10n.settingsImportAction),
+            ),
+            const SizedBox(height: 32),
+            Text(l10n.settingsCheckinDelayLabel, style: Theme.of(context).textTheme.titleSmall),
+            Slider(
+              value: settings.checkinFeedbackDelayMs.toDouble(),
+              min: 1000,
+              max: 4000,
+              divisions: 30,
+              label: '${(settings.checkinFeedbackDelayMs / 1000).toStringAsFixed(1)}s',
+              onChanged: (value) => ref
+                  .read(appSettingsProvider.notifier)
+                  .setCheckinFeedbackDelayMs(value.round()),
+            ),
+            const SizedBox(height: 16),
+            Text(l10n.settingsLanguageLabel, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            SegmentedButton<String?>(
+              segments: [
+                ButtonSegment(value: null, label: Text(l10n.settingsLanguageAuto)),
+                ButtonSegment(value: 'fr', label: Text(l10n.settingsLanguageFrench)),
+                ButtonSegment(value: 'en', label: Text(l10n.settingsLanguageEnglish)),
+              ],
+              selected: {settings.localeOverride},
+              onSelectionChanged: (selection) => ref
+                  .read(appSettingsProvider.notifier)
+                  .setLocaleOverride(selection.first),
             ),
           ],
         ),

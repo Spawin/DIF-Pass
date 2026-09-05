@@ -9,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _FakeBackupRepository implements BackupRepository {
   bool importCalled = false;
@@ -152,5 +153,38 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(fake.importCalled, isFalse);
+  });
+
+  testWidgets('moving the check-in delay slider persists the new value', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(_wrap(const SettingsScreen()));
+    await tester.pumpAndSettle();
+
+    final slider = tester.widget<Slider>(find.byType(Slider));
+    expect(slider.value, 1800);
+
+    await tester.drag(find.byType(Slider), const Offset(200, 0));
+    await tester.pumpAndSettle();
+
+    final updated = tester.widget<Slider>(find.byType(Slider));
+    expect(updated.value, isNot(1800));
+  });
+
+  testWidgets('selecting a language updates the segmented button selection', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(_wrap(const SettingsScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('French'));
+    await tester.pumpAndSettle();
+
+    final segmentedButton = tester.widget<SegmentedButton<String?>>(
+      find.byType(SegmentedButton<String?>),
+    );
+    expect(segmentedButton.selected, {'fr'});
   });
 }
