@@ -365,4 +365,72 @@ void main() {
       expect(find.text('Ticket shared.'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'shows no confirmation when the native share is cancelled',
+    (tester) async {
+      const printingChannel = MethodChannel('net.nfet.printing');
+      addTearDown(() {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(printingChannel, null);
+      });
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(printingChannel, (methodCall) async {
+        if (methodCall.method == 'sharePdf') return 0;
+        return null;
+      });
+
+      final fakeEvents = FakeEventRepository(
+        events: [
+          Event(
+            id: 1,
+            shortCode: 'EVT1',
+            name: 'Gala DIF 2026',
+            date: DateTime(2026, 12, 1),
+            presenceMode: PresenceMode.simple,
+            createdAt: DateTime(2026, 1, 1),
+          ),
+        ],
+      );
+      final fakeBeneficiaries = FakeBeneficiaryRepository(
+        beneficiaries: [
+          Beneficiary(
+            id: 1,
+            eventId: 1,
+            name: 'Jane Doe',
+            customFieldValues: const {},
+            createdAt: DateTime(2026, 1, 1),
+          ),
+        ],
+      );
+      final fakeTickets = FakeTicketRepository(
+        tickets: [
+          Ticket(
+            id: 1,
+            beneficiaryId: 1,
+            eventId: 1,
+            readableId: '0001',
+            randomPart: 'ABCD',
+            qrPayload: 'EVT1-0001-ABCD',
+            createdAt: DateTime(2026, 1, 1),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        _wrap(
+          const TicketPreviewScreen(ticketId: 1),
+          fakeEvents,
+          fakeBeneficiaries,
+          fakeTickets,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip('Share ticket'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ticket shared.'), findsNothing);
+    },
+  );
 }

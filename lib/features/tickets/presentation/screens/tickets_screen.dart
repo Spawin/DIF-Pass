@@ -242,9 +242,14 @@ class TicketsScreen extends ConsumerWidget {
         beneficiariesById: beneficiariesById,
         customFields: customFields,
       );
-      await Printing.layoutPdf(
+      final success = await Printing.layoutPdf(
         onLayout: (format) async => bytes,
         name: 'tickets-${event.shortCode}',
+      );
+      if (!context.mounted || !success) return;
+      HapticFeedback.lightImpact();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.ticketsExportSuccess)),
       );
     } catch (e) {
       if (!context.mounted) return;

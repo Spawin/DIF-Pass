@@ -253,6 +253,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ticketsExportError => 'Impossible d\'exporter les tickets.';
 
   @override
+  String get ticketsExportSuccess => 'Tickets exportes.';
+
+  @override
   String get ticketsTemplateUpdateError =>
       'Impossible de changer le modele de ticket.';
 

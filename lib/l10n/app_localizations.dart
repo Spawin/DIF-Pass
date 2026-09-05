@@ -542,6 +542,12 @@ abstract class AppLocalizations {
   /// **'Could not export the tickets.'**
   String get ticketsExportError;
 
+  /// No description provided for @ticketsExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets exported.'**
+  String get ticketsExportSuccess;
+
   /// No description provided for @ticketsTemplateUpdateError.
   ///
   /// In en, this message translates to:

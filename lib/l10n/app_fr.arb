@@ -74,6 +74,7 @@
   "ticketsGeneratedCount": "{count, plural, =1{1 ticket cree} other{{count} tickets crees}}",
   "ticketsExportAction": "Exporter les tickets",
   "ticketsExportError": "Impossible d'exporter les tickets.",
+  "ticketsExportSuccess": "Tickets exportes.",
   "ticketsTemplateUpdateError": "Impossible de changer le modele de ticket.",
   "ticketsGenerateError": "Impossible de generer les tickets.",
   "ticketPreviewTitle": "Ticket",

@@ -121,11 +121,11 @@ class TicketPreviewScreen extends ConsumerWidget {
         beneficiary: beneficiary,
         customFields: customFields,
       );
-      await Printing.sharePdf(
+      final shared = await Printing.sharePdf(
         bytes: bytes,
         filename: '${ticket.readableId}.pdf',
       );
-      if (!context.mounted) return;
+      if (!context.mounted || !shared) return;
       HapticFeedback.lightImpact();
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.ticketPreviewShareSuccess)),

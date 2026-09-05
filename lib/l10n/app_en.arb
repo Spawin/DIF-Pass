@@ -85,6 +85,7 @@
   },
   "ticketsExportAction": "Export tickets",
   "ticketsExportError": "Could not export the tickets.",
+  "ticketsExportSuccess": "Tickets exported.",
   "ticketsTemplateUpdateError": "Could not change the ticket template.",
   "ticketsGenerateError": "Could not generate tickets.",
   "ticketPreviewTitle": "Ticket",
