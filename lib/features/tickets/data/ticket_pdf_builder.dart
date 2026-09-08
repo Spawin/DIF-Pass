@@ -16,6 +16,14 @@ import '../domain/ticket.dart';
 // (which fetches from fonts.gstatic.com at runtime). Never call
 // pdfDefaultTheme() or PdfGoogleFonts.* here, it would break the
 // offline-first requirement.
+
+// ponytail: IBM Plex Sans does not cover every Unicode codepoint (verified:
+// it lacks U+0186, used in some West African orthographies, e.g. Ewe). The
+// pdf package renders a visible crossed-box placeholder for a codepoint it
+// cannot draw, not a silent gap and not a crash, so this is left as a known
+// limitation rather than adding a fallback font for one character with no
+// reported real-world case yet. Upgrade path if it becomes one: pass a
+// broader-coverage font via TextStyle.fontFallback on the affected text.
 Future<pw.Font> _loadFont(String assetPath) async {
   final bytes = await rootBundle.load(assetPath);
   return pw.Font.ttf(bytes);
