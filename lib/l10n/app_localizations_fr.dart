@@ -44,6 +44,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventsArchiveError => 'Impossible d\'archiver cet evenement.';
 
   @override
+  String get eventsArchivedMessage => 'Evenement archive.';
+
+  @override
   String get eventFormTitleCreate => 'Nouvel evenement';
 
   @override
@@ -112,6 +115,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventsRestoreError => 'Impossible de restaurer cet evenement.';
 
   @override
+  String get eventsRestoredMessage => 'Evenement restaure.';
+
+  @override
   String get eventsDeletePermanentlyAction => 'Supprimer definitivement';
 
   @override
@@ -129,6 +135,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get commonDelete => 'Supprimer';
+
+  @override
+  String get commonUndo => 'Annuler';
 
   @override
   String get commonOk => 'OK';

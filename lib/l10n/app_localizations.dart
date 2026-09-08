@@ -164,6 +164,12 @@ abstract class AppLocalizations {
   /// **'Could not archive this event.'**
   String get eventsArchiveError;
 
+  /// No description provided for @eventsArchivedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Event archived.'**
+  String get eventsArchivedMessage;
+
   /// No description provided for @eventFormTitleCreate.
   ///
   /// In en, this message translates to:
@@ -296,6 +302,12 @@ abstract class AppLocalizations {
   /// **'Could not restore this event.'**
   String get eventsRestoreError;
 
+  /// No description provided for @eventsRestoredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Event restored.'**
+  String get eventsRestoredMessage;
+
   /// No description provided for @eventsDeletePermanentlyAction.
   ///
   /// In en, this message translates to:
@@ -331,6 +343,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get commonDelete;
+
+  /// No description provided for @commonUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get commonUndo;
 
   /// No description provided for @commonOk.
   ///

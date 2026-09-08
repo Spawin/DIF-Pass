@@ -53,6 +53,36 @@ void main() {
     expect(fake.events.single.isArchived, isFalse);
   });
 
+  testWidgets('restoring shows an undo snackbar that archives the event', (
+    tester,
+  ) async {
+    final fake = FakeEventRepository(events: [
+      Event(
+        id: 1,
+        shortCode: 'EVT1',
+        name: 'Old gala',
+        date: DateTime(2025, 1, 1),
+        presenceMode: PresenceMode.simple,
+        archivedAt: DateTime(2026, 1, 1),
+        createdAt: DateTime(2024, 1, 1),
+      ),
+    ]);
+
+    await tester.pumpWidget(_wrap(const EventArchiveScreen(), fake));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Restore'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Event restored.'), findsOneWidget);
+    expect(fake.events.single.isArchived, isFalse);
+
+    await tester.tap(find.text('Undo'));
+    await tester.pumpAndSettle();
+
+    expect(fake.events.single.isArchived, isTrue);
+  });
+
   testWidgets('delete permanently asks for confirmation before deleting',
       (tester) async {
     final fake = FakeEventRepository(events: [

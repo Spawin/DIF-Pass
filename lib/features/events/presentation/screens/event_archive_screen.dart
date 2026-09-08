@@ -47,10 +47,19 @@ class EventArchiveScreen extends ConsumerWidget {
                         tooltip: l10n.eventsRestoreAction,
                         onPressed: () async {
                           final messenger = ScaffoldMessenger.of(context);
+                          final repository = ref.read(eventRepositoryProvider);
                           try {
-                            await ref
-                                .read(eventRepositoryProvider)
-                                .restoreEvent(event.id);
+                            await repository.restoreEvent(event.id);
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.eventsRestoredMessage),
+                                action: SnackBarAction(
+                                  label: l10n.commonUndo,
+                                  onPressed: () =>
+                                      repository.archiveEvent(event.id),
+                                ),
+                              ),
+                            );
                           } catch (e) {
                             messenger.showSnackBar(
                               SnackBar(content: Text(l10n.eventsRestoreError)),

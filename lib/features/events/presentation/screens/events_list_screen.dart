@@ -57,11 +57,20 @@ class EventsListScreen extends ConsumerWidget {
                 onCheckIn: () => context.push('/events/${event.id}/checkin'),
                 onArchive: () async {
                   final messenger = ScaffoldMessenger.of(context);
+                  final repository = ref.read(eventRepositoryProvider);
                   try {
-                    await ref
-                        .read(eventRepositoryProvider)
-                        .archiveEvent(event.id);
+                    await repository.archiveEvent(event.id);
                     HapticFeedback.lightImpact();
+                    if (!context.mounted) return;
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.eventsArchivedMessage),
+                        action: SnackBarAction(
+                          label: l10n.commonUndo,
+                          onPressed: () => repository.restoreEvent(event.id),
+                        ),
+                      ),
+                    );
                   } catch (e) {
                     if (!context.mounted) return;
                     messenger.showSnackBar(
