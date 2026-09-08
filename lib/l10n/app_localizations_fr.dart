@@ -213,6 +213,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get csvImportSaveError => 'Impossible d\'importer les beneficiaires.';
 
   @override
+  String csvImportFieldsHint(String fields) {
+    return 'Vous pourrez associer les colonnes de votre fichier a : Nom, $fields';
+  }
+
+  @override
+  String get csvImportFieldsHintNameOnly =>
+      'Vous pourrez associer les colonnes de votre fichier au champ Nom.';
+
+  @override
   String get ticketsScreenTitle => 'Tickets';
 
   @override

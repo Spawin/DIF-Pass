@@ -482,6 +482,18 @@ abstract class AppLocalizations {
   /// **'Could not import beneficiaries.'**
   String get csvImportSaveError;
 
+  /// No description provided for @csvImportFieldsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be able to map your file\'s columns to: Name, {fields}'**
+  String csvImportFieldsHint(String fields);
+
+  /// No description provided for @csvImportFieldsHintNameOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be able to map your file\'s columns to the Name field.'**
+  String get csvImportFieldsHintNameOnly;
+
   /// No description provided for @ticketsScreenTitle.
   ///
   /// In en, this message translates to:

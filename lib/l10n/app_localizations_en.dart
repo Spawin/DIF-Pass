@@ -206,6 +206,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get csvImportSaveError => 'Could not import beneficiaries.';
 
   @override
+  String csvImportFieldsHint(String fields) {
+    return 'You\'ll be able to map your file\'s columns to: Name, $fields';
+  }
+
+  @override
+  String get csvImportFieldsHintNameOnly =>
+      'You\'ll be able to map your file\'s columns to the Name field.';
+
+  @override
   String get ticketsScreenTitle => 'Tickets';
 
   @override

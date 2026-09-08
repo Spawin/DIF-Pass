@@ -74,6 +74,7 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final customFieldsAsync = ref.watch(customFieldsProvider(widget.eventId));
 
     Widget body;
     if (_importedCount != null) {
@@ -99,7 +100,6 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
         ),
       );
     } else if (_headers != null && _dataRows != null) {
-      final customFieldsAsync = ref.watch(customFieldsProvider(widget.eventId));
       body = customFieldsAsync.when(
         data: (customFields) => CsvMappingForm(
           headers: _headers!,
@@ -114,11 +114,29 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
         ),
       );
     } else {
+      final fieldLabels =
+          customFieldsAsync.valueOrNull?.map((f) => f.label).join(', ') ?? '';
       body = Center(
-        child: FilledButton.icon(
-          onPressed: _pickFile,
-          icon: const Icon(Icons.upload_file_outlined),
-          label: Text(l10n.csvImportPickFileAction),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                fieldLabels.isEmpty
+                    ? l10n.csvImportFieldsHintNameOnly
+                    : l10n.csvImportFieldsHint(fieldLabels),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: _pickFile,
+                icon: const Icon(Icons.upload_file_outlined),
+                label: Text(l10n.csvImportPickFileAction),
+              ),
+            ],
+          ),
         ),
       );
     }

@@ -70,6 +70,13 @@
   },
   "csvImportPickError": "Could not read this CSV file.",
   "csvImportSaveError": "Could not import beneficiaries.",
+  "csvImportFieldsHint": "You'll be able to map your file's columns to: Name, {fields}",
+  "@csvImportFieldsHint": {
+    "placeholders": {
+      "fields": {"type": "String"}
+    }
+  },
+  "csvImportFieldsHintNameOnly": "You'll be able to map your file's columns to the Name field.",
   "ticketsScreenTitle": "Tickets",
   "ticketsTemplateLabel": "Ticket template",
   "ticketsTemplateCompact": "Compact",

@@ -64,6 +64,13 @@
   "csvImportResult": "{imported} beneficiaires importes, {skipped} ignores",
   "csvImportPickError": "Impossible de lire ce fichier CSV.",
   "csvImportSaveError": "Impossible d'importer les beneficiaires.",
+  "csvImportFieldsHint": "Vous pourrez associer les colonnes de votre fichier a : Nom, {fields}",
+  "@csvImportFieldsHint": {
+    "placeholders": {
+      "fields": {"type": "String"}
+    }
+  },
+  "csvImportFieldsHintNameOnly": "Vous pourrez associer les colonnes de votre fichier au champ Nom.",
   "ticketsScreenTitle": "Tickets",
   "ticketsTemplateLabel": "Modele de ticket",
   "ticketsTemplateCompact": "Compact",
