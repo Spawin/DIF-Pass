@@ -31,6 +31,7 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
   bool _manualEntry = false;
   bool _busy = false;
   CheckInFeedback? _feedback;
+  int _scanGeneration = 0;
 
   @override
   void dispose() {
@@ -47,6 +48,7 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
   }
 
   Future<void> _process(String rawInput) async {
+    final generation = ++_scanGeneration;
     setState(() => _busy = true);
     await _controller.stop();
 
@@ -85,7 +87,9 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
     if (feedback != null && checkInFeedbackAutoDismisses(feedback)) {
       final delayMs = ref.read(appSettingsProvider).checkinFeedbackDelayMs;
       await Future<void>.delayed(Duration(milliseconds: delayMs));
-      _dismissFeedback();
+      if (generation == _scanGeneration) {
+        _dismissFeedback();
+      }
     }
     // Exceptions (already recorded / not found) wait for the overlay's OK
     // button to call _dismissFeedback instead of a timer.
@@ -93,6 +97,7 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
 
   void _dismissFeedback() {
     if (!mounted) return;
+    _scanGeneration++;
     setState(() {
       _feedback = null;
       _busy = false;
