@@ -320,6 +320,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkinSkipAction => 'Skip';
 
   @override
+  String get checkinHistoryAction => 'History';
+
+  @override
+  String get checkinHistoryTitle => 'Attendance history';
+
+  @override
+  String get checkinHistoryEmptyState => 'No check-ins recorded yet.';
+
+  @override
+  String get checkinHistoryLoadError => 'Could not load the history.';
+
+  @override
   String get settingsAction => 'Settings';
 
   @override

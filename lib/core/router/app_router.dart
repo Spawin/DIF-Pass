@@ -4,6 +4,7 @@ import '../../features/backup/presentation/screens/settings_screen.dart';
 import '../../features/beneficiaries/presentation/screens/beneficiaries_list_screen.dart';
 import '../../features/beneficiaries/presentation/screens/beneficiary_form_screen.dart';
 import '../../features/beneficiaries/presentation/screens/csv_import_screen.dart';
+import '../../features/checkin/presentation/screens/check_in_history_screen.dart';
 import '../../features/checkin/presentation/screens/check_in_scan_screen.dart';
 import '../../features/events/presentation/screens/event_archive_screen.dart';
 import '../../features/events/presentation/screens/event_form_screen.dart';
@@ -106,6 +107,16 @@ final appRouter = GoRouter(
         return id == null ? '/' : null;
       },
       builder: (context, state) => CheckInScanScreen(
+        eventId: int.parse(state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/events/:id/checkin/history',
+      redirect: (context, state) {
+        final id = int.tryParse(state.pathParameters['id'] ?? '');
+        return id == null ? '/' : null;
+      },
+      builder: (context, state) => CheckInHistoryScreen(
         eventId: int.parse(state.pathParameters['id']!),
       ),
     ),

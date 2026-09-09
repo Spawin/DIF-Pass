@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -144,6 +145,11 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
                 ? l10n.checkinBackToScanAction
                 : l10n.checkinManualEntryToggleAction,
             onPressed: _busy ? null : _toggleManualEntry,
+          ),
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: l10n.checkinHistoryAction,
+            onPressed: () => context.push('/events/${widget.eventId}/checkin/history'),
           ),
         ],
       ),

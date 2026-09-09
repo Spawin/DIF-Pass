@@ -328,6 +328,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get checkinSkipAction => 'Passer';
 
   @override
+  String get checkinHistoryAction => 'Historique';
+
+  @override
+  String get checkinHistoryTitle => 'Historique des passages';
+
+  @override
+  String get checkinHistoryEmptyState => 'Aucun passage enregistre.';
+
+  @override
+  String get checkinHistoryLoadError => 'Impossible de charger l\'historique.';
+
+  @override
   String get settingsAction => 'Reglages';
 
   @override

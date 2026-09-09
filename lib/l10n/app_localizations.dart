@@ -674,6 +674,30 @@ abstract class AppLocalizations {
   /// **'Skip'**
   String get checkinSkipAction;
 
+  /// No description provided for @checkinHistoryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get checkinHistoryAction;
+
+  /// No description provided for @checkinHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance history'**
+  String get checkinHistoryTitle;
+
+  /// No description provided for @checkinHistoryEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No check-ins recorded yet.'**
+  String get checkinHistoryEmptyState;
+
+  /// No description provided for @checkinHistoryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the history.'**
+  String get checkinHistoryLoadError;
+
   /// No description provided for @settingsAction.
   ///
   /// In en, this message translates to:
