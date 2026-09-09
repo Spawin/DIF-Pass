@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../events/presentation/providers/event_providers.dart';
+import '../../../tickets/presentation/providers/ticket_providers.dart';
 import '../../domain/beneficiary.dart';
 import '../providers/beneficiary_providers.dart';
 import '../widgets/beneficiary_list_tile.dart';
@@ -20,6 +21,7 @@ class BeneficiariesListScreen extends ConsumerWidget {
     final beneficiariesAsync = ref.watch(beneficiariesProvider(eventId));
     final eventAsync = ref.watch(eventProvider(eventId));
     final customFieldsAsync = ref.watch(customFieldsProvider(eventId));
+    final ticketsAsync = ref.watch(ticketsProvider(eventId));
 
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +68,13 @@ class BeneficiariesListScreen extends ConsumerWidget {
                 customFields: customFieldsAsync.valueOrNull ?? const [],
                 onTap: () => context
                     .push('/events/$eventId/beneficiaries/${beneficiary.id}/edit'),
-                onDelete: () => _confirmDelete(context, ref, beneficiary),
+                onDelete: () => _confirmDelete(
+                  context,
+                  ref,
+                  beneficiary,
+                  (ticketsAsync.valueOrNull ?? const [])
+                      .any((t) => t.beneficiaryId == beneficiary.id),
+                ),
               );
             },
           );
@@ -89,6 +97,7 @@ class BeneficiariesListScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     Beneficiary beneficiary,
+    bool hasTicket,
   ) async {
     final l10n = AppLocalizations.of(context)!;
     final repository = ref.read(beneficiaryRepositoryProvider);
@@ -97,7 +106,11 @@ class BeneficiariesListScreen extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.beneficiariesDeleteConfirmTitle),
-        content: Text(l10n.eventsDeleteConfirmBody),
+        content: Text(
+          hasTicket
+              ? l10n.beneficiariesDeleteConfirmBodyWithTicket
+              : l10n.eventsDeleteConfirmBody,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),

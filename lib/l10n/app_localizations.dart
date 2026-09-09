@@ -410,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Delete this beneficiary?'**
   String get beneficiariesDeleteConfirmTitle;
 
+  /// No description provided for @beneficiariesDeleteConfirmBodyWithTicket.
+  ///
+  /// In en, this message translates to:
+  /// **'This beneficiary already has a generated ticket. Deleting them will also delete that ticket; any printed or shared copy will become invalid.'**
+  String get beneficiariesDeleteConfirmBodyWithTicket;
+
   /// No description provided for @beneficiaryFormTitleCreate.
   ///
   /// In en, this message translates to:

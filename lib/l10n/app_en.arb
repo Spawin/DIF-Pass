@@ -52,6 +52,7 @@
   "beneficiariesLoadError": "Something went wrong loading beneficiaries.",
   "beneficiariesDeleteError": "Could not delete this beneficiary.",
   "beneficiariesDeleteConfirmTitle": "Delete this beneficiary?",
+  "beneficiariesDeleteConfirmBodyWithTicket": "This beneficiary already has a generated ticket. Deleting them will also delete that ticket; any printed or shared copy will become invalid.",
   "beneficiaryFormTitleCreate": "New beneficiary",
   "beneficiaryFormTitleEdit": "Edit beneficiary",
   "beneficiaryFormFieldNumberInvalid": "Enter a number",

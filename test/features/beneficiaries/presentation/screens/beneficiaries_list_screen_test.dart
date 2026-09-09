@@ -6,23 +6,28 @@ import 'package:dif_pass/features/events/domain/custom_field_type.dart';
 import 'package:dif_pass/features/events/domain/event.dart';
 import 'package:dif_pass/features/events/domain/presence_mode.dart';
 import 'package:dif_pass/features/events/presentation/providers/event_providers.dart';
+import 'package:dif_pass/features/tickets/domain/ticket.dart';
+import 'package:dif_pass/features/tickets/presentation/providers/ticket_providers.dart';
 import 'package:dif_pass/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../events/fake_event_repository.dart';
+import '../../../tickets/fake_ticket_repository.dart';
 import '../../fake_beneficiary_repository.dart';
 
 Widget _wrap(
   Widget child,
   FakeBeneficiaryRepository fakeBeneficiaries,
-  FakeEventRepository fakeEvents,
-) {
+  FakeEventRepository fakeEvents, {
+  FakeTicketRepository? fakeTickets,
+}) {
   return ProviderScope(
     overrides: [
       beneficiaryRepositoryProvider.overrideWithValue(fakeBeneficiaries),
       eventRepositoryProvider.overrideWithValue(fakeEvents),
+      ticketRepositoryProvider.overrideWithValue(fakeTickets ?? FakeTicketRepository()),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -138,4 +143,52 @@ void main() {
     expect(find.text('Gala DIF 2026'), findsOneWidget);
     expect(find.text('Table 5'), findsOneWidget);
   });
+
+  testWidgets(
+    'delete confirmation warns about the existing ticket when one exists',
+    (tester) async {
+      final fakeBeneficiaries = FakeBeneficiaryRepository(beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ]);
+      final fakeTickets = FakeTicketRepository(
+        tickets: [
+          Ticket(
+            id: 1,
+            beneficiaryId: 1,
+            eventId: 1,
+            readableId: '0001',
+            randomPart: 'ABCD',
+            qrPayload: 'EVT1-0001-ABCD',
+            createdAt: DateTime(2026, 1, 1),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        _wrap(
+          const BeneficiariesListScreen(eventId: 1),
+          fakeBeneficiaries,
+          _fakeEventsWithOneEvent(),
+          fakeTickets: fakeTickets,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip('Delete'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'This beneficiary already has a generated ticket. Deleting them will also delete that ticket; any printed or shared copy will become invalid.',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
 }

@@ -52,6 +52,7 @@
   "beneficiariesLoadError": "Un probleme est survenu lors du chargement des beneficiaires.",
   "beneficiariesDeleteError": "Impossible de supprimer ce beneficiaire.",
   "beneficiariesDeleteConfirmTitle": "Supprimer ce beneficiaire ?",
+  "beneficiariesDeleteConfirmBodyWithTicket": "Ce beneficiaire a deja un ticket genere. Le supprimer supprimera aussi ce ticket ; toute copie deja imprimee ou partagee deviendra invalide.",
   "beneficiaryFormTitleCreate": "Nouveau beneficiaire",
   "beneficiaryFormTitleEdit": "Modifier le beneficiaire",
   "beneficiaryFormFieldNumberInvalid": "Entrez un nombre",

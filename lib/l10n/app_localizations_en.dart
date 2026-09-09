@@ -168,6 +168,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beneficiariesDeleteConfirmTitle => 'Delete this beneficiary?';
 
   @override
+  String get beneficiariesDeleteConfirmBodyWithTicket =>
+      'This beneficiary already has a generated ticket. Deleting them will also delete that ticket; any printed or shared copy will become invalid.';
+
+  @override
   String get beneficiaryFormTitleCreate => 'New beneficiary';
 
   @override
