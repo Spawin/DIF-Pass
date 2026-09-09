@@ -58,6 +58,8 @@
   "beneficiaryFormFieldNumberInvalid": "Entrez un nombre",
   "beneficiaryFormLoadError": "Impossible de charger ce beneficiaire.",
   "beneficiaryFormSaveError": "Impossible d'enregistrer ce beneficiaire.",
+  "beneficiaryFormEditConfirmTitle": "Modifier ce beneficiaire ?",
+  "beneficiaryFormEditConfirmBody": "Ce beneficiaire a deja un ticket genere. Le modifier peut rendre les informations du ticket incoherentes avec les donnees reelles.",
   "csvImportTitle": "Importer des beneficiaires",
   "csvImportPickFileAction": "Choisir un fichier CSV",
   "csvImportMappingNameLabel": "Colonne Nom",

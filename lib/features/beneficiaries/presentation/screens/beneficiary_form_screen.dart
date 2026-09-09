@@ -6,6 +6,7 @@ import '../../../../shared/widgets/empty_state.dart';
 import '../../../events/domain/custom_field.dart';
 import '../../../events/domain/custom_field_type.dart';
 import '../../../events/presentation/providers/event_providers.dart';
+import '../../../tickets/presentation/providers/ticket_providers.dart';
 import '../../domain/new_beneficiary.dart';
 import '../providers/beneficiary_providers.dart';
 
@@ -67,9 +68,30 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
     super.dispose();
   }
 
-  Future<void> _save(List<CustomField> customFields) async {
+  Future<void> _save(List<CustomField> customFields, {required bool hasTicket}) async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isEditing && hasTicket) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.beneficiaryFormEditConfirmTitle),
+          content: Text(l10n.beneficiaryFormEditConfirmBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.commonCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.eventFormSaveAction),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+      if (!mounted) return;
+    }
     setState(() => _loading = true);
     final repository = ref.read(beneficiaryRepositoryProvider);
     final messenger = ScaffoldMessenger.of(context);
@@ -103,6 +125,7 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final customFieldsAsync = ref.watch(customFieldsProvider(widget.eventId));
+    final ticketsAsync = ref.watch(ticketsProvider(widget.eventId));
 
     return Scaffold(
       appBar: AppBar(
@@ -140,7 +163,13 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
                 const SizedBox(height: 16),
               ],
               FilledButton(
-                onPressed: _loading ? null : () => _save(customFields),
+                onPressed: _loading
+                    ? null
+                    : () => _save(
+                          customFields,
+                          hasTicket: (ticketsAsync.valueOrNull ?? const [])
+                              .any((t) => t.beneficiaryId == widget.beneficiaryId),
+                        ),
                 child: Text(l10n.eventFormSaveAction),
               ),
             ],

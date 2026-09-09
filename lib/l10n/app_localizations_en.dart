@@ -187,6 +187,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beneficiaryFormSaveError => 'Could not save this beneficiary.';
 
   @override
+  String get beneficiaryFormEditConfirmTitle => 'Edit this beneficiary?';
+
+  @override
+  String get beneficiaryFormEditConfirmBody =>
+      'This beneficiary already has a generated ticket. Editing them may make that ticket\'s information inconsistent with their real details.';
+
+  @override
   String get csvImportTitle => 'Import beneficiaries';
 
   @override

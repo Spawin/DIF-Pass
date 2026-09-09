@@ -194,6 +194,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'enregistrer ce beneficiaire.';
 
   @override
+  String get beneficiaryFormEditConfirmTitle => 'Modifier ce beneficiaire ?';
+
+  @override
+  String get beneficiaryFormEditConfirmBody =>
+      'Ce beneficiaire a deja un ticket genere. Le modifier peut rendre les informations du ticket incoherentes avec les donnees reelles.';
+
+  @override
   String get csvImportTitle => 'Importer des beneficiaires';
 
   @override

@@ -446,6 +446,18 @@ abstract class AppLocalizations {
   /// **'Could not save this beneficiary.'**
   String get beneficiaryFormSaveError;
 
+  /// No description provided for @beneficiaryFormEditConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit this beneficiary?'**
+  String get beneficiaryFormEditConfirmTitle;
+
+  /// No description provided for @beneficiaryFormEditConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This beneficiary already has a generated ticket. Editing them may make that ticket\'s information inconsistent with their real details.'**
+  String get beneficiaryFormEditConfirmBody;
+
   /// No description provided for @csvImportTitle.
   ///
   /// In en, this message translates to:

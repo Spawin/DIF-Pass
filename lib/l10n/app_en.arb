@@ -58,6 +58,8 @@
   "beneficiaryFormFieldNumberInvalid": "Enter a number",
   "beneficiaryFormLoadError": "Could not load this beneficiary.",
   "beneficiaryFormSaveError": "Could not save this beneficiary.",
+  "beneficiaryFormEditConfirmTitle": "Edit this beneficiary?",
+  "beneficiaryFormEditConfirmBody": "This beneficiary already has a generated ticket. Editing them may make that ticket's information inconsistent with their real details.",
   "csvImportTitle": "Import beneficiaries",
   "csvImportPickFileAction": "Choose a CSV file",
   "csvImportMappingNameLabel": "Name column",
