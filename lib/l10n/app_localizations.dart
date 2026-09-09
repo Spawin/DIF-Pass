@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Archive'**
   String get eventsArchiveEventAction;
 
+  /// No description provided for @eventsMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get eventsMoreActions;
+
   /// No description provided for @eventsBeneficiariesAction.
   ///
   /// In en, this message translates to:

@@ -55,6 +55,8 @@ class EventsListScreen extends ConsumerWidget {
                 onManageTickets: () =>
                     context.push('/events/${event.id}/tickets'),
                 onCheckIn: () => context.push('/events/${event.id}/checkin'),
+                onViewHistory: () =>
+                    context.push('/events/${event.id}/checkin/history'),
                 onArchive: () async {
                   final messenger = ScaffoldMessenger.of(context);
                   final repository = ref.read(eventRepositoryProvider);

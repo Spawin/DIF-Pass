@@ -5,6 +5,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/event.dart';
 
+enum _EventCardMenuAction { archive, history }
+
 class EventCard extends StatelessWidget {
   const EventCard({
     required this.event,
@@ -13,6 +15,7 @@ class EventCard extends StatelessWidget {
     required this.onManageTickets,
     required this.onCheckIn,
     required this.onArchive,
+    required this.onViewHistory,
     super.key,
   });
 
@@ -22,6 +25,7 @@ class EventCard extends StatelessWidget {
   final VoidCallback onManageTickets;
   final VoidCallback onCheckIn;
   final VoidCallback onArchive;
+  final VoidCallback onViewHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +69,26 @@ class EventCard extends StatelessWidget {
               tooltip: l10n.eventsCheckInAction,
               onPressed: onCheckIn,
             ),
-            IconButton(
-              icon: const Icon(Icons.archive_outlined),
-              tooltip: l10n.eventsArchiveEventAction,
-              onPressed: onArchive,
+            PopupMenuButton<_EventCardMenuAction>(
+              tooltip: l10n.eventsMoreActions,
+              onSelected: (action) {
+                switch (action) {
+                  case _EventCardMenuAction.archive:
+                    onArchive();
+                  case _EventCardMenuAction.history:
+                    onViewHistory();
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: _EventCardMenuAction.archive,
+                  child: Text(l10n.eventsArchiveEventAction),
+                ),
+                PopupMenuItem(
+                  value: _EventCardMenuAction.history,
+                  child: Text(l10n.checkinHistoryAction),
+                ),
+              ],
             ),
           ],
         ),

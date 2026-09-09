@@ -21,6 +21,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventsArchiveEventAction => 'Archiver';
 
   @override
+  String get eventsMoreActions => 'Plus d\'actions';
+
+  @override
   String get eventsBeneficiariesAction => 'Beneficiaires';
 
   @override

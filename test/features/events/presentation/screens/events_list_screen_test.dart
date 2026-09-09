@@ -69,7 +69,9 @@ void main() {
 
     expect(find.text('Gala DIF 2026'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Archive'));
+    await tester.tap(find.byTooltip('More actions'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Archive'));
     await tester.pumpAndSettle();
 
     expect(find.text('Gala DIF 2026'), findsNothing);
@@ -93,7 +95,9 @@ void main() {
     await tester.pumpWidget(_wrap(const EventsListScreen(), fake));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Archive'));
+    await tester.tap(find.byTooltip('More actions'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Archive'));
     await tester.pumpAndSettle();
 
     expect(find.text('Event archived.'), findsOneWidget);
@@ -103,6 +107,30 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(fake.events.single.isArchived, isFalse);
+  });
+
+  testWidgets('the more-actions menu offers history alongside archive', (
+    tester,
+  ) async {
+    final fake = FakeEventRepository(events: [
+      Event(
+        id: 1,
+        shortCode: 'EVT1',
+        name: 'Gala DIF 2026',
+        date: DateTime(2026, 12, 1),
+        presenceMode: PresenceMode.simple,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    ]);
+
+    await tester.pumpWidget(_wrap(const EventsListScreen(), fake));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('More actions'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Archive'), findsOneWidget);
+    expect(find.text('History'), findsOneWidget);
   });
 
   testWidgets('shows a beneficiaries action for each event', (tester) async {
