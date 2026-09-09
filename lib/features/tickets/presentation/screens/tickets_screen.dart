@@ -9,8 +9,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../beneficiaries/domain/beneficiary.dart';
 import '../../../beneficiaries/presentation/providers/beneficiary_providers.dart';
+import '../../../checkin/presentation/providers/check_in_providers.dart';
 import '../../../events/domain/custom_field.dart';
 import '../../../events/domain/event.dart';
+import '../../../events/domain/presence_mode.dart';
 import '../../../events/domain/ticket_template.dart';
 import '../../../events/presentation/providers/event_providers.dart';
 import '../../data/ticket_pdf_builder.dart';
@@ -29,6 +31,7 @@ class TicketsScreen extends ConsumerWidget {
     final beneficiariesAsync = ref.watch(beneficiariesProvider(eventId));
     final ticketsAsync = ref.watch(ticketsProvider(eventId));
     final customFieldsAsync = ref.watch(customFieldsProvider(eventId));
+    final checkInsAsync = ref.watch(checkInsProvider(eventId));
 
     final event = eventAsync.valueOrNull;
     final beneficiaries = beneficiariesAsync.valueOrNull ?? const [];
@@ -148,6 +151,11 @@ class TicketsScreen extends ConsumerWidget {
                           for (final beneficiary in beneficiaries)
                             beneficiary.id: beneficiary.name,
                         };
+                        final passageCountByTicketId = <int, int>{};
+                        for (final checkIn in checkInsAsync.valueOrNull ?? const []) {
+                          passageCountByTicketId[checkIn.ticketId] =
+                              (passageCountByTicketId[checkIn.ticketId] ?? 0) + 1;
+                        }
                         return ListView.builder(
                           itemCount: tickets.length,
                           itemBuilder: (context, index) {
@@ -170,6 +178,14 @@ class TicketsScreen extends ConsumerWidget {
                                         .onSurfaceVariant,
                                   ),
                                 ),
+                                trailing: () {
+                                  final count = passageCountByTicketId[ticket.id] ?? 0;
+                                  if (count == 0) return null;
+                                  final label = event?.presenceMode == PresenceMode.multiple
+                                      ? l10n.ticketsCheckInCount(count)
+                                      : l10n.ticketsCheckedInBadge;
+                                  return Chip(label: Text(label));
+                                }(),
                                 onTap: () => context.push(
                                   '/events/$eventId/tickets/${ticket.id}',
                                 ),

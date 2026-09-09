@@ -246,6 +246,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ticketsEmptyState => 'Aucun ticket pour l\'instant.';
 
   @override
+  String get ticketsCheckedInBadge => 'Present';
+
+  @override
+  String ticketsCheckInCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count passages',
+      one: '1 passage',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get ticketsLoadError =>
       'Un probleme est survenu lors du chargement des tickets.';
 

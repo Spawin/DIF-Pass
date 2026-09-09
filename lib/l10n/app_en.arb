@@ -85,6 +85,13 @@
   "ticketsTemplateElegant": "Elegant",
   "ticketsGenerateAction": "Generate tickets",
   "ticketsEmptyState": "No tickets yet.",
+  "ticketsCheckedInBadge": "Checked in",
+  "ticketsCheckInCount": "{count, plural, =1{1 check-in} other{{count} check-ins}}",
+  "@ticketsCheckInCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "ticketsLoadError": "Something went wrong loading tickets.",
   "ticketsGenerateConfirmTitle": "Generate tickets?",
   "ticketsGenerateConfirmBody": "This will lock custom-field editing for this event. This action cannot be undone.",

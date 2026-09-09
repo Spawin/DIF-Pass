@@ -542,6 +542,18 @@ abstract class AppLocalizations {
   /// **'No tickets yet.'**
   String get ticketsEmptyState;
 
+  /// No description provided for @ticketsCheckedInBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get ticketsCheckedInBadge;
+
+  /// No description provided for @ticketsCheckInCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 check-in} other{{count} check-ins}}'**
+  String ticketsCheckInCount(int count);
+
   /// No description provided for @ticketsLoadError.
   ///
   /// In en, this message translates to:

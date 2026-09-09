@@ -239,6 +239,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ticketsEmptyState => 'No tickets yet.';
 
   @override
+  String get ticketsCheckedInBadge => 'Checked in';
+
+  @override
+  String ticketsCheckInCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count check-ins',
+      one: '1 check-in',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get ticketsLoadError => 'Something went wrong loading tickets.';
 
   @override

@@ -1,5 +1,7 @@
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/providers/beneficiary_providers.dart';
+import 'package:dif_pass/features/checkin/domain/check_in.dart';
+import 'package:dif_pass/features/checkin/presentation/providers/check_in_providers.dart';
 import 'package:dif_pass/features/events/domain/event.dart';
 import 'package:dif_pass/features/events/domain/presence_mode.dart';
 import 'package:dif_pass/features/events/domain/ticket_template.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../beneficiaries/fake_beneficiary_repository.dart';
+import '../../../checkin/fake_check_in_repository.dart';
 import '../../../events/fake_event_repository.dart';
 import '../../fake_ticket_repository.dart';
 
@@ -20,13 +23,15 @@ Widget _wrap(
   Widget child,
   FakeEventRepository fakeEvents,
   FakeBeneficiaryRepository fakeBeneficiaries,
-  FakeTicketRepository fakeTickets,
-) {
+  FakeTicketRepository fakeTickets, {
+  FakeCheckInRepository? fakeCheckIns,
+}) {
   return ProviderScope(
     overrides: [
       eventRepositoryProvider.overrideWithValue(fakeEvents),
       beneficiaryRepositoryProvider.overrideWithValue(fakeBeneficiaries),
       ticketRepositoryProvider.overrideWithValue(fakeTickets),
+      checkInRepositoryProvider.overrideWithValue(fakeCheckIns ?? FakeCheckInRepository()),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -304,5 +309,120 @@ void main() {
     expect(find.byTooltip('Export tickets'), findsOneWidget);
     final button = tester.widget<IconButton>(find.byType(IconButton));
     expect(button.onPressed, isNotNull);
+  });
+
+  testWidgets('shows a Checked in badge for a ticket with a check-in in simple mode', (
+    tester,
+  ) async {
+    final fakeBeneficiaries = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeTickets = FakeTicketRepository(
+      tickets: [
+        Ticket(
+          id: 1,
+          beneficiaryId: 1,
+          eventId: 1,
+          readableId: '0001',
+          randomPart: 'ABCD',
+          qrPayload: 'EVT1-0001-ABCD',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+      beneficiaryIdsForEvent: (eventId) => fakeBeneficiaries.beneficiaries
+          .where((b) => b.eventId == eventId)
+          .map((b) => b.id)
+          .toList(),
+    );
+    final fakeCheckIns = FakeCheckInRepository(
+      checkIns: [
+        CheckIn(id: 1, ticketId: 1, eventId: 1, scannedAt: DateTime(2026, 12, 1, 9, 0)),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketsScreen(eventId: 1),
+        _fakeEventsWithOneEvent(),
+        fakeBeneficiaries,
+        fakeTickets,
+        fakeCheckIns: fakeCheckIns,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Checked in'), findsOneWidget);
+  });
+
+  testWidgets('shows a passage count for a ticket with multiple check-ins in multiple mode', (
+    tester,
+  ) async {
+    final fakeEvents = FakeEventRepository(
+      events: [
+        Event(
+          id: 1,
+          shortCode: 'EVT1',
+          name: 'Gala DIF 2026',
+          date: DateTime(2026, 12, 1),
+          presenceMode: PresenceMode.multiple,
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeBeneficiaries = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeTickets = FakeTicketRepository(
+      tickets: [
+        Ticket(
+          id: 1,
+          beneficiaryId: 1,
+          eventId: 1,
+          readableId: '0001',
+          randomPart: 'ABCD',
+          qrPayload: 'EVT1-0001-ABCD',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+      beneficiaryIdsForEvent: (eventId) => fakeBeneficiaries.beneficiaries
+          .where((b) => b.eventId == eventId)
+          .map((b) => b.id)
+          .toList(),
+    );
+    final fakeCheckIns = FakeCheckInRepository(
+      checkIns: [
+        CheckIn(id: 1, ticketId: 1, eventId: 1, scannedAt: DateTime(2026, 12, 1, 9, 0)),
+        CheckIn(id: 2, ticketId: 1, eventId: 1, scannedAt: DateTime(2026, 12, 1, 14, 0)),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketsScreen(eventId: 1),
+        fakeEvents,
+        fakeBeneficiaries,
+        fakeTickets,
+        fakeCheckIns: fakeCheckIns,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('2 check-ins'), findsOneWidget);
   });
 }
