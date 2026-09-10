@@ -208,5 +208,24 @@ void main() {
       );
     }
     expect(ids.toSet(), hasLength(6), reason: 'sync_id values must be distinct');
+
+    final indexNames = (await db
+            .customSelect(
+              "SELECT name FROM sqlite_master WHERE type = 'index' "
+              "AND name LIKE 'idx_%_sync_id'",
+            )
+            .get())
+        .map((r) => r.data['name'] as String)
+        .toSet();
+    expect(
+      indexNames,
+      containsAll(<String>[
+        'idx_events_sync_id',
+        'idx_custom_fields_sync_id',
+        'idx_beneficiaries_sync_id',
+        'idx_tickets_sync_id',
+        'idx_check_ins_sync_id',
+      ]),
+    );
   });
 }

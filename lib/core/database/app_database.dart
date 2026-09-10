@@ -58,48 +58,48 @@ class AppDatabase extends _$AppDatabase {
   /// stable `sync_id`, then enforce uniqueness. Fresh installs get the column
   /// and indexes from the table definitions via `createAll`; this path brings
   /// upgrading installs to the same shape.
-  Future<void> _addSyncIds(Migrator m) async {
-    await m.addColumn(events, events.syncId);
-    await m.addColumn(customFields, customFields.syncId);
-    await m.addColumn(beneficiaries, beneficiaries.syncId);
-    await m.addColumn(tickets, tickets.syncId);
-    await m.addColumn(checkIns, checkIns.syncId);
+  Future<void> _addSyncIds(Migrator m) => transaction(() async {
+        await m.addColumn(events, events.syncId);
+        await m.addColumn(customFields, customFields.syncId);
+        await m.addColumn(beneficiaries, beneficiaries.syncId);
+        await m.addColumn(tickets, tickets.syncId);
+        await m.addColumn(checkIns, checkIns.syncId);
 
-    for (final row in await select(events).get()) {
-      await (update(events)..where((t) => t.id.equals(row.id)))
-          .write(EventsCompanion(syncId: Value(uuidGen.v4())));
-    }
-    for (final row in await select(customFields).get()) {
-      await (update(customFields)..where((t) => t.id.equals(row.id)))
-          .write(CustomFieldsCompanion(syncId: Value(uuidGen.v4())));
-    }
-    for (final row in await select(beneficiaries).get()) {
-      await (update(beneficiaries)..where((t) => t.id.equals(row.id)))
-          .write(BeneficiariesCompanion(syncId: Value(uuidGen.v4())));
-    }
-    for (final row in await select(tickets).get()) {
-      await (update(tickets)..where((t) => t.id.equals(row.id)))
-          .write(TicketsCompanion(syncId: Value(uuidGen.v4())));
-    }
-    for (final row in await select(checkIns).get()) {
-      await (update(checkIns)..where((t) => t.id.equals(row.id)))
-          .write(CheckInsCompanion(syncId: Value(uuidGen.v4())));
-    }
+        for (final row in await select(events).get()) {
+          await (update(events)..where((t) => t.id.equals(row.id)))
+              .write(EventsCompanion(syncId: Value(uuidGen.v4())));
+        }
+        for (final row in await select(customFields).get()) {
+          await (update(customFields)..where((t) => t.id.equals(row.id)))
+              .write(CustomFieldsCompanion(syncId: Value(uuidGen.v4())));
+        }
+        for (final row in await select(beneficiaries).get()) {
+          await (update(beneficiaries)..where((t) => t.id.equals(row.id)))
+              .write(BeneficiariesCompanion(syncId: Value(uuidGen.v4())));
+        }
+        for (final row in await select(tickets).get()) {
+          await (update(tickets)..where((t) => t.id.equals(row.id)))
+              .write(TicketsCompanion(syncId: Value(uuidGen.v4())));
+        }
+        for (final row in await select(checkIns).get()) {
+          await (update(checkIns)..where((t) => t.id.equals(row.id)))
+              .write(CheckInsCompanion(syncId: Value(uuidGen.v4())));
+        }
 
-    const indexes = <String, String>{
-      'idx_events_sync_id': 'events',
-      'idx_custom_fields_sync_id': 'custom_fields',
-      'idx_beneficiaries_sync_id': 'beneficiaries',
-      'idx_tickets_sync_id': 'tickets',
-      'idx_check_ins_sync_id': 'check_ins',
-    };
-    for (final entry in indexes.entries) {
-      await customStatement(
-        'CREATE UNIQUE INDEX IF NOT EXISTS ${entry.key} '
-        'ON ${entry.value} (sync_id)',
-      );
-    }
-  }
+        const indexes = <String, String>{
+          'idx_events_sync_id': 'events',
+          'idx_custom_fields_sync_id': 'custom_fields',
+          'idx_beneficiaries_sync_id': 'beneficiaries',
+          'idx_tickets_sync_id': 'tickets',
+          'idx_check_ins_sync_id': 'check_ins',
+        };
+        for (final entry in indexes.entries) {
+          await customStatement(
+            'CREATE UNIQUE INDEX IF NOT EXISTS ${entry.key} '
+            'ON ${entry.value} (sync_id)',
+          );
+        }
+      });
 }
 
 /// Resolves the on-disk path of the app's database file. Shared by the

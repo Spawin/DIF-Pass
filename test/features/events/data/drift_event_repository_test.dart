@@ -50,6 +50,8 @@ void main() {
     expect(fields.single.label, 'Table number');
     expect(fields.single.type, CustomFieldType.number);
     expect(fields.single.showOnTicket, isTrue);
+    expect(fields.single.syncId, isNotNull);
+    expect(fields.single.syncId, isNotEmpty);
   });
 
   test('watchActiveEvents excludes archived events and sorts by date ascending', () async {
