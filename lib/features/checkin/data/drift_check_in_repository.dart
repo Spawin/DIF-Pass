@@ -47,6 +47,7 @@ class DriftCheckInRepository implements CheckInRepository {
       ticketId: row.ticketId,
       eventId: row.eventId,
       scannedAt: row.scannedAt,
+      syncId: row.syncId,
     );
   }
 }

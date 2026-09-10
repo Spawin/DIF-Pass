@@ -56,6 +56,9 @@ void main() {
     final checkIns = await repository.watchCheckInsForEvent(eventId).first;
     expect(checkIns, hasLength(1));
     expect(checkIns.single.ticketId, ticketId);
+    final recorded = outcome as CheckInRecorded;
+    expect(recorded.checkIn.syncId, isNotNull);
+    expect(recorded.checkIn.syncId, isNotEmpty);
   });
 
   test('simple mode: second scan of the same ticket is blocked', () async {

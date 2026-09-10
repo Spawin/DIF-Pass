@@ -31,6 +31,8 @@ void main() {
     expect(event.name, 'Gala DIF 2026');
     expect(event.presenceMode, PresenceMode.simple);
     expect(event.isArchived, isFalse);
+    expect(event.syncId, isNotNull);
+    expect(event.syncId, isNotEmpty);
   });
 
   test('createEvent also creates the given custom fields', () async {

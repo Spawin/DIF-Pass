@@ -43,6 +43,8 @@ void main() {
     final beneficiary = await repository.getBeneficiary(id);
     expect(beneficiary.name, 'Jane Doe');
     expect(beneficiary.customFieldValues, {customFieldId: 'Table 5'});
+    expect(beneficiary.syncId, isNotNull);
+    expect(beneficiary.syncId, isNotEmpty);
   });
 
   test('watchBeneficiaries only returns beneficiaries for the given event', () async {

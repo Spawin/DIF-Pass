@@ -89,6 +89,8 @@ void main() {
 
     final fetched = await repository.getTicket(ticket.id);
     expect(fetched.readableId, ticket.readableId);
+    expect(fetched.syncId, isNotNull);
+    expect(fetched.syncId, isNotEmpty);
   });
 
   test('findTicketForCheckIn finds a ticket by its full QR payload', () async {

@@ -5,6 +5,7 @@ class Beneficiary {
     required this.name,
     required this.customFieldValues,
     required this.createdAt,
+    this.syncId,
   });
 
   final int id;
@@ -12,4 +13,7 @@ class Beneficiary {
   final String name;
   final Map<int, String> customFieldValues;
   final DateTime createdAt;
+
+  // Stable cross-device id, see check_in.dart
+  final String? syncId;
 }

@@ -102,6 +102,7 @@ class DriftTicketRepository implements TicketRepository {
       randomPart: row.randomPart,
       qrPayload: row.qrPayload,
       createdAt: row.createdAt,
+      syncId: row.syncId,
     );
   }
 }

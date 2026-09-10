@@ -110,6 +110,7 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
               name: b.name,
               customFieldValues: Map.unmodifiable(values[b.id] ?? const {}),
               createdAt: b.createdAt,
+              syncId: b.syncId,
             ))
         .toList()
       ..sort((a, b) => a.name.compareTo(b.name));

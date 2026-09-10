@@ -8,6 +8,7 @@ class CustomField {
     required this.type,
     required this.sortOrder,
     required this.showOnTicket,
+    this.syncId,
   });
 
   final int id;
@@ -16,6 +17,9 @@ class CustomField {
   final CustomFieldType type;
   final int sortOrder;
   final bool showOnTicket;
+
+  // Stable cross-device id, see check_in.dart
+  final String? syncId;
 }
 
 class NewCustomField {

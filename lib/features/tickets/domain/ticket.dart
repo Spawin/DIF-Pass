@@ -7,6 +7,7 @@ class Ticket {
     required this.randomPart,
     required this.qrPayload,
     required this.createdAt,
+    this.syncId,
   });
 
   final int id;
@@ -16,4 +17,7 @@ class Ticket {
   final String randomPart;
   final String qrPayload;
   final DateTime createdAt;
+
+  // Stable cross-device id, see check_in.dart
+  final String? syncId;
 }

@@ -178,6 +178,7 @@ class DriftEventRepository implements EventRepository {
       ticketTemplate: TicketTemplate.values.byName(row.ticketTemplate),
       archivedAt: row.archivedAt,
       createdAt: row.createdAt,
+      syncId: row.syncId,
     );
   }
 
@@ -189,6 +190,7 @@ class DriftEventRepository implements EventRepository {
       type: CustomFieldType.values.byName(row.fieldType),
       sortOrder: row.sortOrder,
       showOnTicket: row.showOnTicket,
+      syncId: row.syncId,
     );
   }
 }
