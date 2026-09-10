@@ -88,9 +88,12 @@ backfill (see below). Both paths converge on identical schema.
 ### Domain classes
 
 `Event`, `CustomField`, `Beneficiary`, `Ticket`, `CheckIn` each gain a
-non-nullable `String syncId` field. Mappers read `row.syncId!` with a
-`ponytail:` comment noting the schema column is nullable for migration
-reasons only.
+`String? syncId` field, matching the nullable schema column exactly.
+Mappers read `row.syncId` directly (no `!`). The field is optional in each
+constructor, so the ~95 existing test construction sites are untouched.
+A future merge reads domain objects only from repositories, where the
+column is always populated, and asserts non-null (`event.syncId!`) at its
+own point of use.
 
 `NewBeneficiary` and any other "input" value objects do **not** carry
 `syncId` - it is assigned by the database on insert, never supplied by the
@@ -167,11 +170,12 @@ getting a `syncId` they ignore).
 
 ## Risks and notes
 
-- **Nullable column vs. invariant.** The schema column is nullable but the
-  domain field is not. This is a deliberate, documented gap: `addColumn`
-  leaves no other option for a UUID column on a populated table without a
-  full table rebuild, which is far more invasive. The unique index plus
-  `clientDefault` make a null in practice unreachable.
+- **Nullable everywhere for migration reasons.** Both the schema column and
+  the domain field are nullable: `addColumn` leaves no other option for a
+  UUID column on a populated table without a full table rebuild, which is
+  far more invasive. The unique index plus `clientDefault` make a null in
+  practice unreachable for any row the app writes or migrates. A future
+  merge asserts non-null at its point of use.
 - **Backfill cost.** Real installs hold at most a few thousand rows across
   all tables. A per-row UUID write inside one migration transaction is
   fine; no batching needed.
