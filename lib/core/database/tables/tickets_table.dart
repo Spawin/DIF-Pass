@@ -1,9 +1,11 @@
 import 'package:drift/drift.dart';
 
+import '../uuid.dart';
 import 'beneficiaries_table.dart';
 import 'events_table.dart';
 
 @DataClassName('TicketEntity')
+@TableIndex(name: 'idx_tickets_sync_id', columns: {#syncId}, unique: true)
 class Tickets extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get beneficiaryId =>
@@ -14,6 +16,15 @@ class Tickets extends Table {
   TextColumn get randomPart => text()();
   TextColumn get qrPayload => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  // Stable cross-device identifier for a future multi-device merge.
+  // ponytail: nullable in the schema ONLY so the v2 -> v3 migration can add
+  // it to already-populated tables (ALTER TABLE ADD COLUMN cannot take a
+  // non-constant default). clientDefault fills every new row; the migration
+  // backfills old rows; the unique index rejects a second null. Treated as
+  // always-present by the app. Spec: docs/superpowers/specs/2026-09-10-lot-d
+  // -sync-ready-identifiers-design.md
+  TextColumn get syncId => text().nullable().clientDefault(() => uuidGen.v4())();
 
   @override
   List<Set<Column>> get uniqueKeys => [

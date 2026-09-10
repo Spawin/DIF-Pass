@@ -61,7 +61,7 @@ class FileBackupRepository implements BackupRepository {
       // instantiating AppDatabase() here, which would create and leak a
       // second live database instance (drift warns about this) just to
       // read a constant int.
-      const currentSchemaVersion = 2;
+      const currentSchemaVersion = 3;
       if (foundTableCount != _requiredTableNames.length ||
           db.userVersion <= 0 ||
           db.userVersion > currentSchemaVersion) {

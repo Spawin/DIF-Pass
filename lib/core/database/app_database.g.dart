@@ -116,6 +116,16 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
+  @override
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => uuidGen.v4(),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -128,6 +138,7 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
     ticketTemplate,
     archivedAt,
     createdAt,
+    syncId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -212,6 +223,12 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
     return context;
   }
 
@@ -261,6 +278,10 @@ class $EventsTable extends Events with TableInfo<$EventsTable, EventEntity> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      ),
     );
   }
 
@@ -281,6 +302,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
   final String ticketTemplate;
   final DateTime? archivedAt;
   final DateTime createdAt;
+  final String? syncId;
   const EventEntity({
     required this.id,
     required this.shortCode,
@@ -292,6 +314,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     required this.ticketTemplate,
     this.archivedAt,
     required this.createdAt,
+    this.syncId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -312,6 +335,9 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
       map['archived_at'] = Variable<DateTime>(archivedAt);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || syncId != null) {
+      map['sync_id'] = Variable<String>(syncId);
+    }
     return map;
   }
 
@@ -331,6 +357,9 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
           ? const Value.absent()
           : Value(archivedAt),
       createdAt: Value(createdAt),
+      syncId: syncId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncId),
     );
   }
 
@@ -350,6 +379,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
       ticketTemplate: serializer.fromJson<String>(json['ticketTemplate']),
       archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      syncId: serializer.fromJson<String?>(json['syncId']),
     );
   }
   @override
@@ -366,6 +396,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
       'ticketTemplate': serializer.toJson<String>(ticketTemplate),
       'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'syncId': serializer.toJson<String?>(syncId),
     };
   }
 
@@ -380,6 +411,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     String? ticketTemplate,
     Value<DateTime?> archivedAt = const Value.absent(),
     DateTime? createdAt,
+    Value<String?> syncId = const Value.absent(),
   }) => EventEntity(
     id: id ?? this.id,
     shortCode: shortCode ?? this.shortCode,
@@ -391,6 +423,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     ticketTemplate: ticketTemplate ?? this.ticketTemplate,
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     createdAt: createdAt ?? this.createdAt,
+    syncId: syncId.present ? syncId.value : this.syncId,
   );
   EventEntity copyWithCompanion(EventsCompanion data) {
     return EventEntity(
@@ -410,6 +443,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
           ? data.archivedAt.value
           : this.archivedAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
     );
   }
 
@@ -425,7 +459,8 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
           ..write('presenceMode: $presenceMode, ')
           ..write('ticketTemplate: $ticketTemplate, ')
           ..write('archivedAt: $archivedAt, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
@@ -442,6 +477,7 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
     ticketTemplate,
     archivedAt,
     createdAt,
+    syncId,
   );
   @override
   bool operator ==(Object other) =>
@@ -456,7 +492,8 @@ class EventEntity extends DataClass implements Insertable<EventEntity> {
           other.presenceMode == this.presenceMode &&
           other.ticketTemplate == this.ticketTemplate &&
           other.archivedAt == this.archivedAt &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.syncId == this.syncId);
 }
 
 class EventsCompanion extends UpdateCompanion<EventEntity> {
@@ -470,6 +507,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
   final Value<String> ticketTemplate;
   final Value<DateTime?> archivedAt;
   final Value<DateTime> createdAt;
+  final Value<String?> syncId;
   const EventsCompanion({
     this.id = const Value.absent(),
     this.shortCode = const Value.absent(),
@@ -481,6 +519,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     this.ticketTemplate = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   });
   EventsCompanion.insert({
     this.id = const Value.absent(),
@@ -493,6 +532,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     this.ticketTemplate = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   }) : shortCode = Value(shortCode),
        name = Value(name),
        date = Value(date),
@@ -508,6 +548,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     Expression<String>? ticketTemplate,
     Expression<DateTime>? archivedAt,
     Expression<DateTime>? createdAt,
+    Expression<String>? syncId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -520,6 +561,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
       if (ticketTemplate != null) 'ticket_template': ticketTemplate,
       if (archivedAt != null) 'archived_at': archivedAt,
       if (createdAt != null) 'created_at': createdAt,
+      if (syncId != null) 'sync_id': syncId,
     });
   }
 
@@ -534,6 +576,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     Value<String>? ticketTemplate,
     Value<DateTime?>? archivedAt,
     Value<DateTime>? createdAt,
+    Value<String?>? syncId,
   }) {
     return EventsCompanion(
       id: id ?? this.id,
@@ -546,6 +589,7 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
       ticketTemplate: ticketTemplate ?? this.ticketTemplate,
       archivedAt: archivedAt ?? this.archivedAt,
       createdAt: createdAt ?? this.createdAt,
+      syncId: syncId ?? this.syncId,
     );
   }
 
@@ -582,6 +626,9 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
     return map;
   }
 
@@ -597,7 +644,8 @@ class EventsCompanion extends UpdateCompanion<EventEntity> {
           ..write('presenceMode: $presenceMode, ')
           ..write('ticketTemplate: $ticketTemplate, ')
           ..write('archivedAt: $archivedAt, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
@@ -682,6 +730,16 @@ class $CustomFieldsTable extends CustomFields
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
+  @override
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => uuidGen.v4(),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -690,6 +748,7 @@ class $CustomFieldsTable extends CustomFields
     fieldType,
     sortOrder,
     showOnTicket,
+    syncId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -747,6 +806,12 @@ class $CustomFieldsTable extends CustomFields
         ),
       );
     }
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
     return context;
   }
 
@@ -780,6 +845,10 @@ class $CustomFieldsTable extends CustomFields
         DriftSqlType.bool,
         data['${effectivePrefix}show_on_ticket'],
       )!,
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      ),
     );
   }
 
@@ -797,6 +866,7 @@ class CustomFieldEntity extends DataClass
   final String fieldType;
   final int sortOrder;
   final bool showOnTicket;
+  final String? syncId;
   const CustomFieldEntity({
     required this.id,
     required this.eventId,
@@ -804,6 +874,7 @@ class CustomFieldEntity extends DataClass
     required this.fieldType,
     required this.sortOrder,
     required this.showOnTicket,
+    this.syncId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -814,6 +885,9 @@ class CustomFieldEntity extends DataClass
     map['field_type'] = Variable<String>(fieldType);
     map['sort_order'] = Variable<int>(sortOrder);
     map['show_on_ticket'] = Variable<bool>(showOnTicket);
+    if (!nullToAbsent || syncId != null) {
+      map['sync_id'] = Variable<String>(syncId);
+    }
     return map;
   }
 
@@ -825,6 +899,9 @@ class CustomFieldEntity extends DataClass
       fieldType: Value(fieldType),
       sortOrder: Value(sortOrder),
       showOnTicket: Value(showOnTicket),
+      syncId: syncId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncId),
     );
   }
 
@@ -840,6 +917,7 @@ class CustomFieldEntity extends DataClass
       fieldType: serializer.fromJson<String>(json['fieldType']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       showOnTicket: serializer.fromJson<bool>(json['showOnTicket']),
+      syncId: serializer.fromJson<String?>(json['syncId']),
     );
   }
   @override
@@ -852,6 +930,7 @@ class CustomFieldEntity extends DataClass
       'fieldType': serializer.toJson<String>(fieldType),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'showOnTicket': serializer.toJson<bool>(showOnTicket),
+      'syncId': serializer.toJson<String?>(syncId),
     };
   }
 
@@ -862,6 +941,7 @@ class CustomFieldEntity extends DataClass
     String? fieldType,
     int? sortOrder,
     bool? showOnTicket,
+    Value<String?> syncId = const Value.absent(),
   }) => CustomFieldEntity(
     id: id ?? this.id,
     eventId: eventId ?? this.eventId,
@@ -869,6 +949,7 @@ class CustomFieldEntity extends DataClass
     fieldType: fieldType ?? this.fieldType,
     sortOrder: sortOrder ?? this.sortOrder,
     showOnTicket: showOnTicket ?? this.showOnTicket,
+    syncId: syncId.present ? syncId.value : this.syncId,
   );
   CustomFieldEntity copyWithCompanion(CustomFieldsCompanion data) {
     return CustomFieldEntity(
@@ -880,6 +961,7 @@ class CustomFieldEntity extends DataClass
       showOnTicket: data.showOnTicket.present
           ? data.showOnTicket.value
           : this.showOnTicket,
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
     );
   }
 
@@ -891,14 +973,22 @@ class CustomFieldEntity extends DataClass
           ..write('label: $label, ')
           ..write('fieldType: $fieldType, ')
           ..write('sortOrder: $sortOrder, ')
-          ..write('showOnTicket: $showOnTicket')
+          ..write('showOnTicket: $showOnTicket, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, eventId, label, fieldType, sortOrder, showOnTicket);
+  int get hashCode => Object.hash(
+    id,
+    eventId,
+    label,
+    fieldType,
+    sortOrder,
+    showOnTicket,
+    syncId,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -908,7 +998,8 @@ class CustomFieldEntity extends DataClass
           other.label == this.label &&
           other.fieldType == this.fieldType &&
           other.sortOrder == this.sortOrder &&
-          other.showOnTicket == this.showOnTicket);
+          other.showOnTicket == this.showOnTicket &&
+          other.syncId == this.syncId);
 }
 
 class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
@@ -918,6 +1009,7 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
   final Value<String> fieldType;
   final Value<int> sortOrder;
   final Value<bool> showOnTicket;
+  final Value<String?> syncId;
   const CustomFieldsCompanion({
     this.id = const Value.absent(),
     this.eventId = const Value.absent(),
@@ -925,6 +1017,7 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
     this.fieldType = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.showOnTicket = const Value.absent(),
+    this.syncId = const Value.absent(),
   });
   CustomFieldsCompanion.insert({
     this.id = const Value.absent(),
@@ -933,6 +1026,7 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
     required String fieldType,
     required int sortOrder,
     this.showOnTicket = const Value.absent(),
+    this.syncId = const Value.absent(),
   }) : eventId = Value(eventId),
        label = Value(label),
        fieldType = Value(fieldType),
@@ -944,6 +1038,7 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
     Expression<String>? fieldType,
     Expression<int>? sortOrder,
     Expression<bool>? showOnTicket,
+    Expression<String>? syncId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -952,6 +1047,7 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
       if (fieldType != null) 'field_type': fieldType,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (showOnTicket != null) 'show_on_ticket': showOnTicket,
+      if (syncId != null) 'sync_id': syncId,
     });
   }
 
@@ -962,6 +1058,7 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
     Value<String>? fieldType,
     Value<int>? sortOrder,
     Value<bool>? showOnTicket,
+    Value<String?>? syncId,
   }) {
     return CustomFieldsCompanion(
       id: id ?? this.id,
@@ -970,6 +1067,7 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
       fieldType: fieldType ?? this.fieldType,
       sortOrder: sortOrder ?? this.sortOrder,
       showOnTicket: showOnTicket ?? this.showOnTicket,
+      syncId: syncId ?? this.syncId,
     );
   }
 
@@ -994,6 +1092,9 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
     if (showOnTicket.present) {
       map['show_on_ticket'] = Variable<bool>(showOnTicket.value);
     }
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
     return map;
   }
 
@@ -1005,7 +1106,8 @@ class CustomFieldsCompanion extends UpdateCompanion<CustomFieldEntity> {
           ..write('label: $label, ')
           ..write('fieldType: $fieldType, ')
           ..write('sortOrder: $sortOrder, ')
-          ..write('showOnTicket: $showOnTicket')
+          ..write('showOnTicket: $showOnTicket, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
@@ -1065,8 +1167,18 @@ class $BeneficiariesTable extends Beneficiaries
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
   @override
-  List<GeneratedColumn> get $columns => [id, eventId, name, createdAt];
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => uuidGen.v4(),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, eventId, name, createdAt, syncId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1104,6 +1216,12 @@ class $BeneficiariesTable extends Beneficiaries
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
     return context;
   }
 
@@ -1129,6 +1247,10 @@ class $BeneficiariesTable extends Beneficiaries
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      ),
     );
   }
 
@@ -1144,11 +1266,13 @@ class BeneficiaryEntity extends DataClass
   final int eventId;
   final String name;
   final DateTime createdAt;
+  final String? syncId;
   const BeneficiaryEntity({
     required this.id,
     required this.eventId,
     required this.name,
     required this.createdAt,
+    this.syncId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1157,6 +1281,9 @@ class BeneficiaryEntity extends DataClass
     map['event_id'] = Variable<int>(eventId);
     map['name'] = Variable<String>(name);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || syncId != null) {
+      map['sync_id'] = Variable<String>(syncId);
+    }
     return map;
   }
 
@@ -1166,6 +1293,9 @@ class BeneficiaryEntity extends DataClass
       eventId: Value(eventId),
       name: Value(name),
       createdAt: Value(createdAt),
+      syncId: syncId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncId),
     );
   }
 
@@ -1179,6 +1309,7 @@ class BeneficiaryEntity extends DataClass
       eventId: serializer.fromJson<int>(json['eventId']),
       name: serializer.fromJson<String>(json['name']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      syncId: serializer.fromJson<String?>(json['syncId']),
     );
   }
   @override
@@ -1189,6 +1320,7 @@ class BeneficiaryEntity extends DataClass
       'eventId': serializer.toJson<int>(eventId),
       'name': serializer.toJson<String>(name),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'syncId': serializer.toJson<String?>(syncId),
     };
   }
 
@@ -1197,11 +1329,13 @@ class BeneficiaryEntity extends DataClass
     int? eventId,
     String? name,
     DateTime? createdAt,
+    Value<String?> syncId = const Value.absent(),
   }) => BeneficiaryEntity(
     id: id ?? this.id,
     eventId: eventId ?? this.eventId,
     name: name ?? this.name,
     createdAt: createdAt ?? this.createdAt,
+    syncId: syncId.present ? syncId.value : this.syncId,
   );
   BeneficiaryEntity copyWithCompanion(BeneficiariesCompanion data) {
     return BeneficiaryEntity(
@@ -1209,6 +1343,7 @@ class BeneficiaryEntity extends DataClass
       eventId: data.eventId.present ? data.eventId.value : this.eventId,
       name: data.name.present ? data.name.value : this.name,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
     );
   }
 
@@ -1218,13 +1353,14 @@ class BeneficiaryEntity extends DataClass
           ..write('id: $id, ')
           ..write('eventId: $eventId, ')
           ..write('name: $name, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, eventId, name, createdAt);
+  int get hashCode => Object.hash(id, eventId, name, createdAt, syncId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1232,7 +1368,8 @@ class BeneficiaryEntity extends DataClass
           other.id == this.id &&
           other.eventId == this.eventId &&
           other.name == this.name &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.syncId == this.syncId);
 }
 
 class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
@@ -1240,17 +1377,20 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
   final Value<int> eventId;
   final Value<String> name;
   final Value<DateTime> createdAt;
+  final Value<String?> syncId;
   const BeneficiariesCompanion({
     this.id = const Value.absent(),
     this.eventId = const Value.absent(),
     this.name = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   });
   BeneficiariesCompanion.insert({
     this.id = const Value.absent(),
     required int eventId,
     required String name,
     this.createdAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   }) : eventId = Value(eventId),
        name = Value(name);
   static Insertable<BeneficiaryEntity> custom({
@@ -1258,12 +1398,14 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
     Expression<int>? eventId,
     Expression<String>? name,
     Expression<DateTime>? createdAt,
+    Expression<String>? syncId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (eventId != null) 'event_id': eventId,
       if (name != null) 'name': name,
       if (createdAt != null) 'created_at': createdAt,
+      if (syncId != null) 'sync_id': syncId,
     });
   }
 
@@ -1272,12 +1414,14 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
     Value<int>? eventId,
     Value<String>? name,
     Value<DateTime>? createdAt,
+    Value<String?>? syncId,
   }) {
     return BeneficiariesCompanion(
       id: id ?? this.id,
       eventId: eventId ?? this.eventId,
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
+      syncId: syncId ?? this.syncId,
     );
   }
 
@@ -1296,6 +1440,9 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
     return map;
   }
 
@@ -1305,7 +1452,8 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
           ..write('id: $id, ')
           ..write('eventId: $eventId, ')
           ..write('name: $name, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
@@ -1724,6 +1872,16 @@ class $TicketsTable extends Tickets
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
+  @override
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => uuidGen.v4(),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1733,6 +1891,7 @@ class $TicketsTable extends Tickets
     randomPart,
     qrPayload,
     createdAt,
+    syncId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1798,6 +1957,12 @@ class $TicketsTable extends Tickets
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
     return context;
   }
 
@@ -1839,6 +2004,10 @@ class $TicketsTable extends Tickets
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      ),
     );
   }
 
@@ -1856,6 +2025,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
   final String randomPart;
   final String qrPayload;
   final DateTime createdAt;
+  final String? syncId;
   const TicketEntity({
     required this.id,
     required this.beneficiaryId,
@@ -1864,6 +2034,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
     required this.randomPart,
     required this.qrPayload,
     required this.createdAt,
+    this.syncId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1875,6 +2046,9 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
     map['random_part'] = Variable<String>(randomPart);
     map['qr_payload'] = Variable<String>(qrPayload);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || syncId != null) {
+      map['sync_id'] = Variable<String>(syncId);
+    }
     return map;
   }
 
@@ -1887,6 +2061,9 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
       randomPart: Value(randomPart),
       qrPayload: Value(qrPayload),
       createdAt: Value(createdAt),
+      syncId: syncId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncId),
     );
   }
 
@@ -1903,6 +2080,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
       randomPart: serializer.fromJson<String>(json['randomPart']),
       qrPayload: serializer.fromJson<String>(json['qrPayload']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      syncId: serializer.fromJson<String?>(json['syncId']),
     );
   }
   @override
@@ -1916,6 +2094,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
       'randomPart': serializer.toJson<String>(randomPart),
       'qrPayload': serializer.toJson<String>(qrPayload),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'syncId': serializer.toJson<String?>(syncId),
     };
   }
 
@@ -1927,6 +2106,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
     String? randomPart,
     String? qrPayload,
     DateTime? createdAt,
+    Value<String?> syncId = const Value.absent(),
   }) => TicketEntity(
     id: id ?? this.id,
     beneficiaryId: beneficiaryId ?? this.beneficiaryId,
@@ -1935,6 +2115,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
     randomPart: randomPart ?? this.randomPart,
     qrPayload: qrPayload ?? this.qrPayload,
     createdAt: createdAt ?? this.createdAt,
+    syncId: syncId.present ? syncId.value : this.syncId,
   );
   TicketEntity copyWithCompanion(TicketsCompanion data) {
     return TicketEntity(
@@ -1951,6 +2132,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
           : this.randomPart,
       qrPayload: data.qrPayload.present ? data.qrPayload.value : this.qrPayload,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
     );
   }
 
@@ -1963,7 +2145,8 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
           ..write('readableId: $readableId, ')
           ..write('randomPart: $randomPart, ')
           ..write('qrPayload: $qrPayload, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
@@ -1977,6 +2160,7 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
     randomPart,
     qrPayload,
     createdAt,
+    syncId,
   );
   @override
   bool operator ==(Object other) =>
@@ -1988,7 +2172,8 @@ class TicketEntity extends DataClass implements Insertable<TicketEntity> {
           other.readableId == this.readableId &&
           other.randomPart == this.randomPart &&
           other.qrPayload == this.qrPayload &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.syncId == this.syncId);
 }
 
 class TicketsCompanion extends UpdateCompanion<TicketEntity> {
@@ -1999,6 +2184,7 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
   final Value<String> randomPart;
   final Value<String> qrPayload;
   final Value<DateTime> createdAt;
+  final Value<String?> syncId;
   const TicketsCompanion({
     this.id = const Value.absent(),
     this.beneficiaryId = const Value.absent(),
@@ -2007,6 +2193,7 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
     this.randomPart = const Value.absent(),
     this.qrPayload = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   });
   TicketsCompanion.insert({
     this.id = const Value.absent(),
@@ -2016,6 +2203,7 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
     required String randomPart,
     required String qrPayload,
     this.createdAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   }) : beneficiaryId = Value(beneficiaryId),
        eventId = Value(eventId),
        readableId = Value(readableId),
@@ -2029,6 +2217,7 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
     Expression<String>? randomPart,
     Expression<String>? qrPayload,
     Expression<DateTime>? createdAt,
+    Expression<String>? syncId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2038,6 +2227,7 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
       if (randomPart != null) 'random_part': randomPart,
       if (qrPayload != null) 'qr_payload': qrPayload,
       if (createdAt != null) 'created_at': createdAt,
+      if (syncId != null) 'sync_id': syncId,
     });
   }
 
@@ -2049,6 +2239,7 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
     Value<String>? randomPart,
     Value<String>? qrPayload,
     Value<DateTime>? createdAt,
+    Value<String?>? syncId,
   }) {
     return TicketsCompanion(
       id: id ?? this.id,
@@ -2058,6 +2249,7 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
       randomPart: randomPart ?? this.randomPart,
       qrPayload: qrPayload ?? this.qrPayload,
       createdAt: createdAt ?? this.createdAt,
+      syncId: syncId ?? this.syncId,
     );
   }
 
@@ -2085,6 +2277,9 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
     return map;
   }
 
@@ -2097,7 +2292,8 @@ class TicketsCompanion extends UpdateCompanion<TicketEntity> {
           ..write('readableId: $readableId, ')
           ..write('randomPart: $randomPart, ')
           ..write('qrPayload: $qrPayload, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
@@ -2162,8 +2358,24 @@ class $CheckInsTable extends CheckIns
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
   @override
-  List<GeneratedColumn> get $columns => [id, ticketId, eventId, scannedAt];
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => uuidGen.v4(),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    ticketId,
+    eventId,
+    scannedAt,
+    syncId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2201,6 +2413,12 @@ class $CheckInsTable extends CheckIns
         scannedAt.isAcceptableOrUnknown(data['scanned_at']!, _scannedAtMeta),
       );
     }
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
     return context;
   }
 
@@ -2226,6 +2444,10 @@ class $CheckInsTable extends CheckIns
         DriftSqlType.dateTime,
         data['${effectivePrefix}scanned_at'],
       )!,
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      ),
     );
   }
 
@@ -2240,11 +2462,13 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
   final int ticketId;
   final int eventId;
   final DateTime scannedAt;
+  final String? syncId;
   const CheckInEntity({
     required this.id,
     required this.ticketId,
     required this.eventId,
     required this.scannedAt,
+    this.syncId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2253,6 +2477,9 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
     map['ticket_id'] = Variable<int>(ticketId);
     map['event_id'] = Variable<int>(eventId);
     map['scanned_at'] = Variable<DateTime>(scannedAt);
+    if (!nullToAbsent || syncId != null) {
+      map['sync_id'] = Variable<String>(syncId);
+    }
     return map;
   }
 
@@ -2262,6 +2489,9 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
       ticketId: Value(ticketId),
       eventId: Value(eventId),
       scannedAt: Value(scannedAt),
+      syncId: syncId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncId),
     );
   }
 
@@ -2275,6 +2505,7 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
       ticketId: serializer.fromJson<int>(json['ticketId']),
       eventId: serializer.fromJson<int>(json['eventId']),
       scannedAt: serializer.fromJson<DateTime>(json['scannedAt']),
+      syncId: serializer.fromJson<String?>(json['syncId']),
     );
   }
   @override
@@ -2285,6 +2516,7 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
       'ticketId': serializer.toJson<int>(ticketId),
       'eventId': serializer.toJson<int>(eventId),
       'scannedAt': serializer.toJson<DateTime>(scannedAt),
+      'syncId': serializer.toJson<String?>(syncId),
     };
   }
 
@@ -2293,11 +2525,13 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
     int? ticketId,
     int? eventId,
     DateTime? scannedAt,
+    Value<String?> syncId = const Value.absent(),
   }) => CheckInEntity(
     id: id ?? this.id,
     ticketId: ticketId ?? this.ticketId,
     eventId: eventId ?? this.eventId,
     scannedAt: scannedAt ?? this.scannedAt,
+    syncId: syncId.present ? syncId.value : this.syncId,
   );
   CheckInEntity copyWithCompanion(CheckInsCompanion data) {
     return CheckInEntity(
@@ -2305,6 +2539,7 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
       ticketId: data.ticketId.present ? data.ticketId.value : this.ticketId,
       eventId: data.eventId.present ? data.eventId.value : this.eventId,
       scannedAt: data.scannedAt.present ? data.scannedAt.value : this.scannedAt,
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
     );
   }
 
@@ -2314,13 +2549,14 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
           ..write('id: $id, ')
           ..write('ticketId: $ticketId, ')
           ..write('eventId: $eventId, ')
-          ..write('scannedAt: $scannedAt')
+          ..write('scannedAt: $scannedAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, ticketId, eventId, scannedAt);
+  int get hashCode => Object.hash(id, ticketId, eventId, scannedAt, syncId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2328,7 +2564,8 @@ class CheckInEntity extends DataClass implements Insertable<CheckInEntity> {
           other.id == this.id &&
           other.ticketId == this.ticketId &&
           other.eventId == this.eventId &&
-          other.scannedAt == this.scannedAt);
+          other.scannedAt == this.scannedAt &&
+          other.syncId == this.syncId);
 }
 
 class CheckInsCompanion extends UpdateCompanion<CheckInEntity> {
@@ -2336,17 +2573,20 @@ class CheckInsCompanion extends UpdateCompanion<CheckInEntity> {
   final Value<int> ticketId;
   final Value<int> eventId;
   final Value<DateTime> scannedAt;
+  final Value<String?> syncId;
   const CheckInsCompanion({
     this.id = const Value.absent(),
     this.ticketId = const Value.absent(),
     this.eventId = const Value.absent(),
     this.scannedAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   });
   CheckInsCompanion.insert({
     this.id = const Value.absent(),
     required int ticketId,
     required int eventId,
     this.scannedAt = const Value.absent(),
+    this.syncId = const Value.absent(),
   }) : ticketId = Value(ticketId),
        eventId = Value(eventId);
   static Insertable<CheckInEntity> custom({
@@ -2354,12 +2594,14 @@ class CheckInsCompanion extends UpdateCompanion<CheckInEntity> {
     Expression<int>? ticketId,
     Expression<int>? eventId,
     Expression<DateTime>? scannedAt,
+    Expression<String>? syncId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ticketId != null) 'ticket_id': ticketId,
       if (eventId != null) 'event_id': eventId,
       if (scannedAt != null) 'scanned_at': scannedAt,
+      if (syncId != null) 'sync_id': syncId,
     });
   }
 
@@ -2368,12 +2610,14 @@ class CheckInsCompanion extends UpdateCompanion<CheckInEntity> {
     Value<int>? ticketId,
     Value<int>? eventId,
     Value<DateTime>? scannedAt,
+    Value<String?>? syncId,
   }) {
     return CheckInsCompanion(
       id: id ?? this.id,
       ticketId: ticketId ?? this.ticketId,
       eventId: eventId ?? this.eventId,
       scannedAt: scannedAt ?? this.scannedAt,
+      syncId: syncId ?? this.syncId,
     );
   }
 
@@ -2392,6 +2636,9 @@ class CheckInsCompanion extends UpdateCompanion<CheckInEntity> {
     if (scannedAt.present) {
       map['scanned_at'] = Variable<DateTime>(scannedAt.value);
     }
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
     return map;
   }
 
@@ -2401,7 +2648,8 @@ class CheckInsCompanion extends UpdateCompanion<CheckInEntity> {
           ..write('id: $id, ')
           ..write('ticketId: $ticketId, ')
           ..write('eventId: $eventId, ')
-          ..write('scannedAt: $scannedAt')
+          ..write('scannedAt: $scannedAt, ')
+          ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
@@ -2417,6 +2665,26 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $BeneficiaryValuesTable(this);
   late final $TicketsTable tickets = $TicketsTable(this);
   late final $CheckInsTable checkIns = $CheckInsTable(this);
+  late final Index idxEventsSyncId = Index(
+    'idx_events_sync_id',
+    'CREATE UNIQUE INDEX idx_events_sync_id ON events (sync_id)',
+  );
+  late final Index idxCustomFieldsSyncId = Index(
+    'idx_custom_fields_sync_id',
+    'CREATE UNIQUE INDEX idx_custom_fields_sync_id ON custom_fields (sync_id)',
+  );
+  late final Index idxBeneficiariesSyncId = Index(
+    'idx_beneficiaries_sync_id',
+    'CREATE UNIQUE INDEX idx_beneficiaries_sync_id ON beneficiaries (sync_id)',
+  );
+  late final Index idxTicketsSyncId = Index(
+    'idx_tickets_sync_id',
+    'CREATE UNIQUE INDEX idx_tickets_sync_id ON tickets (sync_id)',
+  );
+  late final Index idxCheckInsSyncId = Index(
+    'idx_check_ins_sync_id',
+    'CREATE UNIQUE INDEX idx_check_ins_sync_id ON check_ins (sync_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2428,6 +2696,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     beneficiaryValues,
     tickets,
     checkIns,
+    idxEventsSyncId,
+    idxCustomFieldsSyncId,
+    idxBeneficiariesSyncId,
+    idxTicketsSyncId,
+    idxCheckInsSyncId,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2502,6 +2775,7 @@ typedef $$EventsTableCreateCompanionBuilder =
       Value<String> ticketTemplate,
       Value<DateTime?> archivedAt,
       Value<DateTime> createdAt,
+      Value<String?> syncId,
     });
 typedef $$EventsTableUpdateCompanionBuilder =
     EventsCompanion Function({
@@ -2515,6 +2789,7 @@ typedef $$EventsTableUpdateCompanionBuilder =
       Value<String> ticketTemplate,
       Value<DateTime?> archivedAt,
       Value<DateTime> createdAt,
+      Value<String?> syncId,
     });
 
 final class $$EventsTableReferences
@@ -2650,6 +2925,11 @@ class $$EventsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2812,6 +3092,11 @@ class $$EventsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$EventsTableAnnotationComposer
@@ -2858,6 +3143,9 @@ class $$EventsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
 
   Expression<T> customFieldsRefs<T extends Object>(
     Expression<T> Function($$CustomFieldsTableAnnotationComposer a) f,
@@ -3003,6 +3291,7 @@ class $$EventsTableTableManager
                 Value<String> ticketTemplate = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => EventsCompanion(
                 id: id,
                 shortCode: shortCode,
@@ -3014,6 +3303,7 @@ class $$EventsTableTableManager
                 ticketTemplate: ticketTemplate,
                 archivedAt: archivedAt,
                 createdAt: createdAt,
+                syncId: syncId,
               ),
           createCompanionCallback:
               ({
@@ -3027,6 +3317,7 @@ class $$EventsTableTableManager
                 Value<String> ticketTemplate = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => EventsCompanion.insert(
                 id: id,
                 shortCode: shortCode,
@@ -3038,6 +3329,7 @@ class $$EventsTableTableManager
                 ticketTemplate: ticketTemplate,
                 archivedAt: archivedAt,
                 createdAt: createdAt,
+                syncId: syncId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3182,6 +3474,7 @@ typedef $$CustomFieldsTableCreateCompanionBuilder =
       required String fieldType,
       required int sortOrder,
       Value<bool> showOnTicket,
+      Value<String?> syncId,
     });
 typedef $$CustomFieldsTableUpdateCompanionBuilder =
     CustomFieldsCompanion Function({
@@ -3191,6 +3484,7 @@ typedef $$CustomFieldsTableUpdateCompanionBuilder =
       Value<String> fieldType,
       Value<int> sortOrder,
       Value<bool> showOnTicket,
+      Value<String?> syncId,
     });
 
 final class $$CustomFieldsTableReferences
@@ -3271,6 +3565,11 @@ class $$CustomFieldsTableFilterComposer
 
   ColumnFilters<bool> get showOnTicket => $composableBuilder(
     column: $table.showOnTicket,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3357,6 +3656,11 @@ class $$CustomFieldsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$EventsTableOrderingComposer get eventId {
     final $$EventsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -3406,6 +3710,9 @@ class $$CustomFieldsTableAnnotationComposer
     column: $table.showOnTicket,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
 
   $$EventsTableAnnotationComposer get eventId {
     final $$EventsTableAnnotationComposer composer = $composerBuilder(
@@ -3491,6 +3798,7 @@ class $$CustomFieldsTableTableManager
                 Value<String> fieldType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<bool> showOnTicket = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => CustomFieldsCompanion(
                 id: id,
                 eventId: eventId,
@@ -3498,6 +3806,7 @@ class $$CustomFieldsTableTableManager
                 fieldType: fieldType,
                 sortOrder: sortOrder,
                 showOnTicket: showOnTicket,
+                syncId: syncId,
               ),
           createCompanionCallback:
               ({
@@ -3507,6 +3816,7 @@ class $$CustomFieldsTableTableManager
                 required String fieldType,
                 required int sortOrder,
                 Value<bool> showOnTicket = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => CustomFieldsCompanion.insert(
                 id: id,
                 eventId: eventId,
@@ -3514,6 +3824,7 @@ class $$CustomFieldsTableTableManager
                 fieldType: fieldType,
                 sortOrder: sortOrder,
                 showOnTicket: showOnTicket,
+                syncId: syncId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3615,6 +3926,7 @@ typedef $$BeneficiariesTableCreateCompanionBuilder =
       required int eventId,
       required String name,
       Value<DateTime> createdAt,
+      Value<String?> syncId,
     });
 typedef $$BeneficiariesTableUpdateCompanionBuilder =
     BeneficiariesCompanion Function({
@@ -3622,6 +3934,7 @@ typedef $$BeneficiariesTableUpdateCompanionBuilder =
       Value<int> eventId,
       Value<String> name,
       Value<DateTime> createdAt,
+      Value<String?> syncId,
     });
 
 final class $$BeneficiariesTableReferences
@@ -3714,6 +4027,11 @@ class $$BeneficiariesTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3815,6 +4133,11 @@ class $$BeneficiariesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$EventsTableOrderingComposer get eventId {
     final $$EventsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -3856,6 +4179,9 @@ class $$BeneficiariesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
 
   $$EventsTableAnnotationComposer get eventId {
     final $$EventsTableAnnotationComposer composer = $composerBuilder(
@@ -3968,11 +4294,13 @@ class $$BeneficiariesTableTableManager
                 Value<int> eventId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => BeneficiariesCompanion(
                 id: id,
                 eventId: eventId,
                 name: name,
                 createdAt: createdAt,
+                syncId: syncId,
               ),
           createCompanionCallback:
               ({
@@ -3980,11 +4308,13 @@ class $$BeneficiariesTableTableManager
                 required int eventId,
                 required String name,
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => BeneficiariesCompanion.insert(
                 id: id,
                 eventId: eventId,
                 name: name,
                 createdAt: createdAt,
+                syncId: syncId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -4518,6 +4848,7 @@ typedef $$TicketsTableCreateCompanionBuilder =
       required String randomPart,
       required String qrPayload,
       Value<DateTime> createdAt,
+      Value<String?> syncId,
     });
 typedef $$TicketsTableUpdateCompanionBuilder =
     TicketsCompanion Function({
@@ -4528,6 +4859,7 @@ typedef $$TicketsTableUpdateCompanionBuilder =
       Value<String> randomPart,
       Value<String> qrPayload,
       Value<DateTime> createdAt,
+      Value<String?> syncId,
     });
 
 final class $$TicketsTableReferences
@@ -4619,6 +4951,11 @@ class $$TicketsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4728,6 +5065,11 @@ class $$TicketsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$BeneficiariesTableOrderingComposer get beneficiaryId {
     final $$BeneficiariesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4802,6 +5144,9 @@ class $$TicketsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
 
   $$BeneficiariesTableAnnotationComposer get beneficiaryId {
     final $$BeneficiariesTableAnnotationComposer composer = $composerBuilder(
@@ -4914,6 +5259,7 @@ class $$TicketsTableTableManager
                 Value<String> randomPart = const Value.absent(),
                 Value<String> qrPayload = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => TicketsCompanion(
                 id: id,
                 beneficiaryId: beneficiaryId,
@@ -4922,6 +5268,7 @@ class $$TicketsTableTableManager
                 randomPart: randomPart,
                 qrPayload: qrPayload,
                 createdAt: createdAt,
+                syncId: syncId,
               ),
           createCompanionCallback:
               ({
@@ -4932,6 +5279,7 @@ class $$TicketsTableTableManager
                 required String randomPart,
                 required String qrPayload,
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => TicketsCompanion.insert(
                 id: id,
                 beneficiaryId: beneficiaryId,
@@ -4940,6 +5288,7 @@ class $$TicketsTableTableManager
                 randomPart: randomPart,
                 qrPayload: qrPayload,
                 createdAt: createdAt,
+                syncId: syncId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -5054,6 +5403,7 @@ typedef $$CheckInsTableCreateCompanionBuilder =
       required int ticketId,
       required int eventId,
       Value<DateTime> scannedAt,
+      Value<String?> syncId,
     });
 typedef $$CheckInsTableUpdateCompanionBuilder =
     CheckInsCompanion Function({
@@ -5061,6 +5411,7 @@ typedef $$CheckInsTableUpdateCompanionBuilder =
       Value<int> ticketId,
       Value<int> eventId,
       Value<DateTime> scannedAt,
+      Value<String?> syncId,
     });
 
 final class $$CheckInsTableReferences
@@ -5118,6 +5469,11 @@ class $$CheckInsTableFilterComposer
 
   ColumnFilters<DateTime> get scannedAt => $composableBuilder(
     column: $table.scannedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5187,6 +5543,11 @@ class $$CheckInsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$TicketsTableOrderingComposer get ticketId {
     final $$TicketsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -5248,6 +5609,9 @@ class $$CheckInsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get scannedAt =>
       $composableBuilder(column: $table.scannedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
 
   $$TicketsTableAnnotationComposer get ticketId {
     final $$TicketsTableAnnotationComposer composer = $composerBuilder(
@@ -5328,11 +5692,13 @@ class $$CheckInsTableTableManager
                 Value<int> ticketId = const Value.absent(),
                 Value<int> eventId = const Value.absent(),
                 Value<DateTime> scannedAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => CheckInsCompanion(
                 id: id,
                 ticketId: ticketId,
                 eventId: eventId,
                 scannedAt: scannedAt,
+                syncId: syncId,
               ),
           createCompanionCallback:
               ({
@@ -5340,11 +5706,13 @@ class $$CheckInsTableTableManager
                 required int ticketId,
                 required int eventId,
                 Value<DateTime> scannedAt = const Value.absent(),
+                Value<String?> syncId = const Value.absent(),
               }) => CheckInsCompanion.insert(
                 id: id,
                 ticketId: ticketId,
                 eventId: eventId,
                 scannedAt: scannedAt,
+                syncId: syncId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
