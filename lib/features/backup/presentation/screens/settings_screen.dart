@@ -14,6 +14,7 @@ import '../../../../core/audit/audit_logger.dart';
 import '../../../../core/audit/audit_providers.dart';
 import '../../../../core/database/database_provider.dart';
 import '../../../../core/settings/settings_providers.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/backup_providers.dart';
 import '../widgets/import_confirm_dialog.dart';
@@ -279,13 +280,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onPressed: hasFile ? _exportAudit : null,
                       icon: const Icon(Icons.upload_outlined),
                       label: Text(l10n.settingsAuditExportAction),
+                      style: OutlinedButton.styleFrom(
+                        disabledForegroundColor: AppColors.ink.withValues(alpha: 0.6),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextButton.icon(
                       onPressed: hasFile ? _deleteAudit : null,
                       icon: const Icon(Icons.delete_outline),
                       label: Text(l10n.settingsAuditDeleteAction),
-                      style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.error,
+                        disabledForegroundColor: AppColors.ink.withValues(alpha: 0.6),
+                      ),
                     ),
                   ],
                 );

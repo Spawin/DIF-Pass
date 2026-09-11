@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:dif_pass/core/audit/audit_logger.dart';
 import 'package:dif_pass/core/audit/audit_providers.dart';
 import 'package:dif_pass/core/settings/app_settings.dart';
+import 'package:dif_pass/core/theme/app_colors.dart';
 import 'package:dif_pass/features/backup/data/backup_repository.dart';
 import 'package:dif_pass/features/backup/presentation/providers/backup_providers.dart';
 import 'package:dif_pass/features/backup/presentation/screens/settings_screen.dart';
@@ -287,6 +288,26 @@ void main() {
             )
             .onPressed,
         isNull,
+      );
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Exporter les donnees d\'audit'),
+            )
+            .style
+            ?.foregroundColor
+            ?.resolve({WidgetState.disabled}),
+        AppColors.ink.withValues(alpha: 0.6),
+      );
+      expect(
+        tester
+            .widget<TextButton>(
+              find.widgetWithText(TextButton, 'Supprimer les donnees d\'audit'),
+            )
+            .style
+            ?.foregroundColor
+            ?.resolve({WidgetState.disabled}),
+        AppColors.ink.withValues(alpha: 0.6),
       );
     });
 
