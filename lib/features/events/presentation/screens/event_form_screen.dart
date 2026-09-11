@@ -148,6 +148,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     final repository = ref.read(eventRepositoryProvider);
     final location =
         _locationController.text.trim().isEmpty ? null : _locationController.text.trim();
+    // Read before the awaits below: see tickets_screen.dart's
+    // _confirmGenerate for why.
+    final auditLogger = ref.read(auditLoggerProvider);
 
     try {
       if (_isEditing) {
@@ -181,10 +184,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           presenceMode: _presenceMode,
           customFields: _customFields,
         );
-        ref.read(auditLoggerProvider).logEventCreated(
-              presenceMode: _presenceMode.name,
-              customFieldCount: _customFields.length,
-            );
+        auditLogger.logEventCreated(
+          presenceMode: _presenceMode.name,
+          customFieldCount: _customFields.length,
+        );
       }
 
       if (!mounted) return;

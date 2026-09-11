@@ -49,9 +49,12 @@ class EventArchiveScreen extends ConsumerWidget {
                         onPressed: () async {
                           final messenger = ScaffoldMessenger.of(context);
                           final repository = ref.read(eventRepositoryProvider);
+                          // Read before the await: see tickets_screen.dart's
+                          // _confirmGenerate for why.
+                          final auditLogger = ref.read(auditLoggerProvider);
                           try {
                             await repository.restoreEvent(event.id);
-                            ref.read(auditLoggerProvider).logEventArchiveAction(action: 'restore');
+                            auditLogger.logEventArchiveAction(action: 'restore');
                             messenger.showSnackBar(
                               SnackBar(
                                 content: Text(l10n.eventsRestoredMessage),

@@ -61,9 +61,12 @@ class EventsListScreen extends ConsumerWidget {
                 onArchive: () async {
                   final messenger = ScaffoldMessenger.of(context);
                   final repository = ref.read(eventRepositoryProvider);
+                  // Read before the await: see tickets_screen.dart's
+                  // _confirmGenerate for why.
+                  final auditLogger = ref.read(auditLoggerProvider);
                   try {
                     await repository.archiveEvent(event.id);
-                    ref.read(auditLoggerProvider).logEventArchiveAction(action: 'archive');
+                    auditLogger.logEventArchiveAction(action: 'archive');
                     HapticFeedback.lightImpact();
                     if (!context.mounted) return;
                     messenger.showSnackBar(

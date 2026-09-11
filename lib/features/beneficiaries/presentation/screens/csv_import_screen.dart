@@ -57,16 +57,19 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
     final l10n = AppLocalizations.of(context)!;
     final repository = ref.read(beneficiaryRepositoryProvider);
     final messenger = ScaffoldMessenger.of(context);
+    // Read before the await: see tickets_screen.dart's _confirmGenerate for
+    // why.
+    final auditLogger = ref.read(auditLoggerProvider);
     try {
       final stopwatch = Stopwatch()..start();
       final imported =
           await repository.importBeneficiaries(widget.eventId, beneficiaries);
       stopwatch.stop();
-      ref.read(auditLoggerProvider).logBeneficiariesImported(
-            rowCount: imported,
-            errorCount: skipped,
-            durationMs: stopwatch.elapsedMilliseconds,
-          );
+      auditLogger.logBeneficiariesImported(
+        rowCount: imported,
+        errorCount: skipped,
+        durationMs: stopwatch.elapsedMilliseconds,
+      );
       if (!mounted) return;
       HapticFeedback.lightImpact();
       setState(() {

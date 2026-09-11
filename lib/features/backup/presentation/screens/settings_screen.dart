@@ -76,6 +76,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _export() async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
+    // Read before the awaits below: see tickets_screen.dart's
+    // _confirmGenerate for why.
+    final auditLogger = ref.read(auditLoggerProvider);
     setState(() => _busy = true);
     try {
       final repository = await ref.read(backupRepositoryProvider.future);
@@ -89,7 +92,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await SharePlus.instance.share(
         ShareParams(files: [XFile(exportFile.path)]),
       );
-      ref.read(auditLoggerProvider).logBackupAction(action: 'export');
+      auditLogger.logBackupAction(action: 'export');
       if (!mounted) return;
       HapticFeedback.lightImpact();
       messenger.showSnackBar(
@@ -111,6 +114,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final container = ProviderScope.containerOf(context, listen: false);
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
+    // Read before the awaits below: see tickets_screen.dart's
+    // _confirmGenerate for why.
+    final auditLogger = ref.read(auditLoggerProvider);
     setState(() => _busy = true);
 
     PlatformFile? file;
@@ -143,7 +149,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final repository = await ref.read(backupRepositoryProvider.future);
       await ref.read(appDatabaseProvider).close();
       await repository.importBackup(bytes);
-      ref.read(auditLoggerProvider).logBackupAction(action: 'import');
+      auditLogger.logBackupAction(action: 'import');
       container.invalidate(appDatabaseProvider);
       if (!mounted) return;
       HapticFeedback.lightImpact();

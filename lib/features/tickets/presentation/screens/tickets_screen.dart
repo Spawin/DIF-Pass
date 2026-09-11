@@ -212,6 +212,11 @@ class TicketsScreen extends ConsumerWidget {
   Future<void> _confirmGenerate(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
+    // Read before the awaits below: ref.read() throws if the widget backing
+    // it has since been disposed (e.g. the user navigated away while
+    // generation was running), and an audit-log read must never be why the
+    // success path reports failure.
+    final auditLogger = ref.read(auditLoggerProvider);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -236,10 +241,10 @@ class TicketsScreen extends ConsumerWidget {
           .read(ticketRepositoryProvider)
           .generateMissingTickets(eventId);
       stopwatch.stop();
-      ref.read(auditLoggerProvider).logTicketsGenerated(
-            count: created,
-            durationMs: stopwatch.elapsedMilliseconds,
-          );
+      auditLogger.logTicketsGenerated(
+        count: created,
+        durationMs: stopwatch.elapsedMilliseconds,
+      );
       HapticFeedback.lightImpact();
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.ticketsGeneratedCount(created))),

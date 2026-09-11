@@ -60,6 +60,14 @@ Widget _wrap(
 }) {
   return ProviderScope(
     overrides: [
+      // Every SettingsScreen action path reads auditLoggerProvider before
+      // its first await now (never mid-flight after a dispose could have
+      // happened), so it must always be overridden here, disabled by
+      // default. Tests that care about audit behavior pass their own
+      // logger via extraOverrides, which - listed after - wins.
+      auditLoggerProvider.overrideWithValue(
+        AuditLogger(enabled: false, fileResolver: () async => throw UnimplementedError('not used')),
+      ),
       if (repository != null)
         backupRepositoryProvider.overrideWith((ref) => repository),
       ...extraOverrides,

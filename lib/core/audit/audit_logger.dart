@@ -132,18 +132,24 @@ class AuditLogger {
 
   /// ponytail: swallow-and-log is deliberate here, the one place in the app
   /// where that is correct - an audit write must never break the real
-  /// feature it instruments.
+  /// feature it instruments. This covers fileResolver() itself (e.g.
+  /// path_provider failing to resolve a directory), not just the write in
+  /// _writeOne, since both are equally "an audit write failed".
   Future<void> _append(Map<String, dynamic> event) async {
     if (!_enabled) return;
-    final file = await fileResolver();
-    final key = file.path;
-    // Chain onto the per-path queue rather than awaiting immediately, so
-    // concurrent calls still serialize even if an earlier write is still in
-    // flight.
-    final previous = _writeQueues[key] ?? Future<void>.value();
-    final next = previous.then((_) => _writeOne(file, event));
-    _writeQueues[key] = next;
-    return next;
+    try {
+      final file = await fileResolver();
+      final key = file.path;
+      // Chain onto the per-path queue rather than awaiting immediately, so
+      // concurrent calls still serialize even if an earlier write is still
+      // in flight.
+      final previous = _writeQueues[key] ?? Future<void>.value();
+      final next = previous.then((_) => _writeOne(file, event));
+      _writeQueues[key] = next;
+      await next;
+    } catch (e) {
+      debugPrint('AuditLogger append failed: $e');
+    }
   }
 
   Future<void> _writeOne(File file, Map<String, dynamic> event) async {
