@@ -254,6 +254,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ticketsGenerateAction => 'Generer les tickets';
 
   @override
+  String get ticketsGenerateNoBeneficiariesHint =>
+      'Ajoutez des beneficiaires avant de generer les tickets.';
+
+  @override
+  String get ticketsGenerateAllDoneHint =>
+      'Tous les tickets ont deja ete generes.';
+
+  @override
   String get ticketsEmptyState => 'Aucun ticket pour l\'instant.';
 
   @override

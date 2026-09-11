@@ -554,6 +554,18 @@ abstract class AppLocalizations {
   /// **'Generate tickets'**
   String get ticketsGenerateAction;
 
+  /// No description provided for @ticketsGenerateNoBeneficiariesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add beneficiaries before generating tickets.'**
+  String get ticketsGenerateNoBeneficiariesHint;
+
+  /// No description provided for @ticketsGenerateAllDoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'All tickets have already been generated.'**
+  String get ticketsGenerateAllDoneHint;
+
   /// No description provided for @ticketsEmptyState.
   ///
   /// In en, this message translates to:

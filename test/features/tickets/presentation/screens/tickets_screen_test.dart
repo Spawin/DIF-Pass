@@ -100,6 +100,8 @@ void main() {
       expect(find.text('No tickets yet.'), findsOneWidget);
       final button = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(button.onPressed, isNotNull);
+      expect(find.text('Add beneficiaries before generating tickets.'), findsNothing);
+      expect(find.text('All tickets have already been generated.'), findsNothing);
     },
   );
 
@@ -148,6 +150,26 @@ void main() {
       expect(find.text('Jane Doe'), findsOneWidget);
       final button = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(button.onPressed, isNull);
+      expect(find.text('All tickets have already been generated.'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'generate button is disabled with a hint when there are no beneficiaries yet',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const TicketsScreen(eventId: 1),
+          _fakeEventsWithOneEvent(),
+          FakeBeneficiaryRepository(),
+          FakeTicketRepository(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final button = tester.widget<FilledButton>(find.byType(FilledButton));
+      expect(button.onPressed, isNull);
+      expect(find.text('Add beneficiaries before generating tickets.'), findsOneWidget);
     },
   );
 

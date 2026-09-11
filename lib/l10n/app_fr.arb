@@ -81,6 +81,8 @@
   "ticketsTemplateStandard": "Standard",
   "ticketsTemplateElegant": "Elegant",
   "ticketsGenerateAction": "Generer les tickets",
+  "ticketsGenerateNoBeneficiariesHint": "Ajoutez des beneficiaires avant de generer les tickets.",
+  "ticketsGenerateAllDoneHint": "Tous les tickets ont deja ete generes.",
   "ticketsEmptyState": "Aucun ticket pour l'instant.",
   "ticketsCheckedInBadge": "Present",
   "ticketsCheckInCount": "{count, plural, =1{1 passage} other{{count} passages}}",

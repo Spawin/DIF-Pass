@@ -138,6 +138,17 @@ class TicketsScreen extends ConsumerWidget {
                     icon: const Icon(Icons.confirmation_number_outlined),
                     label: Text(l10n.ticketsGenerateAction),
                   ),
+                  if (!canGenerate) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      beneficiaries.isEmpty
+                          ? l10n.ticketsGenerateNoBeneficiariesHint
+                          : l10n.ticketsGenerateAllDoneHint,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   Expanded(
                     child: ticketsAsync.when(

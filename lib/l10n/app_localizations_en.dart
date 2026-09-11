@@ -247,6 +247,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ticketsGenerateAction => 'Generate tickets';
 
   @override
+  String get ticketsGenerateNoBeneficiariesHint =>
+      'Add beneficiaries before generating tickets.';
+
+  @override
+  String get ticketsGenerateAllDoneHint =>
+      'All tickets have already been generated.';
+
+  @override
   String get ticketsEmptyState => 'No tickets yet.';
 
   @override

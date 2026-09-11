@@ -87,6 +87,8 @@
   "ticketsTemplateStandard": "Standard",
   "ticketsTemplateElegant": "Elegant",
   "ticketsGenerateAction": "Generate tickets",
+  "ticketsGenerateNoBeneficiariesHint": "Add beneficiaries before generating tickets.",
+  "ticketsGenerateAllDoneHint": "All tickets have already been generated.",
   "ticketsEmptyState": "No tickets yet.",
   "ticketsCheckedInBadge": "Checked in",
   "ticketsCheckInCount": "{count, plural, =1{1 check-in} other{{count} check-ins}}",
