@@ -219,7 +219,12 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            16 + MediaQuery.paddingOf(context).bottom + 24,
+          ),
           children: [
             TextFormField(
               controller: _nameController,

@@ -399,7 +399,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsLanguageLabel => 'Langue';
 
   @override
-  String get settingsLanguageAuto => 'Automatique';
+  String get settingsLanguageAuto => 'Auto';
 
   @override
   String get settingsLanguageFrench => 'Francais';

@@ -797,7 +797,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsLanguageAuto.
   ///
   /// In en, this message translates to:
-  /// **'Automatic'**
+  /// **'Auto'**
   String get settingsLanguageAuto;
 
   /// No description provided for @settingsLanguageFrench.
