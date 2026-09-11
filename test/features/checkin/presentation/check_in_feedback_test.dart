@@ -24,4 +24,28 @@ void main() {
       expect(checkInFeedbackAutoDismisses(feedback), isFalse);
     });
   });
+
+  group('checkInFeedbackResultLabel', () {
+    test('maps each feedback variant to its audit result label', () {
+      expect(
+        checkInFeedbackResultLabel(
+          const CheckInFeedbackRecorded(beneficiaryName: 'Jane Doe'),
+        ),
+        'new',
+      );
+      expect(
+        checkInFeedbackResultLabel(
+          CheckInFeedbackAlreadyRecorded(
+            beneficiaryName: 'Jane Doe',
+            scannedAt: DateTime(2026, 1, 1),
+          ),
+        ),
+        'already',
+      );
+      expect(
+        checkInFeedbackResultLabel(const CheckInFeedbackNotFound()),
+        'not_found',
+      );
+    });
+  });
 }

@@ -27,3 +27,13 @@ class CheckInFeedbackNotFound extends CheckInFeedback {
 // explicit tap (the two exception cases, which need the agent's attention).
 bool checkInFeedbackAutoDismisses(CheckInFeedback feedback) =>
     feedback is CheckInFeedbackRecorded;
+
+/// Maps a feedback outcome to the audit log's `result` field. Pure and
+/// side-effect free so it is unit-testable without any screen or camera.
+String checkInFeedbackResultLabel(CheckInFeedback feedback) {
+  return switch (feedback) {
+    CheckInFeedbackRecorded() => 'new',
+    CheckInFeedbackAlreadyRecorded() => 'already',
+    CheckInFeedbackNotFound() => 'not_found',
+  };
+}

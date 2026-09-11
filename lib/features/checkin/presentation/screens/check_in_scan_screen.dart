@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../core/settings/settings_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -33,6 +34,8 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
   bool _busy = false;
   CheckInFeedback? _feedback;
   int _scanGeneration = 0;
+  DateTime? _feedbackShownAt;
+  String? _feedbackPresenceMode;
 
   @override
   void dispose() {
@@ -67,6 +70,8 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
         );
         if (mounted) {
           setState(() => _feedback = feedback);
+          _feedbackShownAt = DateTime.now();
+          _feedbackPresenceMode = event.presenceMode.name;
           if (feedback is CheckInFeedbackRecorded) {
             HapticFeedback.mediumImpact();
           } else {
@@ -89,15 +94,26 @@ class _CheckInScanScreenState extends ConsumerState<CheckInScanScreen> {
       final delayMs = ref.read(appSettingsProvider).checkinFeedbackDelayMs;
       await Future<void>.delayed(Duration(milliseconds: delayMs));
       if (generation == _scanGeneration) {
-        _dismissFeedback();
+        _dismissFeedback(auto: true);
       }
     }
     // Exceptions (already recorded / not found) wait for the overlay's OK
     // button to call _dismissFeedback instead of a timer.
   }
 
-  void _dismissFeedback() {
+  void _dismissFeedback({bool auto = false}) {
     if (!mounted) return;
+    final feedback = _feedback;
+    final shownAt = _feedbackShownAt;
+    if (feedback != null && shownAt != null) {
+      ref.read(auditLoggerProvider).logCheckinScan(
+            result: checkInFeedbackResultLabel(feedback),
+            presenceMode: _feedbackPresenceMode ?? 'simple',
+            feedbackDurationMs: DateTime.now().difference(shownAt).inMilliseconds,
+            dismissedBy: auto ? 'auto' : 'manual',
+          );
+    }
+    _feedbackShownAt = null;
     _scanGeneration++;
     setState(() {
       _feedback = null;
