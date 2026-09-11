@@ -18,8 +18,20 @@ import '../../../../l10n/app_localizations.dart';
 import '../providers/backup_providers.dart';
 import '../widgets/import_confirm_dialog.dart';
 
+Future<void> _deleteFile(File file) => file.delete();
+
+Future<File?> _resolveExistingAuditFile() async {
+  final file = await resolveAuditFile();
+  return await file.exists() ? file : null;
+}
+
 class SettingsScreen extends ConsumerStatefulWidget {
-  const SettingsScreen({this.pickFile = FilePicker.pickFile, super.key});
+  const SettingsScreen({
+    this.pickFile = FilePicker.pickFile,
+    this.deleteAuditFile = _deleteFile,
+    this.resolveExistingAuditFile = _resolveExistingAuditFile,
+    super.key,
+  });
 
   // Injectable for tests: FilePicker.pickFile talks to the platform and
   // cannot be exercised in flutter test, same reason AppDatabase.forTesting
@@ -33,12 +45,33 @@ class SettingsScreen extends ConsumerStatefulWidget {
     List<String>? allowedExtensions,
   }) pickFile;
 
+  // Injectable for the same reason: a real File.delete() call is a stdlib
+  // one-liner not worth re-proving in a widget test, and this project's
+  // sandboxed test environment cannot reliably exercise a real delete from
+  // inside testWidgets. Tests assert the screen calls this with the right
+  // file; Dart's own File.delete() is trusted to do the rest.
+  final Future<void> Function(File file) deleteAuditFile;
+
+  // Injectable for the same reason: real getApplicationSupportDirectory() +
+  // File.exists() calls proved unreliable (observed to hang) from inside
+  // testWidgets in this project's sandboxed test environment when the audit
+  // file exists on disk at pump time. Tests fake the presence/absence of
+  // the file directly instead of relying on a real filesystem check.
+  final Future<File?> Function() resolveExistingAuditFile;
+
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _busy = false;
+  late Future<File?> _auditFileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _auditFileFuture = widget.resolveExistingAuditFile();
+  }
 
   Future<void> _export() async {
     final l10n = AppLocalizations.of(context)!;
@@ -123,11 +156,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<File?> _auditFileIfExists() async {
-    final file = await resolveAuditFile();
-    return await file.exists() ? file : null;
-  }
-
   Future<void> _exportAudit() async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
@@ -162,10 +190,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     if (confirmed != true) return;
     try {
-      final file = await resolveAuditFile();
-      if (await file.exists()) await file.delete();
+      final file = await widget.resolveExistingAuditFile();
+      if (file != null) await widget.deleteAuditFile(file);
       if (!mounted) return;
-      setState(() {});
+      setState(() => _auditFileFuture = widget.resolveExistingAuditFile());
       messenger.showSnackBar(SnackBar(content: Text(l10n.settingsAuditDeleteSuccess)));
     } catch (e) {
       if (!mounted) return;
@@ -235,7 +263,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 8),
             FutureBuilder<File?>(
-              future: _auditFileIfExists(),
+              future: _auditFileFuture,
               builder: (context, snapshot) {
                 final hasFile = snapshot.data != null;
                 return Column(

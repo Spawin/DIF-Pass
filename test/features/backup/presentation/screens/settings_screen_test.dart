@@ -13,23 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// SettingsScreen's audit export/delete flow calls the real top-level
-// resolveAuditFile() (getApplicationSupportDirectory() + 'audit.jsonl'),
-// not the auditLoggerProvider override's fileResolver - that override only
-// matters for AuditLogger.setEnabled() calls made from setAuditEnabled().
-// To make the audit file the widget resolves the same one these tests write
-// to, point path_provider's application-support path at tempDir.
-class _FakePathProviderPlatform extends PathProviderPlatform {
-  _FakePathProviderPlatform(this.path);
-
-  final String path;
-
-  @override
-  Future<String?> getApplicationSupportPath() async => path;
-}
 
 class _FakeBackupRepository implements BackupRepository {
   bool importCalled = false;
@@ -226,28 +210,35 @@ void main() {
   });
 
   group('audit section', () {
-    late Directory tempDir;
-    late File auditFile;
+    // SettingsScreen's audit export/delete flow otherwise calls the real
+    // getApplicationSupportDirectory() + File.exists()/File.delete(). Those
+    // real dart:io calls proved unreliable (observed to hang indefinitely)
+    // from inside testWidgets in this project's sandboxed test environment
+    // whenever the audit file exists on disk at pump time. SettingsScreen
+    // exposes resolveExistingAuditFile and deleteAuditFile precisely so
+    // these tests can fake both and never touch the real filesystem - same
+    // reasoning as the pre-existing pickFile injection above.
+    final fakeAuditFile = File('Z:/fake/audit.jsonl');
     late AuditLogger logger;
-    late PathProviderPlatform originalPathProvider;
 
-    setUp(() async {
-      tempDir = await Directory.systemTemp.createTemp('dif_pass_settings_audit_test');
-      auditFile = File('${tempDir.path}/audit.jsonl');
-      logger = AuditLogger(enabled: false, fileResolver: () async => auditFile);
-      originalPathProvider = PathProviderPlatform.instance;
-      PathProviderPlatform.instance = _FakePathProviderPlatform(tempDir.path);
+    setUp(() {
+      logger = AuditLogger(
+        enabled: false,
+        fileResolver: () async => fakeAuditFile,
+      );
     });
 
-    tearDown(() async {
-      PathProviderPlatform.instance = originalPathProvider;
-      await tempDir.delete(recursive: true);
-    });
-
-    Future<void> pumpAuditSettings(WidgetTester tester) async {
+    Future<void> pumpAuditSettings(
+      WidgetTester tester, {
+      Future<File?> Function()? resolveExistingAuditFile,
+      Future<void> Function(File file)? deleteAuditFile,
+    }) async {
       await tester.pumpWidget(
         _wrap(
-          const SettingsScreen(),
+          SettingsScreen(
+            resolveExistingAuditFile: resolveExistingAuditFile ?? () async => null,
+            deleteAuditFile: deleteAuditFile ?? (file) async {},
+          ),
           extraOverrides: [auditLoggerProvider.overrideWithValue(logger)],
           locale: const Locale('fr'),
         ),
@@ -271,7 +262,7 @@ void main() {
       tester,
     ) async {
       SharedPreferences.setMockInitialValues({});
-      await pumpAuditSettings(tester);
+      await pumpAuditSettings(tester, resolveExistingAuditFile: () async => null);
 
       expect(
         tester
@@ -295,27 +286,44 @@ void main() {
       tester,
     ) async {
       SharedPreferences.setMockInitialValues({});
-      await auditFile.writeAsString(
-        '{"ts":"2026-01-01T00:00:00.000","session":"s","type":"backup_action","action":"export"}\n',
+      // Fake both the existence check and the actual delete call rather
+      // than exercising real dart:io - see the group-level comment above.
+      // This test verifies the screen's own logic (dialog gating, calling
+      // the injected deleter with the right file, re-checking existence
+      // afterward), not that File.exists()/File.delete() themselves work.
+      var fileExists = true;
+      final deletedPaths = <String>[];
+      await pumpAuditSettings(
+        tester,
+        resolveExistingAuditFile: () async => fileExists ? fakeAuditFile : null,
+        deleteAuditFile: (file) async {
+          deletedPaths.add(file.path);
+          fileExists = false;
+        },
       );
-      await pumpAuditSettings(tester);
 
-      await tester.tap(find.widgetWithText(TextButton, 'Supprimer les donnees d\'audit'));
+      // The button sits below the fold on a typical test viewport, inside
+      // the settings body's SingleChildScrollView - scroll it into view
+      // before tapping, or the tap misses (offset outside the render tree).
+      final deleteTrigger = find.widgetWithText(TextButton, 'Supprimer les donnees d\'audit');
+      await tester.ensureVisible(deleteTrigger);
+      await tester.tap(deleteTrigger);
       await tester.pumpAndSettle();
       expect(find.text('Supprimer les donnees d\'audit ?'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(TextButton, 'Annuler'));
       await tester.pumpAndSettle();
-      expect(await auditFile.exists(), isTrue);
+      expect(deletedPaths, isEmpty);
 
-      await tester.tap(find.widgetWithText(TextButton, 'Supprimer les donnees d\'audit'));
+      await tester.ensureVisible(deleteTrigger);
+      await tester.tap(deleteTrigger);
       await tester.pumpAndSettle();
       await tester.tap(find.descendant(
         of: find.byType(AlertDialog),
         matching: find.widgetWithText(TextButton, 'Supprimer'),
       ));
       await tester.pumpAndSettle();
-      expect(await auditFile.exists(), isFalse);
+      expect(deletedPaths, [fakeAuditFile.path]);
     });
   });
 }
