@@ -56,4 +56,17 @@ void main() {
       expect(settings.localeOverride, isNull);
     });
   });
+
+  group('AppSettings.auditEnabled', () {
+    test('defaults to false when nothing is stored', () async {
+      final settings = await AppSettings.load();
+      expect(settings.auditEnabled, isFalse);
+    });
+
+    test('saveAuditEnabled persists the value for a later load', () async {
+      await AppSettings.saveAuditEnabled(true);
+      final settings = await AppSettings.load();
+      expect(settings.auditEnabled, isTrue);
+    });
+  });
 }

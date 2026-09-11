@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../audit/audit_providers.dart';
 import 'app_settings.dart';
 
 class AppSettingsNotifier extends Notifier<AppSettings> {
@@ -13,12 +14,30 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 
   Future<void> setCheckinFeedbackDelayMs(int value) async {
     await AppSettings.saveCheckinFeedbackDelayMs(value);
-    state = AppSettings(checkinFeedbackDelayMs: value, localeOverride: state.localeOverride);
+    state = AppSettings(
+      checkinFeedbackDelayMs: value,
+      localeOverride: state.localeOverride,
+      auditEnabled: state.auditEnabled,
+    );
   }
 
   Future<void> setLocaleOverride(String? value) async {
     await AppSettings.saveLocaleOverride(value);
-    state = AppSettings(checkinFeedbackDelayMs: state.checkinFeedbackDelayMs, localeOverride: value);
+    state = AppSettings(
+      checkinFeedbackDelayMs: state.checkinFeedbackDelayMs,
+      localeOverride: value,
+      auditEnabled: state.auditEnabled,
+    );
+  }
+
+  Future<void> setAuditEnabled(bool value) async {
+    await AppSettings.saveAuditEnabled(value);
+    ref.read(auditLoggerProvider).setEnabled(value);
+    state = AppSettings(
+      checkinFeedbackDelayMs: state.checkinFeedbackDelayMs,
+      localeOverride: state.localeOverride,
+      auditEnabled: value,
+    );
   }
 }
 
