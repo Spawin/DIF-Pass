@@ -39,8 +39,6 @@ class EventsListScreen extends ConsumerWidget {
             return EmptyState(
               icon: Icons.event_outlined,
               message: l10n.eventsEmptyState,
-              actionLabel: l10n.eventsNewAction,
-              onAction: () => context.push('/events/new'),
             );
           }
           return ListView.builder(
@@ -95,10 +93,13 @@ class EventsListScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(activeEventsProvider),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/events/new'),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.eventsNewAction),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push('/events/new'),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.eventsNewAction),
+        ),
       ),
     );
   }

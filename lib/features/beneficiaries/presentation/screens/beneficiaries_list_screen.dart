@@ -54,8 +54,6 @@ class BeneficiariesListScreen extends ConsumerWidget {
             return EmptyState(
               icon: Icons.people_outline,
               message: l10n.beneficiariesEmptyState,
-              actionLabel: l10n.beneficiariesNewAction,
-              onAction: () => context.push('/events/$eventId/beneficiaries/new'),
             );
           }
           return ListView.builder(
@@ -85,10 +83,13 @@ class BeneficiariesListScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(beneficiariesProvider(eventId)),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/events/$eventId/beneficiaries/new'),
-        icon: const Icon(Icons.person_add_outlined),
-        label: Text(l10n.beneficiariesNewAction),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push('/events/$eventId/beneficiaries/new'),
+          icon: const Icon(Icons.person_add_outlined),
+          label: Text(l10n.beneficiariesNewAction),
+        ),
       ),
     );
   }
