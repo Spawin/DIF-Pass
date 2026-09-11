@@ -4,6 +4,14 @@ import 'dart:io';
 import 'package:dif_pass/core/audit/audit_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+
+class _FakePathProviderPlatform extends PathProviderPlatform {
+  _FakePathProviderPlatform(this.path);
+  final String path;
+  @override
+  Future<String?> getApplicationSupportPath() async => path;
+}
 
 // ponytail: AuditLogger's log methods are deliberately fire-and-forget
 // (void, not Future<void>) so instrumented call sites never await disk I/O.
@@ -22,6 +30,21 @@ void main() {
   });
 
   tearDown(() => tempDir.delete(recursive: true));
+
+  test('resolveAuditFile joins the app support path with audit.jsonl', () async {
+    // Fakes only the platform channel that reports the directory path - no
+    // real filesystem access, so this is safe from the File.exists()/
+    // File.delete() hang this project's sandboxed test environment shows
+    // when the target actually exists on disk (see settings_screen_test.dart
+    // for the fuller writeup).
+    final original = PathProviderPlatform.instance;
+    PathProviderPlatform.instance = _FakePathProviderPlatform('some/app/support/dir');
+    addTearDown(() => PathProviderPlatform.instance = original);
+
+    final file = await resolveAuditFile();
+
+    expect(file.path, p.join('some/app/support/dir', 'audit.jsonl'));
+  });
 
   AuditLogger buildLogger({bool enabled = true}) => AuditLogger(
         enabled: enabled,
