@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../providers/event_providers.dart';
@@ -62,6 +63,7 @@ class EventsListScreen extends ConsumerWidget {
                   final repository = ref.read(eventRepositoryProvider);
                   try {
                     await repository.archiveEvent(event.id);
+                    ref.read(auditLoggerProvider).logEventArchiveAction(action: 'archive');
                     HapticFeedback.lightImpact();
                     if (!context.mounted) return;
                     messenger.showSnackBar(

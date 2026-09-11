@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:printing/printing.dart';
 
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
@@ -230,9 +231,15 @@ class TicketsScreen extends ConsumerWidget {
     );
     if (confirmed != true) return;
     try {
+      final stopwatch = Stopwatch()..start();
       final created = await ref
           .read(ticketRepositoryProvider)
           .generateMissingTickets(eventId);
+      stopwatch.stop();
+      ref.read(auditLoggerProvider).logTicketsGenerated(
+            count: created,
+            durationMs: stopwatch.elapsedMilliseconds,
+          );
       HapticFeedback.lightImpact();
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.ticketsGeneratedCount(created))),

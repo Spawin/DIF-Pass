@@ -1,3 +1,5 @@
+import 'package:dif_pass/core/audit/audit_logger.dart';
+import 'package:dif_pass/core/audit/audit_providers.dart';
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/providers/beneficiary_providers.dart';
 import 'package:dif_pass/features/checkin/domain/check_in.dart';
@@ -32,6 +34,13 @@ Widget _wrap(
       beneficiaryRepositoryProvider.overrideWithValue(fakeBeneficiaries),
       ticketRepositoryProvider.overrideWithValue(fakeTickets),
       checkInRepositoryProvider.overrideWithValue(fakeCheckIns ?? FakeCheckInRepository()),
+      auditLoggerProvider.overrideWithValue(
+        AuditLogger(
+          enabled: false,
+          fileResolver: () async =>
+              throw UnimplementedError('not used - enabled is false'),
+        ),
+      ),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,

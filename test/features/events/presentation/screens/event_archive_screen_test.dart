@@ -1,3 +1,5 @@
+import 'package:dif_pass/core/audit/audit_logger.dart';
+import 'package:dif_pass/core/audit/audit_providers.dart';
 import 'package:dif_pass/features/events/domain/event.dart';
 import 'package:dif_pass/features/events/domain/presence_mode.dart';
 import 'package:dif_pass/features/events/presentation/providers/event_providers.dart';
@@ -11,7 +13,16 @@ import '../../fake_event_repository.dart';
 
 Widget _wrap(Widget child, FakeEventRepository fake) {
   return ProviderScope(
-    overrides: [eventRepositoryProvider.overrideWithValue(fake)],
+    overrides: [
+      eventRepositoryProvider.overrideWithValue(fake),
+      auditLoggerProvider.overrideWithValue(
+        AuditLogger(
+          enabled: false,
+          fileResolver: () async =>
+              throw UnimplementedError('not used - enabled is false'),
+        ),
+      ),
+    ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

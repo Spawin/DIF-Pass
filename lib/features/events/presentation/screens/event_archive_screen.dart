@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../domain/event.dart';
@@ -50,6 +51,7 @@ class EventArchiveScreen extends ConsumerWidget {
                           final repository = ref.read(eventRepositoryProvider);
                           try {
                             await repository.restoreEvent(event.id);
+                            ref.read(auditLoggerProvider).logEventArchiveAction(action: 'restore');
                             messenger.showSnackBar(
                               SnackBar(
                                 content: Text(l10n.eventsRestoredMessage),

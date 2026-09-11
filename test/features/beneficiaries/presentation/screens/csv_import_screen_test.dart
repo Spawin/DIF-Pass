@@ -1,3 +1,5 @@
+import 'package:dif_pass/core/audit/audit_logger.dart';
+import 'package:dif_pass/core/audit/audit_providers.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/screens/csv_import_screen.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/providers/beneficiary_providers.dart';
 import 'package:dif_pass/features/events/domain/custom_field.dart';
@@ -18,6 +20,13 @@ Widget _wrap(Widget child, FakeEventRepository fakeEvents) {
     overrides: [
       eventRepositoryProvider.overrideWithValue(fakeEvents),
       beneficiaryRepositoryProvider.overrideWithValue(FakeBeneficiaryRepository()),
+      auditLoggerProvider.overrideWithValue(
+        AuditLogger(
+          enabled: false,
+          fileResolver: () async =>
+              throw UnimplementedError('not used - enabled is false'),
+        ),
+      ),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,

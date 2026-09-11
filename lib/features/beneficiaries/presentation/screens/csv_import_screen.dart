@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../data/csv_parser.dart';
@@ -57,8 +58,15 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
     final repository = ref.read(beneficiaryRepositoryProvider);
     final messenger = ScaffoldMessenger.of(context);
     try {
+      final stopwatch = Stopwatch()..start();
       final imported =
           await repository.importBeneficiaries(widget.eventId, beneficiaries);
+      stopwatch.stop();
+      ref.read(auditLoggerProvider).logBeneficiariesImported(
+            rowCount: imported,
+            errorCount: skipped,
+            durationMs: stopwatch.elapsedMilliseconds,
+          );
       if (!mounted) return;
       HapticFeedback.lightImpact();
       setState(() {

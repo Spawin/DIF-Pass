@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/custom_field.dart';
 import '../../domain/custom_field_type.dart';
@@ -180,6 +181,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           presenceMode: _presenceMode,
           customFields: _customFields,
         );
+        ref.read(auditLoggerProvider).logEventCreated(
+              presenceMode: _presenceMode.name,
+              customFieldCount: _customFields.length,
+            );
       }
 
       if (!mounted) return;
