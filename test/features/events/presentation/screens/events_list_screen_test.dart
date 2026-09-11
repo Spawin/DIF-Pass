@@ -120,7 +120,7 @@ void main() {
     expect(fake.events.single.isArchived, isFalse);
   });
 
-  testWidgets('the more-actions menu offers history alongside archive', (
+  testWidgets('the more-actions menu offers beneficiaries, archive, and history', (
     tester,
   ) async {
     final fake = FakeEventRepository(events: [
@@ -140,11 +140,14 @@ void main() {
     await tester.tap(find.byTooltip('More actions'));
     await tester.pumpAndSettle();
 
+    expect(find.text('Beneficiaries'), findsOneWidget);
     expect(find.text('Archive'), findsOneWidget);
     expect(find.text('History'), findsOneWidget);
   });
 
-  testWidgets('shows a beneficiaries action for each event', (tester) async {
+  testWidgets('offers a beneficiaries action in the more-actions menu', (
+    tester,
+  ) async {
     final fake = FakeEventRepository(events: [
       Event(
         id: 1,
@@ -159,7 +162,10 @@ void main() {
     await tester.pumpWidget(_wrap(const EventsListScreen(), fake));
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip('Beneficiaries'), findsOneWidget);
+    await tester.tap(find.byTooltip('More actions'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Beneficiaries'), findsOneWidget);
   });
 
   testWidgets('shows a tickets action for each event', (tester) async {

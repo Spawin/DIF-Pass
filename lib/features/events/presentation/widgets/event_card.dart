@@ -5,7 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/event.dart';
 
-enum _EventCardMenuAction { archive, history }
+enum _EventCardMenuAction { beneficiaries, archive, history }
 
 class EventCard extends StatelessWidget {
   const EventCard({
@@ -55,11 +55,6 @@ class EventCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.group_outlined),
-              tooltip: l10n.eventsBeneficiariesAction,
-              onPressed: onManageBeneficiaries,
-            ),
-            IconButton(
               icon: const Icon(Icons.confirmation_number_outlined),
               tooltip: l10n.eventsTicketsAction,
               onPressed: onManageTickets,
@@ -73,6 +68,8 @@ class EventCard extends StatelessWidget {
               tooltip: l10n.eventsMoreActions,
               onSelected: (action) {
                 switch (action) {
+                  case _EventCardMenuAction.beneficiaries:
+                    onManageBeneficiaries();
                   case _EventCardMenuAction.archive:
                     onArchive();
                   case _EventCardMenuAction.history:
@@ -80,6 +77,10 @@ class EventCard extends StatelessWidget {
                 }
               },
               itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: _EventCardMenuAction.beneficiaries,
+                  child: Text(l10n.eventsBeneficiariesAction),
+                ),
                 PopupMenuItem(
                   value: _EventCardMenuAction.archive,
                   child: Text(l10n.eventsArchiveEventAction),
