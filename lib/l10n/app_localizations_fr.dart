@@ -410,4 +410,40 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsImportError =>
       'Impossible d\'importer ce fichier. Verifiez qu\'il s\'agit bien d\'une sauvegarde DIF Pass valide.';
+
+  @override
+  String get settingsAuditSectionTitle => 'Statistiques d\'utilisation';
+
+  @override
+  String get settingsAuditExplanation =>
+      'Enregistre localement les scans et les principales actions (creation d\'evenement, generation de tickets, import, sauvegarde) pour ameliorer l\'application plus tard. Aucun nom, aucune donnee personnelle. Reste sur cet appareil sauf si vous exportez le fichier vous-meme. Desactivable et supprimable a tout moment.';
+
+  @override
+  String get settingsAuditToggleLabel =>
+      'Activer les statistiques d\'utilisation';
+
+  @override
+  String get settingsAuditExportAction => 'Exporter les donnees d\'audit';
+
+  @override
+  String get settingsAuditDeleteAction => 'Supprimer les donnees d\'audit';
+
+  @override
+  String get settingsAuditDeleteConfirmTitle =>
+      'Supprimer les donnees d\'audit ?';
+
+  @override
+  String get settingsAuditDeleteConfirmBody =>
+      'Cette action supprime definitivement le journal d\'utilisation enregistre sur cet appareil.';
+
+  @override
+  String get settingsAuditDeleteSuccess => 'Donnees d\'audit supprimees';
+
+  @override
+  String get settingsAuditDeleteError =>
+      'Echec de la suppression des donnees d\'audit';
+
+  @override
+  String get settingsAuditExportError =>
+      'Echec de l\'export des donnees d\'audit';
 }

@@ -402,4 +402,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsImportError =>
       'Could not import this file. Make sure it is a valid DIF Pass backup.';
+
+  @override
+  String get settingsAuditSectionTitle => 'Usage statistics';
+
+  @override
+  String get settingsAuditExplanation =>
+      'Locally records scans and the main actions (event creation, ticket generation, import, backup) to improve the app later. No names, no personal data. Stays on this device unless you export the file yourself. Can be turned off and deleted at any time.';
+
+  @override
+  String get settingsAuditToggleLabel => 'Enable usage statistics';
+
+  @override
+  String get settingsAuditExportAction => 'Export audit data';
+
+  @override
+  String get settingsAuditDeleteAction => 'Delete audit data';
+
+  @override
+  String get settingsAuditDeleteConfirmTitle => 'Delete audit data?';
+
+  @override
+  String get settingsAuditDeleteConfirmBody =>
+      'This permanently deletes the usage log recorded on this device.';
+
+  @override
+  String get settingsAuditDeleteSuccess => 'Audit data deleted';
+
+  @override
+  String get settingsAuditDeleteError => 'Failed to delete audit data';
+
+  @override
+  String get settingsAuditExportError => 'Failed to export audit data';
 }

@@ -151,5 +151,15 @@
   "settingsLanguageAuto": "Automatic",
   "settingsLanguageFrench": "French",
   "settingsLanguageEnglish": "English",
-  "settingsImportError": "Could not import this file. Make sure it is a valid DIF Pass backup."
+  "settingsImportError": "Could not import this file. Make sure it is a valid DIF Pass backup.",
+  "settingsAuditSectionTitle": "Usage statistics",
+  "settingsAuditExplanation": "Locally records scans and the main actions (event creation, ticket generation, import, backup) to improve the app later. No names, no personal data. Stays on this device unless you export the file yourself. Can be turned off and deleted at any time.",
+  "settingsAuditToggleLabel": "Enable usage statistics",
+  "settingsAuditExportAction": "Export audit data",
+  "settingsAuditDeleteAction": "Delete audit data",
+  "settingsAuditDeleteConfirmTitle": "Delete audit data?",
+  "settingsAuditDeleteConfirmBody": "This permanently deletes the usage log recorded on this device.",
+  "settingsAuditDeleteSuccess": "Audit data deleted",
+  "settingsAuditDeleteError": "Failed to delete audit data",
+  "settingsAuditExportError": "Failed to export audit data"
 }

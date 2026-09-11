@@ -10,6 +10,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/audit/audit_logger.dart';
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../core/database/database_provider.dart';
 import '../../../../core/settings/settings_providers.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -54,6 +56,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await SharePlus.instance.share(
         ShareParams(files: [XFile(exportFile.path)]),
       );
+      ref.read(auditLoggerProvider).logBackupAction(action: 'export');
       if (!mounted) return;
       HapticFeedback.lightImpact();
       messenger.showSnackBar(
@@ -107,6 +110,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final repository = await ref.read(backupRepositoryProvider.future);
       await ref.read(appDatabaseProvider).close();
       await repository.importBackup(bytes);
+      ref.read(auditLoggerProvider).logBackupAction(action: 'import');
       container.invalidate(appDatabaseProvider);
       if (!mounted) return;
       HapticFeedback.lightImpact();
@@ -119,13 +123,63 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<File?> _auditFileIfExists() async {
+    final file = await resolveAuditFile();
+    return await file.exists() ? file : null;
+  }
+
+  Future<void> _exportAudit() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final file = await resolveAuditFile();
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsAuditExportError)));
+    }
+  }
+
+  Future<void> _deleteAudit() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.settingsAuditDeleteConfirmTitle),
+        content: Text(l10n.settingsAuditDeleteConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.commonDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      final file = await resolveAuditFile();
+      if (await file.exists()) await file.delete();
+      if (!mounted) return;
+      setState(() {});
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsAuditDeleteSuccess)));
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsAuditDeleteError)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settings = ref.watch(appSettingsProvider);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsScreenTitle)),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -166,6 +220,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onSelectionChanged: (selection) => ref
                   .read(appSettingsProvider.notifier)
                   .setLocaleOverride(selection.first),
+            ),
+            const SizedBox(height: 32),
+            Text(l10n.settingsAuditSectionTitle, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            Text(l10n.settingsAuditExplanation, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.settingsAuditToggleLabel),
+              value: settings.auditEnabled,
+              onChanged: (value) =>
+                  ref.read(appSettingsProvider.notifier).setAuditEnabled(value),
+            ),
+            const SizedBox(height: 8),
+            FutureBuilder<File?>(
+              future: _auditFileIfExists(),
+              builder: (context, snapshot) {
+                final hasFile = snapshot.data != null;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: hasFile ? _exportAudit : null,
+                      icon: const Icon(Icons.upload_outlined),
+                      label: Text(l10n.settingsAuditExportAction),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: hasFile ? _deleteAudit : null,
+                      icon: const Icon(Icons.delete_outline),
+                      label: Text(l10n.settingsAuditDeleteAction),
+                      style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),

@@ -817,6 +817,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not import this file. Make sure it is a valid DIF Pass backup.'**
   String get settingsImportError;
+
+  /// No description provided for @settingsAuditSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage statistics'**
+  String get settingsAuditSectionTitle;
+
+  /// No description provided for @settingsAuditExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Locally records scans and the main actions (event creation, ticket generation, import, backup) to improve the app later. No names, no personal data. Stays on this device unless you export the file yourself. Can be turned off and deleted at any time.'**
+  String get settingsAuditExplanation;
+
+  /// No description provided for @settingsAuditToggleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable usage statistics'**
+  String get settingsAuditToggleLabel;
+
+  /// No description provided for @settingsAuditExportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Export audit data'**
+  String get settingsAuditExportAction;
+
+  /// No description provided for @settingsAuditDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete audit data'**
+  String get settingsAuditDeleteAction;
+
+  /// No description provided for @settingsAuditDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete audit data?'**
+  String get settingsAuditDeleteConfirmTitle;
+
+  /// No description provided for @settingsAuditDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes the usage log recorded on this device.'**
+  String get settingsAuditDeleteConfirmBody;
+
+  /// No description provided for @settingsAuditDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit data deleted'**
+  String get settingsAuditDeleteSuccess;
+
+  /// No description provided for @settingsAuditDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete audit data'**
+  String get settingsAuditDeleteError;
+
+  /// No description provided for @settingsAuditExportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export audit data'**
+  String get settingsAuditExportError;
 }
 
 class _AppLocalizationsDelegate

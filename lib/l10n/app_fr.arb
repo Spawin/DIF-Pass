@@ -129,5 +129,15 @@
   "settingsLanguageAuto": "Automatique",
   "settingsLanguageFrench": "Francais",
   "settingsLanguageEnglish": "Anglais",
-  "settingsImportError": "Impossible d'importer ce fichier. Verifiez qu'il s'agit bien d'une sauvegarde DIF Pass valide."
+  "settingsImportError": "Impossible d'importer ce fichier. Verifiez qu'il s'agit bien d'une sauvegarde DIF Pass valide.",
+  "settingsAuditSectionTitle": "Statistiques d'utilisation",
+  "settingsAuditExplanation": "Enregistre localement les scans et les principales actions (creation d'evenement, generation de tickets, import, sauvegarde) pour ameliorer l'application plus tard. Aucun nom, aucune donnee personnelle. Reste sur cet appareil sauf si vous exportez le fichier vous-meme. Desactivable et supprimable a tout moment.",
+  "settingsAuditToggleLabel": "Activer les statistiques d'utilisation",
+  "settingsAuditExportAction": "Exporter les donnees d'audit",
+  "settingsAuditDeleteAction": "Supprimer les donnees d'audit",
+  "settingsAuditDeleteConfirmTitle": "Supprimer les donnees d'audit ?",
+  "settingsAuditDeleteConfirmBody": "Cette action supprime definitivement le journal d'utilisation enregistre sur cet appareil.",
+  "settingsAuditDeleteSuccess": "Donnees d'audit supprimees",
+  "settingsAuditDeleteError": "Echec de la suppression des donnees d'audit",
+  "settingsAuditExportError": "Echec de l'export des donnees d'audit"
 }

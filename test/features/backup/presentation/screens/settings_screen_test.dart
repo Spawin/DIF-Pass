@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dif_pass/core/audit/audit_logger.dart';
+import 'package:dif_pass/core/audit/audit_providers.dart';
+import 'package:dif_pass/core/settings/app_settings.dart';
 import 'package:dif_pass/features/backup/data/backup_repository.dart';
 import 'package:dif_pass/features/backup/presentation/providers/backup_providers.dart';
 import 'package:dif_pass/features/backup/presentation/screens/settings_screen.dart';
@@ -9,7 +13,23 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// SettingsScreen's audit export/delete flow calls the real top-level
+// resolveAuditFile() (getApplicationSupportDirectory() + 'audit.jsonl'),
+// not the auditLoggerProvider override's fileResolver - that override only
+// matters for AuditLogger.setEnabled() calls made from setAuditEnabled().
+// To make the audit file the widget resolves the same one these tests write
+// to, point path_provider's application-support path at tempDir.
+class _FakePathProviderPlatform extends PathProviderPlatform {
+  _FakePathProviderPlatform(this.path);
+
+  final String path;
+
+  @override
+  Future<String?> getApplicationSupportPath() async => path;
+}
 
 class _FakeBackupRepository implements BackupRepository {
   bool importCalled = false;
@@ -48,13 +68,20 @@ base class _FakePlatformFile extends PlatformFile {
   Stream<Uint8List> readAsByteStream() => Stream.value(_bytes);
 }
 
-Widget _wrap(Widget child, {BackupRepository? repository}) {
+Widget _wrap(
+  Widget child, {
+  BackupRepository? repository,
+  List<Override> extraOverrides = const [],
+  Locale? locale,
+}) {
   return ProviderScope(
     overrides: [
       if (repository != null)
         backupRepositoryProvider.overrideWith((ref) => repository),
+      ...extraOverrides,
     ],
     child: MaterialApp(
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: child,
@@ -71,7 +98,9 @@ void main() {
     expect(find.text('Import backup'), findsOneWidget);
     final exportButton = tester.widget<FilledButton>(find.byType(FilledButton));
     expect(exportButton.onPressed, isNotNull);
-    final importButton = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
+    final importButton = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, 'Import backup'),
+    );
     expect(importButton.onPressed, isNotNull);
   });
 
@@ -92,7 +121,11 @@ void main() {
     await tester.pump();
 
     expect(
-      tester.widget<OutlinedButton>(find.byType(OutlinedButton)).onPressed,
+      tester
+          .widget<OutlinedButton>(
+            find.widgetWithText(OutlinedButton, 'Import backup'),
+          )
+          .onPressed,
       isNull,
     );
     expect(
@@ -120,7 +153,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester.widget<OutlinedButton>(find.byType(OutlinedButton)).onPressed,
+      tester
+          .widget<OutlinedButton>(
+            find.widgetWithText(OutlinedButton, 'Import backup'),
+          )
+          .onPressed,
       isNotNull,
     );
     expect(
@@ -186,5 +223,99 @@ void main() {
       find.byType(SegmentedButton<String?>),
     );
     expect(segmentedButton.selected, {'fr'});
+  });
+
+  group('audit section', () {
+    late Directory tempDir;
+    late File auditFile;
+    late AuditLogger logger;
+    late PathProviderPlatform originalPathProvider;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('dif_pass_settings_audit_test');
+      auditFile = File('${tempDir.path}/audit.jsonl');
+      logger = AuditLogger(enabled: false, fileResolver: () async => auditFile);
+      originalPathProvider = PathProviderPlatform.instance;
+      PathProviderPlatform.instance = _FakePathProviderPlatform(tempDir.path);
+    });
+
+    tearDown(() async {
+      PathProviderPlatform.instance = originalPathProvider;
+      await tempDir.delete(recursive: true);
+    });
+
+    Future<void> pumpAuditSettings(WidgetTester tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SettingsScreen(),
+          extraOverrides: [auditLoggerProvider.overrideWithValue(logger)],
+          locale: const Locale('fr'),
+        ),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('toggling the switch persists the preference', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      await pumpAuditSettings(tester);
+
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      final settings = await AppSettings.load();
+      expect(settings.auditEnabled, isTrue);
+    });
+
+    testWidgets('export and delete buttons are disabled when no audit file exists', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      await pumpAuditSettings(tester);
+
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Exporter les donnees d\'audit'),
+            )
+            .onPressed,
+        isNull,
+      );
+      expect(
+        tester
+            .widget<TextButton>(
+              find.widgetWithText(TextButton, 'Supprimer les donnees d\'audit'),
+            )
+            .onPressed,
+        isNull,
+      );
+    });
+
+    testWidgets('delete asks for confirmation and only deletes on confirm', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      await auditFile.writeAsString(
+        '{"ts":"2026-01-01T00:00:00.000","session":"s","type":"backup_action","action":"export"}\n',
+      );
+      await pumpAuditSettings(tester);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Supprimer les donnees d\'audit'));
+      await tester.pumpAndSettle();
+      expect(find.text('Supprimer les donnees d\'audit ?'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Annuler'));
+      await tester.pumpAndSettle();
+      expect(await auditFile.exists(), isTrue);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Supprimer les donnees d\'audit'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.widgetWithText(TextButton, 'Supprimer'),
+      ));
+      await tester.pumpAndSettle();
+      expect(await auditFile.exists(), isFalse);
+    });
   });
 }
