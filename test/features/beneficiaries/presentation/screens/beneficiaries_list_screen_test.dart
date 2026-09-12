@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/providers/beneficiary_providers.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/screens/beneficiaries_list_screen.dart';
@@ -191,4 +193,60 @@ void main() {
       );
     },
   );
+
+  testWidgets('shows the beneficiary photo when set', (tester) async {
+    final testPhotoBytes = base64Decode(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+    );
+
+    final fake = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+          photo: testPhotoBytes,
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const BeneficiariesListScreen(eventId: 1),
+        fake,
+        _fakeEventsWithOneEvent(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final avatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar));
+    expect(avatar.backgroundImage, isNotNull);
+  });
+
+  testWidgets('shows a placeholder icon when no photo is set', (tester) async {
+    final fake = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const BeneficiariesListScreen(eventId: 1),
+        fake,
+        _fakeEventsWithOneEvent(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.person_outline), findsOneWidget);
+  });
 }
