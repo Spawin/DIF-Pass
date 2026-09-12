@@ -39,7 +39,11 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
   Future<int> createBeneficiary(int eventId, NewBeneficiary beneficiary) {
     return _db.transaction(() async {
       final id = await _db.into(_db.beneficiaries).insert(
-            BeneficiariesCompanion.insert(eventId: eventId, name: beneficiary.name),
+            BeneficiariesCompanion.insert(
+              eventId: eventId,
+              name: beneficiary.name,
+              photo: Value(beneficiary.photo),
+            ),
           );
       await _insertValues(id, beneficiary.customFieldValues);
       return id;
@@ -50,7 +54,10 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
   Future<void> updateBeneficiary(int id, NewBeneficiary beneficiary) {
     return _db.transaction(() async {
       await (_db.update(_db.beneficiaries)..where((tbl) => tbl.id.equals(id)))
-          .write(BeneficiariesCompanion(name: Value(beneficiary.name)));
+          .write(BeneficiariesCompanion(
+            name: Value(beneficiary.name),
+            photo: Value(beneficiary.photo),
+          ));
       await (_db.delete(_db.beneficiaryValues)
             ..where((tbl) => tbl.beneficiaryId.equals(id)))
           .go();
@@ -69,7 +76,11 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
       var count = 0;
       for (final beneficiary in beneficiaries) {
         final id = await _db.into(_db.beneficiaries).insert(
-              BeneficiariesCompanion.insert(eventId: eventId, name: beneficiary.name),
+              BeneficiariesCompanion.insert(
+                eventId: eventId,
+                name: beneficiary.name,
+                photo: Value(beneficiary.photo),
+              ),
             );
         await _insertValues(id, beneficiary.customFieldValues);
         count++;
@@ -111,6 +122,7 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
               customFieldValues: Map.unmodifiable(values[b.id] ?? const {}),
               createdAt: b.createdAt,
               syncId: b.syncId,
+              photo: b.photo,
             ))
         .toList()
       ..sort((a, b) => a.name.compareTo(b.name));

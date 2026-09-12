@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class Beneficiary {
   const Beneficiary({
     required this.id,
@@ -6,6 +8,7 @@ class Beneficiary {
     required this.customFieldValues,
     required this.createdAt,
     this.syncId,
+    this.photo,
   });
 
   final int id;
@@ -16,4 +19,8 @@ class Beneficiary {
 
   // Stable cross-device id, see check_in.dart
   final String? syncId;
+
+  // Optional identification photo, shown on the form, the list, the ticket,
+  // and the check-in confirmation. Never required.
+  final Uint8List? photo;
 }

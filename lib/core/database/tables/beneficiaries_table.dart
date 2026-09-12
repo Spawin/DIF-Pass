@@ -11,6 +11,7 @@ class Beneficiaries extends Table {
       integer().references(Events, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  BlobColumn get photo => blob().nullable()();
 
   // Stable cross-device identifier for a future multi-device merge.
   // ponytail: nullable in the schema ONLY so the v2 -> v3 migration can add

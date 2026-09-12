@@ -48,6 +48,7 @@ class FakeBeneficiaryRepository implements BeneficiaryRepository {
       name: beneficiary.name,
       customFieldValues: Map.of(beneficiary.customFieldValues),
       createdAt: DateTime.now(),
+      photo: beneficiary.photo,
     ));
     _emit(eventId);
     return id;
@@ -63,6 +64,7 @@ class FakeBeneficiaryRepository implements BeneficiaryRepository {
       name: beneficiary.name,
       customFieldValues: Map.of(beneficiary.customFieldValues),
       createdAt: existing.createdAt,
+      photo: beneficiary.photo,
     );
     _emit(existing.eventId);
   }
@@ -88,6 +90,7 @@ class FakeBeneficiaryRepository implements BeneficiaryRepository {
         name: beneficiary.name,
         customFieldValues: Map.of(beneficiary.customFieldValues),
         createdAt: DateTime.now(),
+        photo: beneficiary.photo,
       ));
     }
     _emit(eventId);

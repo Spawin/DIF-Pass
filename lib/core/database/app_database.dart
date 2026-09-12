@@ -37,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -47,6 +47,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 3) {
         await _addSyncIds(m);
+      }
+      if (from < 4) {
+        await m.addColumn(beneficiaries, beneficiaries.photo);
       }
     },
     beforeOpen: (details) async {

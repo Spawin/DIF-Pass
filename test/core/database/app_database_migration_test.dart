@@ -228,4 +228,107 @@ void main() {
       ]),
     );
   });
+
+  test('opening a v3 database adds a photo column that reads null on '
+      'existing beneficiaries', () async {
+    final dir = await Directory.systemTemp.createTemp('dif_pass_migration_v3');
+    final file = File(p.join(dir.path, 'legacy_v3.sqlite'));
+    addTearDown(() => dir.delete(recursive: true));
+
+    final legacyDb = sqlite3.sqlite3.open(file.path);
+    legacyDb.execute('''
+      CREATE TABLE events (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        short_code TEXT NOT NULL,
+        name TEXT NOT NULL,
+        date INTEGER NOT NULL,
+        location TEXT NULL,
+        logo BLOB NULL,
+        presence_mode TEXT NOT NULL,
+        ticket_template TEXT NOT NULL DEFAULT 'standard',
+        archived_at INTEGER NULL,
+        created_at INTEGER NOT NULL,
+        sync_id TEXT NULL
+      );
+    ''');
+    legacyDb.execute('''
+      CREATE TABLE custom_fields (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        event_id INTEGER NOT NULL REFERENCES events (id) ON DELETE CASCADE,
+        label TEXT NOT NULL,
+        field_type TEXT NOT NULL,
+        sort_order INTEGER NOT NULL,
+        show_on_ticket INTEGER NOT NULL DEFAULT 0,
+        sync_id TEXT NULL
+      );
+    ''');
+    legacyDb.execute('''
+      CREATE TABLE beneficiaries (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        event_id INTEGER NOT NULL REFERENCES events (id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        sync_id TEXT NULL
+      );
+    ''');
+    legacyDb.execute('''
+      CREATE TABLE beneficiary_values (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        beneficiary_id INTEGER NOT NULL REFERENCES beneficiaries (id) ON DELETE CASCADE,
+        custom_field_id INTEGER NOT NULL REFERENCES custom_fields (id) ON DELETE CASCADE,
+        value TEXT NOT NULL
+      );
+    ''');
+    legacyDb.execute('''
+      CREATE TABLE tickets (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        beneficiary_id INTEGER NOT NULL REFERENCES beneficiaries (id) ON DELETE CASCADE,
+        event_id INTEGER NOT NULL REFERENCES events (id) ON DELETE CASCADE,
+        readable_id TEXT NOT NULL,
+        random_part TEXT NOT NULL,
+        qr_payload TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        sync_id TEXT NULL,
+        UNIQUE (event_id, readable_id)
+      );
+    ''');
+    legacyDb.execute('''
+      CREATE TABLE check_ins (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        ticket_id INTEGER NOT NULL REFERENCES tickets (id) ON DELETE CASCADE,
+        event_id INTEGER NOT NULL REFERENCES events (id) ON DELETE CASCADE,
+        scanned_at INTEGER NOT NULL,
+        sync_id TEXT NULL
+      );
+    ''');
+    for (final entry in {
+      'idx_events_sync_id': 'events',
+      'idx_custom_fields_sync_id': 'custom_fields',
+      'idx_beneficiaries_sync_id': 'beneficiaries',
+      'idx_tickets_sync_id': 'tickets',
+      'idx_check_ins_sync_id': 'check_ins',
+    }.entries) {
+      legacyDb.execute(
+        'CREATE UNIQUE INDEX ${entry.key} ON ${entry.value} (sync_id)',
+      );
+    }
+    legacyDb.execute(
+      "INSERT INTO events (short_code, name, date, presence_mode, created_at, sync_id) "
+      "VALUES ('EVT1', 'A', 0, 'simple', 0, 'e1')",
+    );
+    legacyDb.execute(
+      "INSERT INTO beneficiaries (event_id, name, created_at, sync_id) "
+      "VALUES (1, 'Ama', 0, 'b1')",
+    );
+    legacyDb.userVersion = 3;
+    legacyDb.close();
+
+    final db = AppDatabase.forTesting(NativeDatabase(file));
+    addTearDown(db.close);
+
+    final beneficiaries = await db.select(db.beneficiaries).get();
+    expect(beneficiaries, hasLength(1));
+    expect(beneficiaries.single.name, 'Ama');
+    expect(beneficiaries.single.photo, isNull);
+  });
 }

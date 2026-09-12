@@ -1167,6 +1167,15 @@ class $BeneficiariesTable extends Beneficiaries
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _photoMeta = const VerificationMeta('photo');
+  @override
+  late final GeneratedColumn<Uint8List> photo = GeneratedColumn<Uint8List>(
+    'photo',
+    aliasedName,
+    true,
+    type: DriftSqlType.blob,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
   @override
   late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
@@ -1178,7 +1187,14 @@ class $BeneficiariesTable extends Beneficiaries
     clientDefault: () => uuidGen.v4(),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, eventId, name, createdAt, syncId];
+  List<GeneratedColumn> get $columns => [
+    id,
+    eventId,
+    name,
+    createdAt,
+    photo,
+    syncId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1216,6 +1232,12 @@ class $BeneficiariesTable extends Beneficiaries
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
+    if (data.containsKey('photo')) {
+      context.handle(
+        _photoMeta,
+        photo.isAcceptableOrUnknown(data['photo']!, _photoMeta),
+      );
+    }
     if (data.containsKey('sync_id')) {
       context.handle(
         _syncIdMeta,
@@ -1247,6 +1269,10 @@ class $BeneficiariesTable extends Beneficiaries
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      photo: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}photo'],
+      ),
       syncId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sync_id'],
@@ -1266,12 +1292,14 @@ class BeneficiaryEntity extends DataClass
   final int eventId;
   final String name;
   final DateTime createdAt;
+  final Uint8List? photo;
   final String? syncId;
   const BeneficiaryEntity({
     required this.id,
     required this.eventId,
     required this.name,
     required this.createdAt,
+    this.photo,
     this.syncId,
   });
   @override
@@ -1281,6 +1309,9 @@ class BeneficiaryEntity extends DataClass
     map['event_id'] = Variable<int>(eventId);
     map['name'] = Variable<String>(name);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || photo != null) {
+      map['photo'] = Variable<Uint8List>(photo);
+    }
     if (!nullToAbsent || syncId != null) {
       map['sync_id'] = Variable<String>(syncId);
     }
@@ -1293,6 +1324,9 @@ class BeneficiaryEntity extends DataClass
       eventId: Value(eventId),
       name: Value(name),
       createdAt: Value(createdAt),
+      photo: photo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photo),
       syncId: syncId == null && nullToAbsent
           ? const Value.absent()
           : Value(syncId),
@@ -1309,6 +1343,7 @@ class BeneficiaryEntity extends DataClass
       eventId: serializer.fromJson<int>(json['eventId']),
       name: serializer.fromJson<String>(json['name']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      photo: serializer.fromJson<Uint8List?>(json['photo']),
       syncId: serializer.fromJson<String?>(json['syncId']),
     );
   }
@@ -1320,6 +1355,7 @@ class BeneficiaryEntity extends DataClass
       'eventId': serializer.toJson<int>(eventId),
       'name': serializer.toJson<String>(name),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'photo': serializer.toJson<Uint8List?>(photo),
       'syncId': serializer.toJson<String?>(syncId),
     };
   }
@@ -1329,12 +1365,14 @@ class BeneficiaryEntity extends DataClass
     int? eventId,
     String? name,
     DateTime? createdAt,
+    Value<Uint8List?> photo = const Value.absent(),
     Value<String?> syncId = const Value.absent(),
   }) => BeneficiaryEntity(
     id: id ?? this.id,
     eventId: eventId ?? this.eventId,
     name: name ?? this.name,
     createdAt: createdAt ?? this.createdAt,
+    photo: photo.present ? photo.value : this.photo,
     syncId: syncId.present ? syncId.value : this.syncId,
   );
   BeneficiaryEntity copyWithCompanion(BeneficiariesCompanion data) {
@@ -1343,6 +1381,7 @@ class BeneficiaryEntity extends DataClass
       eventId: data.eventId.present ? data.eventId.value : this.eventId,
       name: data.name.present ? data.name.value : this.name,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      photo: data.photo.present ? data.photo.value : this.photo,
       syncId: data.syncId.present ? data.syncId.value : this.syncId,
     );
   }
@@ -1354,13 +1393,21 @@ class BeneficiaryEntity extends DataClass
           ..write('eventId: $eventId, ')
           ..write('name: $name, ')
           ..write('createdAt: $createdAt, ')
+          ..write('photo: $photo, ')
           ..write('syncId: $syncId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, eventId, name, createdAt, syncId);
+  int get hashCode => Object.hash(
+    id,
+    eventId,
+    name,
+    createdAt,
+    $driftBlobEquality.hash(photo),
+    syncId,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1369,6 +1416,7 @@ class BeneficiaryEntity extends DataClass
           other.eventId == this.eventId &&
           other.name == this.name &&
           other.createdAt == this.createdAt &&
+          $driftBlobEquality.equals(other.photo, this.photo) &&
           other.syncId == this.syncId);
 }
 
@@ -1377,12 +1425,14 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
   final Value<int> eventId;
   final Value<String> name;
   final Value<DateTime> createdAt;
+  final Value<Uint8List?> photo;
   final Value<String?> syncId;
   const BeneficiariesCompanion({
     this.id = const Value.absent(),
     this.eventId = const Value.absent(),
     this.name = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.photo = const Value.absent(),
     this.syncId = const Value.absent(),
   });
   BeneficiariesCompanion.insert({
@@ -1390,6 +1440,7 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
     required int eventId,
     required String name,
     this.createdAt = const Value.absent(),
+    this.photo = const Value.absent(),
     this.syncId = const Value.absent(),
   }) : eventId = Value(eventId),
        name = Value(name);
@@ -1398,6 +1449,7 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
     Expression<int>? eventId,
     Expression<String>? name,
     Expression<DateTime>? createdAt,
+    Expression<Uint8List>? photo,
     Expression<String>? syncId,
   }) {
     return RawValuesInsertable({
@@ -1405,6 +1457,7 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
       if (eventId != null) 'event_id': eventId,
       if (name != null) 'name': name,
       if (createdAt != null) 'created_at': createdAt,
+      if (photo != null) 'photo': photo,
       if (syncId != null) 'sync_id': syncId,
     });
   }
@@ -1414,6 +1467,7 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
     Value<int>? eventId,
     Value<String>? name,
     Value<DateTime>? createdAt,
+    Value<Uint8List?>? photo,
     Value<String?>? syncId,
   }) {
     return BeneficiariesCompanion(
@@ -1421,6 +1475,7 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
       eventId: eventId ?? this.eventId,
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
+      photo: photo ?? this.photo,
       syncId: syncId ?? this.syncId,
     );
   }
@@ -1440,6 +1495,9 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (photo.present) {
+      map['photo'] = Variable<Uint8List>(photo.value);
+    }
     if (syncId.present) {
       map['sync_id'] = Variable<String>(syncId.value);
     }
@@ -1453,6 +1511,7 @@ class BeneficiariesCompanion extends UpdateCompanion<BeneficiaryEntity> {
           ..write('eventId: $eventId, ')
           ..write('name: $name, ')
           ..write('createdAt: $createdAt, ')
+          ..write('photo: $photo, ')
           ..write('syncId: $syncId')
           ..write(')'))
         .toString();
@@ -3926,6 +3985,7 @@ typedef $$BeneficiariesTableCreateCompanionBuilder =
       required int eventId,
       required String name,
       Value<DateTime> createdAt,
+      Value<Uint8List?> photo,
       Value<String?> syncId,
     });
 typedef $$BeneficiariesTableUpdateCompanionBuilder =
@@ -3934,6 +3994,7 @@ typedef $$BeneficiariesTableUpdateCompanionBuilder =
       Value<int> eventId,
       Value<String> name,
       Value<DateTime> createdAt,
+      Value<Uint8List?> photo,
       Value<String?> syncId,
     });
 
@@ -4027,6 +4088,11 @@ class $$BeneficiariesTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<Uint8List> get photo => $composableBuilder(
+    column: $table.photo,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4133,6 +4199,11 @@ class $$BeneficiariesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<Uint8List> get photo => $composableBuilder(
+    column: $table.photo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get syncId => $composableBuilder(
     column: $table.syncId,
     builder: (column) => ColumnOrderings(column),
@@ -4179,6 +4250,9 @@ class $$BeneficiariesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<Uint8List> get photo =>
+      $composableBuilder(column: $table.photo, builder: (column) => column);
 
   GeneratedColumn<String> get syncId =>
       $composableBuilder(column: $table.syncId, builder: (column) => column);
@@ -4294,12 +4368,14 @@ class $$BeneficiariesTableTableManager
                 Value<int> eventId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<Uint8List?> photo = const Value.absent(),
                 Value<String?> syncId = const Value.absent(),
               }) => BeneficiariesCompanion(
                 id: id,
                 eventId: eventId,
                 name: name,
                 createdAt: createdAt,
+                photo: photo,
                 syncId: syncId,
               ),
           createCompanionCallback:
@@ -4308,12 +4384,14 @@ class $$BeneficiariesTableTableManager
                 required int eventId,
                 required String name,
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<Uint8List?> photo = const Value.absent(),
                 Value<String?> syncId = const Value.absent(),
               }) => BeneficiariesCompanion.insert(
                 id: id,
                 eventId: eventId,
                 name: name,
                 createdAt: createdAt,
+                photo: photo,
                 syncId: syncId,
               ),
           withReferenceMapper: (p0) => p0

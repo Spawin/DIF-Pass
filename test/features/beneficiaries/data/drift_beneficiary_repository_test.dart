@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dif_pass/core/database/app_database.dart';
 import 'package:dif_pass/features/beneficiaries/data/drift_beneficiary_repository.dart';
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
@@ -134,5 +136,55 @@ void main() {
     expect(imported, 2);
     final beneficiaries = await repository.watchBeneficiaries(eventId).first;
     expect(beneficiaries.map((b) => b.name).toSet(), {'Jane Doe', 'John Smith'});
+  });
+
+  test('createBeneficiary stores and round-trips a photo', () async {
+    final photo = Uint8List.fromList([1, 2, 3, 4]);
+    final id = await repository.createBeneficiary(
+      eventId,
+      NewBeneficiary(name: 'Jane Doe', customFieldValues: const {}, photo: photo),
+    );
+
+    final beneficiary = await repository.getBeneficiary(id);
+    expect(beneficiary.photo, photo);
+  });
+
+  test('createBeneficiary leaves photo null when none is given', () async {
+    final id = await repository.createBeneficiary(
+      eventId,
+      const NewBeneficiary(name: 'Jane Doe', customFieldValues: {}),
+    );
+
+    final beneficiary = await repository.getBeneficiary(id);
+    expect(beneficiary.photo, isNull);
+  });
+
+  test('updateBeneficiary replaces the photo', () async {
+    final id = await repository.createBeneficiary(
+      eventId,
+      NewBeneficiary(
+        name: 'Jane Doe',
+        customFieldValues: const {},
+        photo: Uint8List.fromList([1, 2, 3]),
+      ),
+    );
+
+    final newPhoto = Uint8List.fromList([9, 9, 9]);
+    await repository.updateBeneficiary(
+      id,
+      NewBeneficiary(name: 'Jane Doe', customFieldValues: const {}, photo: newPhoto),
+    );
+
+    final beneficiary = await repository.getBeneficiary(id);
+    expect(beneficiary.photo, newPhoto);
+  });
+
+  test('importBeneficiaries never sets a photo', () async {
+    await repository.importBeneficiaries(eventId, const [
+      NewBeneficiary(name: 'Jane Doe', customFieldValues: {}),
+    ]);
+
+    final beneficiaries = await repository.watchBeneficiaries(eventId).first;
+    expect(beneficiaries.single.photo, isNull);
   });
 }
