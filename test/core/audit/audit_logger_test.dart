@@ -116,6 +116,18 @@ void main() {
     );
   });
 
+  test('logTicketsGenerated defaults generic to false and records it when true', () async {
+    final logger = buildLogger();
+    logger.logTicketsGenerated(count: 3, durationMs: 20);
+    logger.logTicketsGenerated(count: 2, durationMs: 15, generic: true);
+    await Future<void>.delayed(_writeSettleDelay);
+
+    final lines = await readLines();
+    expect(lines, hasLength(2));
+    expect(lines[0]['generic'], isFalse);
+    expect(lines[1]['generic'], isTrue);
+  });
+
   test('two log calls from the same logger share the same session id', () async {
     final logger = buildLogger();
     logger.logBackupAction(action: 'export');

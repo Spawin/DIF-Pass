@@ -101,11 +101,16 @@ class AuditLogger {
     }));
   }
 
-  void logTicketsGenerated({required int count, required int durationMs}) {
+  void logTicketsGenerated({
+    required int count,
+    required int durationMs,
+    bool generic = false,
+  }) {
     unawaited(_append({
       'type': 'tickets_generated',
       'count': count,
       'durationMs': durationMs,
+      'generic': generic,
     }));
   }
 
