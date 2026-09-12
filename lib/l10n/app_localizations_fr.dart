@@ -254,6 +254,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ticketsGenerateAction => 'Generer les tickets';
 
   @override
+  String get ticketsGenerateGenericAction => 'Ajouter des tickets generiques';
+
+  @override
+  String get ticketsGenerateGenericDialogTitle => 'Combien de tickets ?';
+
+  @override
+  String get ticketsGenerateGenericCountLabel => 'Nombre de tickets';
+
+  @override
+  String get ticketsGenerateGenericCountInvalid =>
+      'Entrez un nombre entre 1 et 500';
+
+  @override
+  String ticketsGenerateGenericSuccess(int count) {
+    return '$count tickets generiques ajoutes';
+  }
+
+  @override
+  String get ticketsGenerateGenericError =>
+      'Echec de l\'ajout des tickets generiques';
+
+  @override
   String get ticketsGenerateNoBeneficiariesHint =>
       'Ajoutez des beneficiaires avant de generer les tickets.';
 

@@ -554,6 +554,42 @@ abstract class AppLocalizations {
   /// **'Generate tickets'**
   String get ticketsGenerateAction;
 
+  /// No description provided for @ticketsGenerateGenericAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add generic tickets'**
+  String get ticketsGenerateGenericAction;
+
+  /// No description provided for @ticketsGenerateGenericDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How many tickets?'**
+  String get ticketsGenerateGenericDialogTitle;
+
+  /// No description provided for @ticketsGenerateGenericCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of tickets'**
+  String get ticketsGenerateGenericCountLabel;
+
+  /// No description provided for @ticketsGenerateGenericCountInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number between 1 and 500'**
+  String get ticketsGenerateGenericCountInvalid;
+
+  /// No description provided for @ticketsGenerateGenericSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} generic tickets added'**
+  String ticketsGenerateGenericSuccess(int count);
+
+  /// No description provided for @ticketsGenerateGenericError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add generic tickets'**
+  String get ticketsGenerateGenericError;
+
   /// No description provided for @ticketsGenerateNoBeneficiariesHint.
   ///
   /// In en, this message translates to:

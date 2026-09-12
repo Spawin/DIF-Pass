@@ -81,6 +81,19 @@
   "ticketsTemplateStandard": "Standard",
   "ticketsTemplateElegant": "Elegant",
   "ticketsGenerateAction": "Generer les tickets",
+  "ticketsGenerateGenericAction": "Ajouter des tickets generiques",
+  "ticketsGenerateGenericDialogTitle": "Combien de tickets ?",
+  "ticketsGenerateGenericCountLabel": "Nombre de tickets",
+  "ticketsGenerateGenericCountInvalid": "Entrez un nombre entre 1 et 500",
+  "ticketsGenerateGenericSuccess": "{count} tickets generiques ajoutes",
+  "@ticketsGenerateGenericSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ticketsGenerateGenericError": "Echec de l'ajout des tickets generiques",
   "ticketsGenerateNoBeneficiariesHint": "Ajoutez des beneficiaires avant de generer les tickets.",
   "ticketsGenerateAllDoneHint": "Tous les tickets ont deja ete generes.",
   "ticketsEmptyState": "Aucun ticket pour l'instant.",

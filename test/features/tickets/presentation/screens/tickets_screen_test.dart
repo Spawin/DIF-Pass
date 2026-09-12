@@ -1,6 +1,7 @@
 import 'package:dif_pass/core/audit/audit_logger.dart';
 import 'package:dif_pass/core/audit/audit_providers.dart';
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
+import 'package:dif_pass/features/beneficiaries/domain/new_beneficiary.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/providers/beneficiary_providers.dart';
 import 'package:dif_pass/features/checkin/domain/check_in.dart';
 import 'package:dif_pass/features/checkin/presentation/providers/check_in_providers.dart';
@@ -455,5 +456,81 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('2 check-ins'), findsOneWidget);
+  });
+
+  testWidgets('adding generic tickets creates the requested count', (tester) async {
+    final fakeBeneficiaries = FakeBeneficiaryRepository();
+    final fakeTickets = FakeTicketRepository(
+      createBeneficiary: (eventId, name) => fakeBeneficiaries.createBeneficiary(
+        eventId,
+        NewBeneficiary(name: name, customFieldValues: const {}),
+      ),
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketsScreen(eventId: 1),
+        _fakeEventsWithOneEvent(),
+        fakeBeneficiaries,
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add generic tickets'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField), '3');
+    await tester.tap(find.widgetWithText(TextButton, 'Add generic tickets'));
+    await tester.pumpAndSettle();
+
+    expect(fakeTickets.tickets, hasLength(3));
+    expect(find.text('3 generic tickets added'), findsOneWidget);
+  });
+
+  testWidgets('cancelling the generic tickets dialog creates nothing', (tester) async {
+    final fakeTickets = FakeTicketRepository();
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketsScreen(eventId: 1),
+        _fakeEventsWithOneEvent(),
+        FakeBeneficiaryRepository(),
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add generic tickets'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(fakeTickets.tickets, isEmpty);
+  });
+
+  testWidgets('an invalid count is rejected without submitting', (tester) async {
+    final fakeTickets = FakeTicketRepository();
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketsScreen(eventId: 1),
+        _fakeEventsWithOneEvent(),
+        FakeBeneficiaryRepository(),
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add generic tickets'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField), '0');
+    await tester.tap(find.widgetWithText(TextButton, 'Add generic tickets'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enter a number between 1 and 500'), findsOneWidget);
+    expect(fakeTickets.tickets, isEmpty);
   });
 }

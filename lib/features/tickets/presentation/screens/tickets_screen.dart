@@ -149,6 +149,12 @@ class TicketsScreen extends ConsumerWidget {
                           ),
                     ),
                   ],
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () => _addGenericTickets(context, ref),
+                    icon: const Icon(Icons.playlist_add),
+                    label: Text(l10n.ticketsGenerateGenericAction),
+                  ),
                   const SizedBox(height: 16),
                   Expanded(
                     child: ticketsAsync.when(
@@ -265,6 +271,36 @@ class TicketsScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _addGenericTickets(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final auditLogger = ref.read(auditLoggerProvider);
+    final count = await showDialog<int>(
+      context: context,
+      builder: (_) => const _GenericTicketCountDialog(),
+    );
+    if (count == null) return;
+    try {
+      final stopwatch = Stopwatch()..start();
+      final created = await ref
+          .read(ticketRepositoryProvider)
+          .generateGenericTickets(eventId, count);
+      stopwatch.stop();
+      auditLogger.logTicketsGenerated(
+        count: created,
+        durationMs: stopwatch.elapsedMilliseconds,
+      );
+      HapticFeedback.lightImpact();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.ticketsGenerateGenericSuccess(created))),
+      );
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.ticketsGenerateGenericError)),
+      );
+    }
+  }
+
   Future<void> _exportAllTickets(
     BuildContext context,
     Event event,
@@ -294,5 +330,62 @@ class TicketsScreen extends ConsumerWidget {
       if (!context.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.ticketsExportError)));
     }
+  }
+}
+
+class _GenericTicketCountDialog extends StatefulWidget {
+  const _GenericTicketCountDialog();
+
+  @override
+  State<_GenericTicketCountDialog> createState() =>
+      _GenericTicketCountDialogState();
+}
+
+class _GenericTicketCountDialogState extends State<_GenericTicketCountDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(l10n.ticketsGenerateGenericDialogTitle),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: _controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(labelText: l10n.ticketsGenerateGenericCountLabel),
+          validator: (value) {
+            final count = int.tryParse(value?.trim() ?? '');
+            if (count == null || count <= 0 || count > 500) {
+              return l10n.ticketsGenerateGenericCountInvalid;
+            }
+            return null;
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.commonCancel),
+        ),
+        TextButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              Navigator.of(context).pop(int.parse(_controller.text.trim()));
+            }
+          },
+          child: Text(l10n.ticketsGenerateGenericAction),
+        ),
+      ],
+    );
   }
 }
