@@ -186,6 +186,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get beneficiaryFormFieldNumberInvalid => 'Entrez un nombre';
 
   @override
+  String get beneficiaryFormPhotoAction => 'Ajouter une photo';
+
+  @override
+  String get beneficiaryFormPhotoSourceCameraAction => 'Prendre une photo';
+
+  @override
+  String get beneficiaryFormPhotoSourceGalleryAction =>
+      'Choisir dans la galerie';
+
+  @override
   String get beneficiaryFormLoadError =>
       'Impossible de charger ce beneficiaire.';
 

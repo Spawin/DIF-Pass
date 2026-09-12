@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/providers/beneficiary_providers.dart';
 import 'package:dif_pass/features/beneficiaries/presentation/screens/beneficiary_form_screen.dart';
@@ -211,6 +213,52 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(fakeBeneficiaries.beneficiaries.single.name, 'Jane Doe');
+    },
+  );
+
+  testWidgets(
+    'editing a beneficiary with a photo shows it and preserves it on save',
+    (tester) async {
+      final fakeEvents = FakeEventRepository();
+      final eventId = await fakeEvents.createEvent(
+        name: 'Gala DIF 2026',
+        date: DateTime(2026, 12, 1),
+        presenceMode: PresenceMode.simple,
+        customFields: const [],
+      );
+      // A valid 1x1 transparent PNG, so MemoryImage can decode it during the test
+      // (arbitrary bytes throw an async image-decode exception that fails the test).
+      final photo = Uint8List.fromList(const [
+        137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 4,
+        0, 0, 0, 181, 28, 12, 2, 0, 0, 0, 11, 73, 68, 65, 84, 120, 218, 99, 100, 248, 15, 0, 1, 5,
+        1, 1, 39, 24, 227, 102, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
+      ]);
+      final fakeBeneficiaries = FakeBeneficiaryRepository(beneficiaries: [
+        Beneficiary(
+          id: 7,
+          eventId: eventId,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+          photo: photo,
+        ),
+      ]);
+
+      await tester.pumpWidget(_wrap(
+        BeneficiaryFormScreen(eventId: eventId, beneficiaryId: 7),
+        fakeEvents,
+        fakeBeneficiaries,
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CircleAvatar), findsOneWidget);
+
+      await tester.ensureVisible(find.text('Save'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(fakeBeneficiaries.beneficiaries.single.photo, photo);
     },
   );
 }

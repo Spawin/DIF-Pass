@@ -181,6 +181,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beneficiaryFormFieldNumberInvalid => 'Enter a number';
 
   @override
+  String get beneficiaryFormPhotoAction => 'Add a photo';
+
+  @override
+  String get beneficiaryFormPhotoSourceCameraAction => 'Take a photo';
+
+  @override
+  String get beneficiaryFormPhotoSourceGalleryAction => 'Choose from gallery';
+
+  @override
   String get beneficiaryFormLoadError => 'Could not load this beneficiary.';
 
   @override

@@ -434,6 +434,24 @@ abstract class AppLocalizations {
   /// **'Enter a number'**
   String get beneficiaryFormFieldNumberInvalid;
 
+  /// No description provided for @beneficiaryFormPhotoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo'**
+  String get beneficiaryFormPhotoAction;
+
+  /// No description provided for @beneficiaryFormPhotoSourceCameraAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get beneficiaryFormPhotoSourceCameraAction;
+
+  /// No description provided for @beneficiaryFormPhotoSourceGalleryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get beneficiaryFormPhotoSourceGalleryAction;
+
   /// No description provided for @beneficiaryFormLoadError.
   ///
   /// In en, this message translates to:

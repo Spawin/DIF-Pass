@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
@@ -25,6 +28,7 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
   final _nameController = TextEditingController();
   final Map<int, TextEditingController> _fieldControllers = {};
   bool _loading = false;
+  Uint8List? _photo;
 
   bool get _isEditing => widget.beneficiaryId != null;
 
@@ -46,6 +50,7 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
         for (final entry in beneficiary.customFieldValues.entries) {
           _controllerFor(entry.key).text = entry.value;
         }
+        _photo = beneficiary.photo;
       });
     } catch (e) {
       if (!mounted) return;
@@ -57,6 +62,44 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
 
   TextEditingController _controllerFor(int customFieldId) {
     return _fieldControllers.putIfAbsent(customFieldId, () => TextEditingController());
+  }
+
+  Future<void> _pickPhoto() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(sheetContext)!;
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: Text(l10n.beneficiaryFormPhotoSourceCameraAction),
+                onTap: () => Navigator.of(sheetContext).pop(ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(l10n.beneficiaryFormPhotoSourceGalleryAction),
+                onTap: () => Navigator.of(sheetContext).pop(ImageSource.gallery),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    if (source == null) return;
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: source,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 80,
+    );
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    if (!mounted) return;
+    setState(() => _photo = bytes);
   }
 
   @override
@@ -100,8 +143,11 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
         if (_controllerFor(field.id).text.trim().isNotEmpty)
           field.id: _controllerFor(field.id).text.trim(),
     };
-    final newBeneficiary =
-        NewBeneficiary(name: _nameController.text.trim(), customFieldValues: values);
+    final newBeneficiary = NewBeneficiary(
+      name: _nameController.text.trim(),
+      customFieldValues: values,
+      photo: _photo,
+    );
     try {
       if (_isEditing) {
         await repository.updateBeneficiary(widget.beneficiaryId!, newBeneficiary);
@@ -143,6 +189,20 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
                 validator: (value) => (value == null || value.trim().isEmpty)
                     ? l10n.eventFormNameRequired
                     : null,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  if (_photo != null) ...[
+                    CircleAvatar(backgroundImage: MemoryImage(_photo!), radius: 24),
+                    const SizedBox(width: 12),
+                  ],
+                  TextButton.icon(
+                    onPressed: _pickPhoto,
+                    icon: const Icon(Icons.add_a_photo_outlined),
+                    label: Text(l10n.beneficiaryFormPhotoAction),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               for (final field in customFields) ...[
