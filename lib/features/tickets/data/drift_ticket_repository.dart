@@ -44,13 +44,7 @@ class DriftTicketRepository implements TicketRepository {
       final beneficiariesWithTickets =
           existingTickets.map((t) => t.beneficiaryId).toSet();
 
-      var nextSequence = 1;
-      for (final ticket in existingTickets) {
-        final parsed = int.tryParse(ticket.readableId);
-        if (parsed != null && parsed >= nextSequence) {
-          nextSequence = parsed + 1;
-        }
-      }
+      var nextSequence = await _nextSequence(eventId);
 
       var createdCount = 0;
       for (final beneficiary in beneficiaryRows) {
@@ -71,6 +65,53 @@ class DriftTicketRepository implements TicketRepository {
       }
 
       return createdCount;
+    });
+  }
+
+  Future<int> _nextSequence(int eventId) async {
+    final existingTickets = await (_db.select(_db.tickets)
+          ..where((tbl) => tbl.eventId.equals(eventId)))
+        .get();
+    var nextSequence = 1;
+    for (final ticket in existingTickets) {
+      final parsed = int.tryParse(ticket.readableId);
+      if (parsed != null && parsed >= nextSequence) {
+        nextSequence = parsed + 1;
+      }
+    }
+    return nextSequence;
+  }
+
+  @override
+  Future<int> generateGenericTickets(int eventId, int count) {
+    return _db.transaction(() async {
+      final event = await (_db.select(_db.events)
+            ..where((tbl) => tbl.id.equals(eventId)))
+          .getSingle();
+
+      var nextSequence = await _nextSequence(eventId);
+
+      for (var i = 0; i < count; i++) {
+        final generated = generateTicketId(sequence: nextSequence);
+        final beneficiaryId = await _db.into(_db.beneficiaries).insert(
+              BeneficiariesCompanion.insert(
+                eventId: eventId,
+                name: 'Ticket ${generated.readableId}',
+              ),
+            );
+        await _db.into(_db.tickets).insert(
+              TicketsCompanion.insert(
+                beneficiaryId: beneficiaryId,
+                eventId: eventId,
+                readableId: generated.readableId,
+                randomPart: generated.randomPart,
+                qrPayload: generated.payloadFor(event.shortCode),
+              ),
+            );
+        nextSequence++;
+      }
+
+      return count;
     });
   }
 

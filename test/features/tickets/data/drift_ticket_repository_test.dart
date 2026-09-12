@@ -136,4 +136,62 @@ void main() {
 
     expect(found, isNull);
   });
+
+  test('generateGenericTickets creates the requested number of beneficiary+ticket pairs', () async {
+    final created = await repository.generateGenericTickets(eventId, 3);
+
+    expect(created, 3);
+    final tickets = await repository.watchTicketsForEvent(eventId).first;
+    expect(tickets, hasLength(3));
+    expect(
+      tickets.map((t) => t.readableId).toSet(),
+      {'0001', '0002', '0003'},
+    );
+
+    final beneficiaryRows = await db.select(db.beneficiaries).get();
+    expect(beneficiaryRows, hasLength(3));
+    final namesByReadableId = {
+      for (final t in tickets)
+        t.readableId: beneficiaryRows.firstWhere((b) => b.id == t.beneficiaryId).name,
+    };
+    expect(namesByReadableId, {
+      '0001': 'Ticket 0001',
+      '0002': 'Ticket 0002',
+      '0003': 'Ticket 0003',
+    });
+  });
+
+  test('generateGenericTickets continues the sequence after existing tickets', () async {
+    final beneficiaryId = await insertBeneficiary('Jane Doe');
+    await repository.generateMissingTickets(eventId);
+    // Confirm the named beneficiary got 0001 before adding generic ones.
+    final firstBatch = await repository.watchTicketsForEvent(eventId).first;
+    expect(firstBatch.single.beneficiaryId, beneficiaryId);
+    expect(firstBatch.single.readableId, '0001');
+
+    final created = await repository.generateGenericTickets(eventId, 2);
+
+    expect(created, 2);
+    final allTickets = await repository.watchTicketsForEvent(eventId).first;
+    expect(allTickets, hasLength(3));
+    expect(
+      allTickets.map((t) => t.readableId).toSet(),
+      {'0001', '0002', '0003'},
+    );
+  });
+
+  test('each generic ticket has a well-formed QR payload', () async {
+    await repository.generateGenericTickets(eventId, 1);
+
+    final ticket = (await repository.watchTicketsForEvent(eventId).first).single;
+    expect(ticket.qrPayload, 'EVT1-${ticket.readableId}-${ticket.randomPart}');
+  });
+
+  test('calling generateGenericTickets twice never reuses a readableId', () async {
+    await repository.generateGenericTickets(eventId, 2);
+    await repository.generateGenericTickets(eventId, 2);
+
+    final tickets = await repository.watchTicketsForEvent(eventId).first;
+    expect(tickets.map((t) => t.readableId).toSet(), hasLength(4));
+  });
 }

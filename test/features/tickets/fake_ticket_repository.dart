@@ -11,15 +11,26 @@ import 'package:dif_pass/features/tickets/domain/ticket.dart';
 /// type. Wire it to whatever fake beneficiary repository the same test
 /// already constructed, e.g.
 /// `(eventId) => fakeBeneficiaries.beneficiaries.where((b) => b.eventId == eventId).map((b) => b.id).toList()`.
+///
+/// [createBeneficiary], if given, is called once per generic ticket with the
+/// name this fake assigns it (`'Ticket <readableId>'`) and must return the
+/// new beneficiary's id - wire it directly to a
+/// `FakeBeneficiaryRepository`'s own `createBeneficiary`, e.g.
+/// `(eventId, name) => fakeBeneficiaries.createBeneficiary(eventId, NewBeneficiary(name: name, customFieldValues: const {}))`.
+/// If omitted, generic tickets get a synthetic beneficiary id with no
+/// corresponding beneficiary row - fine for tests that only care about the
+/// ticket side.
 class FakeTicketRepository implements TicketRepository {
   FakeTicketRepository({
     List<Ticket>? tickets,
     List<int> Function(int eventId)? beneficiaryIdsForEvent,
+    this._createBeneficiary,
   })  : _tickets = List.of(tickets ?? const []),
         _beneficiaryIdsForEvent = beneficiaryIdsForEvent ?? ((_) => const []);
 
   final List<Ticket> _tickets;
   final List<int> Function(int eventId) _beneficiaryIdsForEvent;
+  final Future<int> Function(int eventId, String name)? _createBeneficiary;
   final Map<int, StreamController<List<Ticket>>> _controllers = {};
   int _nextId = 1000;
 
@@ -80,6 +91,34 @@ class FakeTicketRepository implements TicketRepository {
     }
     _emit(eventId);
     return created;
+  }
+
+  @override
+  Future<int> generateGenericTickets(int eventId, int count) async {
+    var sequence = _tickets
+            .where((t) => t.eventId == eventId)
+            .map((t) => int.tryParse(t.readableId) ?? 0)
+            .fold<int>(0, (highest, value) => value > highest ? value : highest) +
+        1;
+
+    for (var i = 0; i < count; i++) {
+      final readableId = sequence.toString().padLeft(4, '0');
+      final beneficiaryId = _createBeneficiary != null
+          ? await _createBeneficiary(eventId, 'Ticket $readableId')
+          : _nextId;
+      _tickets.add(Ticket(
+        id: _nextId++,
+        beneficiaryId: beneficiaryId,
+        eventId: eventId,
+        readableId: readableId,
+        randomPart: 'TEST',
+        qrPayload: 'EVT-$readableId-TEST',
+        createdAt: DateTime.now(),
+      ));
+      sequence++;
+    }
+    _emit(eventId);
+    return count;
   }
 
   @override
