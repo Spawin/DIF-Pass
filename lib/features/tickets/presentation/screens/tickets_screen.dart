@@ -20,13 +20,25 @@ import '../../data/ticket_pdf_builder.dart';
 import '../../domain/ticket.dart';
 import '../providers/ticket_providers.dart';
 
-class TicketsScreen extends ConsumerWidget {
+class TicketsScreen extends ConsumerStatefulWidget {
   const TicketsScreen({required this.eventId, super.key});
 
   final int eventId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TicketsScreen> createState() => _TicketsScreenState();
+}
+
+class _TicketsScreenState extends ConsumerState<TicketsScreen> {
+  // Guards both ticket-generation actions below: they write to the same
+  // beneficiaries/tickets tables, so a double-tap on either one while the
+  // first is still in flight could fire a second batch on top of it. Same
+  // _busy pattern as settings_screen.dart's export/import.
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final eventId = widget.eventId;
     final l10n = AppLocalizations.of(context)!;
     final eventAsync = ref.watch(eventProvider(eventId));
     final beneficiariesAsync = ref.watch(beneficiariesProvider(eventId));
@@ -132,8 +144,8 @@ class TicketsScreen extends ConsumerWidget {
                     ),
                   const SizedBox(height: 16),
                   FilledButton.icon(
-                    onPressed: canGenerate
-                        ? () => _confirmGenerate(context, ref)
+                    onPressed: canGenerate && !_busy
+                        ? () => _confirmGenerate(context)
                         : null,
                     icon: const Icon(Icons.confirmation_number_outlined),
                     label: Text(l10n.ticketsGenerateAction),
@@ -151,7 +163,7 @@ class TicketsScreen extends ConsumerWidget {
                   ],
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    onPressed: () => _addGenericTickets(context, ref),
+                    onPressed: _busy ? null : () => _addGenericTickets(context),
                     icon: const Icon(Icons.playlist_add),
                     label: Text(l10n.ticketsGenerateGenericAction),
                   ),
@@ -226,7 +238,7 @@ class TicketsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmGenerate(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmGenerate(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     // Read before the awaits below: ref.read() throws if the widget backing
@@ -252,11 +264,12 @@ class TicketsScreen extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
+    setState(() => _busy = true);
     try {
       final stopwatch = Stopwatch()..start();
       final created = await ref
           .read(ticketRepositoryProvider)
-          .generateMissingTickets(eventId);
+          .generateMissingTickets(widget.eventId);
       stopwatch.stop();
       auditLogger.logTicketsGenerated(
         count: created,
@@ -268,10 +281,12 @@ class TicketsScreen extends ConsumerWidget {
       );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.ticketsGenerateError)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
-  Future<void> _addGenericTickets(BuildContext context, WidgetRef ref) async {
+  Future<void> _addGenericTickets(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final auditLogger = ref.read(auditLoggerProvider);
@@ -280,15 +295,17 @@ class TicketsScreen extends ConsumerWidget {
       builder: (_) => const _GenericTicketCountDialog(),
     );
     if (count == null) return;
+    setState(() => _busy = true);
     try {
       final stopwatch = Stopwatch()..start();
       final created = await ref
           .read(ticketRepositoryProvider)
-          .generateGenericTickets(eventId, count);
+          .generateGenericTickets(widget.eventId, count);
       stopwatch.stop();
       auditLogger.logTicketsGenerated(
         count: created,
         durationMs: stopwatch.elapsedMilliseconds,
+        generic: true,
       );
       HapticFeedback.lightImpact();
       messenger.showSnackBar(
@@ -298,6 +315,8 @@ class TicketsScreen extends ConsumerWidget {
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.ticketsGenerateGenericError)),
       );
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 

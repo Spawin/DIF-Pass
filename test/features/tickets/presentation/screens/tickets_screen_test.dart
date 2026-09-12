@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dif_pass/core/audit/audit_logger.dart';
 import 'package:dif_pass/core/audit/audit_providers.dart';
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
@@ -9,6 +11,7 @@ import 'package:dif_pass/features/events/domain/event.dart';
 import 'package:dif_pass/features/events/domain/presence_mode.dart';
 import 'package:dif_pass/features/events/domain/ticket_template.dart';
 import 'package:dif_pass/features/events/presentation/providers/event_providers.dart';
+import 'package:dif_pass/features/tickets/data/ticket_repository.dart';
 import 'package:dif_pass/features/tickets/domain/ticket.dart';
 import 'package:dif_pass/features/tickets/presentation/providers/ticket_providers.dart';
 import 'package:dif_pass/features/tickets/presentation/screens/tickets_screen.dart';
@@ -64,6 +67,38 @@ FakeEventRepository _fakeEventsWithOneEvent() {
       ),
     ],
   );
+}
+
+/// Wraps a [TicketRepository] and holds `generateMissingTickets` suspended
+/// on [gate] until the test explicitly completes it - lets a test observe
+/// the screen's busy state deterministically instead of guessing a frame
+/// count against a fake that otherwise completes instantly.
+class _GatedTicketRepository implements TicketRepository {
+  _GatedTicketRepository(this._inner);
+
+  final TicketRepository _inner;
+  final gate = Completer<void>();
+
+  @override
+  Stream<List<Ticket>> watchTicketsForEvent(int eventId) =>
+      _inner.watchTicketsForEvent(eventId);
+
+  @override
+  Future<Ticket> getTicket(int id) => _inner.getTicket(id);
+
+  @override
+  Future<int> generateMissingTickets(int eventId) async {
+    await gate.future;
+    return _inner.generateMissingTickets(eventId);
+  }
+
+  @override
+  Future<int> generateGenericTickets(int eventId, int count) =>
+      _inner.generateGenericTickets(eventId, count);
+
+  @override
+  Future<Ticket?> findTicketForCheckIn(int eventId, String rawInput) =>
+      _inner.findTicketForCheckIn(eventId, rawInput);
 }
 
 void main() {
@@ -216,6 +251,91 @@ void main() {
     expect(fakeTickets.tickets, hasLength(1));
     expect(find.text('1 ticket created'), findsOneWidget);
   });
+
+  testWidgets(
+    'both generation actions are disabled while a batch is in flight, then re-enabled',
+    (tester) async {
+      final fakeBeneficiaries = FakeBeneficiaryRepository(
+        beneficiaries: [
+          Beneficiary(
+            id: 1,
+            eventId: 1,
+            name: 'Jane Doe',
+            customFieldValues: const {},
+            createdAt: DateTime(2026, 1, 1),
+          ),
+        ],
+      );
+      final fakeTickets = FakeTicketRepository(
+        beneficiaryIdsForEvent: (eventId) => fakeBeneficiaries.beneficiaries
+            .where((b) => b.eventId == eventId)
+            .map((b) => b.id)
+            .toList(),
+      );
+      final gated = _GatedTicketRepository(fakeTickets);
+
+      // Not using _wrap: it is typed to accept a concrete
+      // FakeTicketRepository, and this test needs to override with the
+      // gated wrapper instead.
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            eventRepositoryProvider.overrideWithValue(_fakeEventsWithOneEvent()),
+            beneficiaryRepositoryProvider.overrideWithValue(fakeBeneficiaries),
+            ticketRepositoryProvider.overrideWithValue(gated),
+            checkInRepositoryProvider.overrideWithValue(FakeCheckInRepository()),
+            auditLoggerProvider.overrideWithValue(
+              AuditLogger(
+                enabled: false,
+                fileResolver: () async =>
+                    throw UnimplementedError('not used - enabled is false'),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const TicketsScreen(eventId: 1),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, 'Generate tickets'));
+      await tester.pumpAndSettle();
+
+      // The repository call is now genuinely suspended on `gated.gate` -
+      // this is the deterministic window where _busy must be true and both
+      // generation actions disabled.
+      expect(
+        tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+        isNull,
+      );
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Add generic tickets'),
+            )
+            .onPressed,
+        isNull,
+      );
+
+      gated.gate.complete();
+      await tester.pumpAndSettle();
+
+      expect(fakeTickets.tickets, hasLength(1));
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Add generic tickets'),
+            )
+            .onPressed,
+        isNotNull,
+      );
+    },
+  );
 
   testWidgets(
     'picking a different ticket template updates the selected segment',
