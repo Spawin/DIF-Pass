@@ -264,6 +264,7 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
       ),
     );
     if (confirmed != true) return;
+    if (!mounted) return;
     setState(() => _busy = true);
     try {
       final stopwatch = Stopwatch()..start();
@@ -295,6 +296,7 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
       builder: (_) => const _GenericTicketCountDialog(),
     );
     if (count == null) return;
+    if (!mounted) return;
     setState(() => _busy = true);
     try {
       final stopwatch = Stopwatch()..start();
