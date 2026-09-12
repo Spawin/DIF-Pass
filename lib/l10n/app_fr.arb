@@ -85,7 +85,7 @@
   "ticketsGenerateGenericDialogTitle": "Combien de tickets ?",
   "ticketsGenerateGenericCountLabel": "Nombre de tickets",
   "ticketsGenerateGenericCountInvalid": "Entrez un nombre entre 1 et 500",
-  "ticketsGenerateGenericSuccess": "{count} tickets generiques ajoutes",
+  "ticketsGenerateGenericSuccess": "{count, plural, =1{1 ticket generique ajoute} other{{count} tickets generiques ajoutes}}",
   "@ticketsGenerateGenericSuccess": {
     "placeholders": {
       "count": {

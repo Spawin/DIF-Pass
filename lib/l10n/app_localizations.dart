@@ -581,7 +581,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsGenerateGenericSuccess.
   ///
   /// In en, this message translates to:
-  /// **'{count} generic tickets added'**
+  /// **'{count, plural, =1{1 generic ticket added} other{{count} generic tickets added}}'**
   String ticketsGenerateGenericSuccess(int count);
 
   /// No description provided for @ticketsGenerateGenericError.

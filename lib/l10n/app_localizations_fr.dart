@@ -268,7 +268,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String ticketsGenerateGenericSuccess(int count) {
-    return '$count tickets generiques ajoutes';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tickets generiques ajoutes',
+      one: '1 ticket generique ajoute',
+    );
+    return '$_temp0';
   }
 
   @override
