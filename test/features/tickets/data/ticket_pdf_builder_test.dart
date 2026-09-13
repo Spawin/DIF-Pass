@@ -245,5 +245,24 @@ void main() {
         expect(_isPdf(bytes), isTrue);
       });
     }
+
+    test('includes a beneficiary photo in the bulk export without error', () async {
+      final beneficiary = Beneficiary(
+        id: 1,
+        eventId: 1,
+        name: 'Jane Doe',
+        customFieldValues: const {},
+        createdAt: DateTime(2026, 1, 1),
+        photo: _testPhotoBytes,
+      );
+      final bytes = await buildEventTicketsPdf(
+        event: _event(),
+        tickets: [_ticket()],
+        beneficiariesById: {beneficiary.id: beneficiary},
+        customFields: const [],
+      );
+
+      expect(_isPdf(bytes), isTrue);
+    });
   });
 }
