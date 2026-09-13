@@ -298,6 +298,109 @@ void main() {
     expect(button.onPressed, isNotNull);
   });
 
+  testWidgets('shows a photo medallion when the beneficiary has one', (tester) async {
+    final fakeEvents = FakeEventRepository(
+      events: [
+        Event(
+          id: 1,
+          shortCode: 'EVT1',
+          name: 'Gala DIF 2026',
+          date: DateTime(2026, 12, 1),
+          presenceMode: PresenceMode.simple,
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeBeneficiaries = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+          photo: _testLogoBytes,
+        ),
+      ],
+    );
+    final fakeTickets = FakeTicketRepository(
+      tickets: [
+        Ticket(
+          id: 1,
+          beneficiaryId: 1,
+          eventId: 1,
+          readableId: '0001',
+          randomPart: 'ABCD',
+          qrPayload: 'EVT1-0001-ABCD',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketPreviewScreen(ticketId: 1),
+        fakeEvents,
+        fakeBeneficiaries,
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CircleAvatar), findsOneWidget);
+  });
+
+  testWidgets('shows no medallion when the beneficiary has no photo', (tester) async {
+    final fakeEvents = FakeEventRepository(
+      events: [
+        Event(
+          id: 1,
+          shortCode: 'EVT1',
+          name: 'Gala DIF 2026',
+          date: DateTime(2026, 12, 1),
+          presenceMode: PresenceMode.simple,
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeBeneficiaries = FakeBeneficiaryRepository(
+      beneficiaries: [
+        Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+    final fakeTickets = FakeTicketRepository(
+      tickets: [
+        Ticket(
+          id: 1,
+          beneficiaryId: 1,
+          eventId: 1,
+          readableId: '0001',
+          randomPart: 'ABCD',
+          qrPayload: 'EVT1-0001-ABCD',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const TicketPreviewScreen(ticketId: 1),
+        fakeEvents,
+        fakeBeneficiaries,
+        fakeTickets,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CircleAvatar), findsNothing);
+  });
+
   testWidgets(
     'shows a confirmation snackbar after successfully sharing the ticket',
     (tester) async {

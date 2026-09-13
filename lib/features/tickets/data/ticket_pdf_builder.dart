@@ -71,6 +71,7 @@ pw.Widget _ticketCardPdf({
   required String eventName,
   Uint8List? eventLogo,
   required String beneficiaryName,
+  Uint8List? beneficiaryPhoto,
   required String readableId,
   required String qrPayload,
   required List<String> visibleFieldLines,
@@ -122,6 +123,20 @@ pw.Widget _ticketCardPdf({
           drawText: false,
         ),
         pw.SizedBox(height: 2 * PdfPageFormat.mm),
+        if (beneficiaryPhoto != null) ...[
+          pw.Container(
+            width: (isCompact ? 12 : 16) * PdfPageFormat.mm,
+            height: (isCompact ? 12 : 16) * PdfPageFormat.mm,
+            decoration: pw.BoxDecoration(
+              shape: pw.BoxShape.circle,
+              image: pw.DecorationImage(
+                image: pw.MemoryImage(beneficiaryPhoto),
+                fit: pw.BoxFit.cover,
+              ),
+            ),
+          ),
+          pw.SizedBox(height: 1 * PdfPageFormat.mm),
+        ],
         pw.Text(
           beneficiaryName,
           style: pw.TextStyle(fontSize: isCompact ? 8 : 10),
@@ -165,6 +180,7 @@ Future<pw.Document> buildSingleTicketDocument({
           eventName: event.name,
           eventLogo: event.logo,
           beneficiaryName: beneficiary.name,
+          beneficiaryPhoto: beneficiary.photo,
           readableId: ticket.readableId,
           qrPayload: ticket.qrPayload,
           visibleFieldLines: _visibleFieldLines(beneficiary, customFields),
@@ -219,6 +235,7 @@ Future<pw.Document> buildEventTicketsDocument({
                   eventLogo: event.logo,
                   beneficiaryName:
                       beneficiariesById[ticket.beneficiaryId]!.name,
+                  beneficiaryPhoto: beneficiariesById[ticket.beneficiaryId]!.photo,
                   readableId: ticket.readableId,
                   qrPayload: ticket.qrPayload,
                   visibleFieldLines: _visibleFieldLines(

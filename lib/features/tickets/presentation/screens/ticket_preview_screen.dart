@@ -80,6 +80,7 @@ class TicketPreviewScreen extends ConsumerWidget {
                 eventName: event.name,
                 eventLogo: event.logo,
                 beneficiaryName: beneficiary.name,
+                beneficiaryPhoto: beneficiary.photo,
                 readableId: ticket.readableId,
                 qrPayload: ticket.qrPayload,
                 visibleFieldLines: [
@@ -145,6 +146,7 @@ class _TicketCard extends StatelessWidget {
     required this.eventName,
     this.eventLogo,
     required this.beneficiaryName,
+    this.beneficiaryPhoto,
     required this.readableId,
     required this.qrPayload,
     required this.visibleFieldLines,
@@ -154,6 +156,7 @@ class _TicketCard extends StatelessWidget {
   final String eventName;
   final Uint8List? eventLogo;
   final String beneficiaryName;
+  final Uint8List? beneficiaryPhoto;
   final String readableId;
   final String qrPayload;
   final List<String> visibleFieldLines;
@@ -184,6 +187,13 @@ class _TicketCard extends StatelessWidget {
             SizedBox(height: isCompact ? 8 : 16),
             QrImageView(data: qrPayload, size: isCompact ? 120 : 180),
             SizedBox(height: isCompact ? 8 : 16),
+            if (beneficiaryPhoto != null) ...[
+              CircleAvatar(
+                backgroundImage: MemoryImage(beneficiaryPhoto!),
+                radius: isCompact ? 16 : 24,
+              ),
+              SizedBox(height: isCompact ? 4 : 8),
+            ],
             Text(
               beneficiaryName,
               style: Theme.of(context).textTheme.titleLarge,

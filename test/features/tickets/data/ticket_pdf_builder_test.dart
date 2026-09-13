@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/events/domain/custom_field.dart';
 import 'package:dif_pass/features/events/domain/custom_field_type.dart';
@@ -44,6 +46,13 @@ Ticket _ticket() {
 
 bool _isPdf(List<int> bytes) =>
     bytes.length > 4 && String.fromCharCodes(bytes.take(4)) == '%PDF';
+
+// A minimal valid 1x1 transparent PNG, so pw.MemoryImage can decode it
+// without throwing (raw non-image bytes are rejected with "unable to guess
+// the image type").
+final _testPhotoBytes = base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -144,6 +153,24 @@ void main() {
         expect(_isPdf(bytes), isTrue);
       },
     );
+  });
+
+  test('buildSingleTicketPdf includes a beneficiary photo without error', () async {
+    final bytes = await buildSingleTicketPdf(
+      event: _event(),
+      ticket: _ticket(),
+      beneficiary: Beneficiary(
+        id: 1,
+        eventId: 1,
+        name: 'Jane Doe',
+        customFieldValues: const {},
+        createdAt: DateTime(2026, 1, 1),
+        photo: _testPhotoBytes,
+      ),
+      customFields: const [],
+    );
+
+    expect(_isPdf(bytes), isTrue);
   });
 
   group('buildEventTicketsPdf', () {
