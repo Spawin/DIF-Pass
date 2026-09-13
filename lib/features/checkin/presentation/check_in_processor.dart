@@ -23,11 +23,14 @@ Future<CheckInFeedback> processCheckIn({
   final outcome = await checkInRepository.recordCheckIn(ticket, presenceMode);
 
   return switch (outcome) {
-    CheckInRecorded() =>
-      CheckInFeedbackRecorded(beneficiaryName: beneficiary.name),
+    CheckInRecorded() => CheckInFeedbackRecorded(
+        beneficiaryName: beneficiary.name,
+        beneficiaryPhoto: beneficiary.photo,
+      ),
     CheckInAlreadyRecorded(:final existing) => CheckInFeedbackAlreadyRecorded(
         beneficiaryName: beneficiary.name,
         scannedAt: existing.scannedAt,
+        beneficiaryPhoto: beneficiary.photo,
       ),
   };
 }

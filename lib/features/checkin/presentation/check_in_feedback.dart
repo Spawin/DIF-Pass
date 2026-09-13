@@ -1,21 +1,29 @@
+import 'dart:typed_data';
+
 sealed class CheckInFeedback {
   const CheckInFeedback();
 }
 
 class CheckInFeedbackRecorded extends CheckInFeedback {
-  const CheckInFeedbackRecorded({required this.beneficiaryName});
+  const CheckInFeedbackRecorded({
+    required this.beneficiaryName,
+    this.beneficiaryPhoto,
+  });
 
   final String beneficiaryName;
+  final Uint8List? beneficiaryPhoto;
 }
 
 class CheckInFeedbackAlreadyRecorded extends CheckInFeedback {
   const CheckInFeedbackAlreadyRecorded({
     required this.beneficiaryName,
     required this.scannedAt,
+    this.beneficiaryPhoto,
   });
 
   final String beneficiaryName;
   final DateTime scannedAt;
+  final Uint8List? beneficiaryPhoto;
 }
 
 class CheckInFeedbackNotFound extends CheckInFeedback {

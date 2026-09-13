@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/checkin/presentation/check_in_feedback.dart';
 import 'package:dif_pass/features/checkin/presentation/check_in_processor.dart';
@@ -114,5 +116,30 @@ void main() {
 
     expect(first, isA<CheckInFeedbackRecorded>());
     expect(second, isA<CheckInFeedbackRecorded>());
+  });
+
+  test('carries the beneficiary photo through to CheckInFeedbackRecorded', () async {
+    final photo = Uint8List.fromList([1, 2, 3]);
+    final feedback = await processCheckIn(
+      ticketRepository: FakeTicketRepository(tickets: [ticket]),
+      checkInRepository: FakeCheckInRepository(),
+      beneficiaryRepository: FakeBeneficiaryRepository(
+        beneficiaries: [
+          Beneficiary(
+            id: 1,
+            eventId: 42,
+            name: 'Jane Doe',
+            customFieldValues: const {},
+            createdAt: DateTime(2026, 1, 1),
+            photo: photo,
+          ),
+        ],
+      ),
+      eventId: 42,
+      presenceMode: PresenceMode.simple,
+      rawInput: ticket.qrPayload,
+    );
+
+    expect((feedback as CheckInFeedbackRecorded).beneficiaryPhoto, photo);
   });
 }

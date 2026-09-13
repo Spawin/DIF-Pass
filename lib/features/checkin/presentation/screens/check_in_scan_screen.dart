@@ -260,12 +260,19 @@ class _CheckInFeedbackOverlay extends StatelessWidget {
     final icon = isSuccess ? Icons.check_circle : Icons.error;
 
     String? name;
+    Uint8List? photo;
     String? message;
     switch (feedback) {
-      case CheckInFeedbackRecorded(:final beneficiaryName):
+      case CheckInFeedbackRecorded(:final beneficiaryName, :final beneficiaryPhoto):
         name = beneficiaryName;
-      case CheckInFeedbackAlreadyRecorded(:final beneficiaryName, :final scannedAt):
+        photo = beneficiaryPhoto;
+      case CheckInFeedbackAlreadyRecorded(
+          :final beneficiaryName,
+          :final scannedAt,
+          :final beneficiaryPhoto,
+        ):
         name = beneficiaryName;
+        photo = beneficiaryPhoto;
         message = l10n.checkinAlreadyRecordedMessage(
           DateFormat.Hm(locale).format(scannedAt),
         );
@@ -284,6 +291,10 @@ class _CheckInFeedbackOverlay extends StatelessWidget {
               children: [
                 Icon(icon, color: Colors.white, size: 48),
                 const SizedBox(height: 16),
+                if (photo != null) ...[
+                  CircleAvatar(backgroundImage: MemoryImage(photo), radius: 40),
+                  const SizedBox(height: 16),
+                ],
                 if (name != null)
                   Text(
                     name,
