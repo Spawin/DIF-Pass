@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:dif_pass/features/beneficiaries/data/beneficiary_repository.dart';
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
@@ -24,10 +25,24 @@ class FakeBeneficiaryRepository implements BeneficiaryRepository {
   }
 
   void _emit(int eventId) {
-    final list = _beneficiaries.where((b) => b.eventId == eventId).toList()
+    // Mirrors DriftBeneficiaryRepository: the list stream never carries a
+    // photo, callers fetch it lazily via getBeneficiaryPhoto.
+    final list = _beneficiaries
+        .where((b) => b.eventId == eventId)
+        .map((b) => b.photo == null ? b : _withoutPhoto(b))
+        .toList()
       ..sort((a, b) => a.name.compareTo(b.name));
     _controllerFor(eventId).add(list);
   }
+
+  Beneficiary _withoutPhoto(Beneficiary b) => Beneficiary(
+        id: b.id,
+        eventId: b.eventId,
+        name: b.name,
+        customFieldValues: b.customFieldValues,
+        createdAt: b.createdAt,
+        syncId: b.syncId,
+      );
 
   @override
   Stream<List<Beneficiary>> watchBeneficiaries(int eventId) {
@@ -38,6 +53,10 @@ class FakeBeneficiaryRepository implements BeneficiaryRepository {
   @override
   Future<Beneficiary> getBeneficiary(int id) async =>
       _beneficiaries.firstWhere((b) => b.id == id);
+
+  @override
+  Future<Uint8List?> getBeneficiaryPhoto(int id) async =>
+      _beneficiaries.firstWhere((b) => b.id == id).photo;
 
   @override
   Future<int> createBeneficiary(int eventId, NewBeneficiary beneficiary) async {

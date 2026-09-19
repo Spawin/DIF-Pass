@@ -184,6 +184,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beneficiaryFormPhotoAction => 'Add a photo';
 
   @override
+  String get beneficiaryFormPhotoRemoveAction => 'Remove photo';
+
+  @override
   String get beneficiaryFormPhotoSourceCameraAction => 'Take a photo';
 
   @override

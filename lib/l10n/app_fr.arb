@@ -57,6 +57,7 @@
   "beneficiaryFormTitleEdit": "Modifier le beneficiaire",
   "beneficiaryFormFieldNumberInvalid": "Entrez un nombre",
   "beneficiaryFormPhotoAction": "Ajouter une photo",
+  "beneficiaryFormPhotoRemoveAction": "Retirer la photo",
   "beneficiaryFormPhotoSourceCameraAction": "Prendre une photo",
   "beneficiaryFormPhotoSourceGalleryAction": "Choisir dans la galerie",
   "beneficiaryFormLoadError": "Impossible de charger ce beneficiaire.",

@@ -12,14 +12,23 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
 
   @override
   Stream<List<Beneficiary>> watchBeneficiaries(int eventId) {
-    final query = _db.select(_db.beneficiaries).join([
+    final query = _db.selectOnly(_db.beneficiaries).join([
       leftOuterJoin(
         _db.beneficiaryValues,
         _db.beneficiaryValues.beneficiaryId.equalsExp(_db.beneficiaries.id),
       ),
     ])
+      ..addColumns([
+        _db.beneficiaries.id,
+        _db.beneficiaries.eventId,
+        _db.beneficiaries.name,
+        _db.beneficiaries.createdAt,
+        _db.beneficiaries.syncId,
+        _db.beneficiaryValues.customFieldId,
+        _db.beneficiaryValues.value,
+      ])
       ..where(_db.beneficiaries.eventId.equals(eventId));
-    return query.watch().map(_groupRows);
+    return query.watch().map(_groupListRows);
   }
 
   @override
@@ -33,6 +42,15 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
       ..where(_db.beneficiaries.id.equals(id));
     final rows = await query.get();
     return _groupRows(rows).single;
+  }
+
+  @override
+  Future<Uint8List?> getBeneficiaryPhoto(int id) async {
+    final row = await (_db.selectOnly(_db.beneficiaries)
+          ..addColumns([_db.beneficiaries.photo])
+          ..where(_db.beneficiaries.id.equals(id)))
+        .getSingle();
+    return row.read(_db.beneficiaries.photo);
   }
 
   @override
@@ -100,6 +118,43 @@ class DriftBeneficiaryRepository implements BeneficiaryRepository {
             ),
           );
     }
+  }
+
+  /// Groups rows from [watchBeneficiaries]'s photo-less, `selectOnly` join,
+  /// where `readTable` isn't available (only the addColumns subset was
+  /// selected) so each column is read individually instead.
+  List<Beneficiary> _groupListRows(List<TypedResult> rows) {
+    final beneficiaryRows = <int, ({int id, int eventId, String name, DateTime createdAt, String? syncId})>{};
+    final values = <int, Map<int, String>>{};
+    for (final row in rows) {
+      final id = row.read(_db.beneficiaries.id)!;
+      beneficiaryRows[id] = (
+        id: id,
+        eventId: row.read(_db.beneficiaries.eventId)!,
+        name: row.read(_db.beneficiaries.name)!,
+        createdAt: row.read(_db.beneficiaries.createdAt)!,
+        syncId: row.read(_db.beneficiaries.syncId),
+      );
+      final customFieldId = row.read(_db.beneficiaryValues.customFieldId);
+      final value = row.read(_db.beneficiaryValues.value);
+      final valueMap = values.putIfAbsent(id, () => {});
+      if (customFieldId != null && value != null) {
+        valueMap[customFieldId] = value;
+      }
+    }
+    final result = beneficiaryRows.values
+        .map((b) => Beneficiary(
+              id: b.id,
+              eventId: b.eventId,
+              name: b.name,
+              customFieldValues: Map.unmodifiable(values[b.id] ?? const {}),
+              createdAt: b.createdAt,
+              syncId: b.syncId,
+              photo: null,
+            ))
+        .toList()
+      ..sort((a, b) => a.name.compareTo(b.name));
+    return result;
   }
 
   List<Beneficiary> _groupRows(List<TypedResult> rows) {
