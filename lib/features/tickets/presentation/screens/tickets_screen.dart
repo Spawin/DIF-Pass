@@ -337,6 +337,8 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
         tickets: tickets,
         beneficiariesById: beneficiariesById,
         customFields: customFields,
+        generatedByLabel: l10n.ticketPreviewGeneratedByLabel,
+        appName: l10n.appTitle,
       );
       final success = await Printing.layoutPdf(
         onLayout: (format) async => bytes,

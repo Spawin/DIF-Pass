@@ -29,6 +29,11 @@ Future<pw.Font> _loadFont(String assetPath) async {
   return pw.Font.ttf(bytes);
 }
 
+Future<pw.MemoryImage> _loadBadgeImage() async {
+  final bytes = await rootBundle.load('assets/brand/icone_seule.png');
+  return pw.MemoryImage(bytes.buffer.asUint8List());
+}
+
 const _indigo = PdfColor.fromInt(0xFF5B6EE8);
 const _pageMarginMm = 10.0;
 const _cardSpacingMm = 4.0;
@@ -76,10 +81,15 @@ pw.Widget _ticketCardPdf({
   required String qrPayload,
   required List<String> visibleFieldLines,
   required pw.Font monoFont,
+  required pw.MemoryImage badgeImage,
+  required String generatedByLabel,
+  required String appName,
 }) {
   final isCompact = template == TicketTemplate.compact;
   final isElegant = template == TicketTemplate.elegant;
   final qrSizeMm = isCompact ? 20.0 : 28.0;
+  final frameBorderMm = isCompact ? 0.5 : 0.8;
+  final badgeSizeMm = isCompact ? 6.0 : 8.0;
 
   // An undecodable photo (e.g. from a hand-modified backup) must not abort
   // the whole export: skip just this card's photo instead of throwing.
@@ -126,12 +136,44 @@ pw.Widget _ticketCardPdf({
           textAlign: pw.TextAlign.center,
         ),
         pw.SizedBox(height: 2 * PdfPageFormat.mm),
-        pw.BarcodeWidget(
-          data: qrPayload,
-          barcode: pw.Barcode.qrCode(),
-          width: qrSizeMm * PdfPageFormat.mm,
-          height: qrSizeMm * PdfPageFormat.mm,
-          drawText: false,
+        pw.Stack(
+          children: [
+            pw.Container(
+              padding: pw.EdgeInsets.all(1.5 * PdfPageFormat.mm),
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(
+                  color: _indigo,
+                  width: frameBorderMm * PdfPageFormat.mm,
+                ),
+                borderRadius: pw.BorderRadius.all(
+                  pw.Radius.circular((isCompact ? 3 : 4) * PdfPageFormat.mm),
+                ),
+              ),
+              child: pw.BarcodeWidget(
+                data: qrPayload,
+                barcode: pw.Barcode.qrCode(),
+                width: qrSizeMm * PdfPageFormat.mm,
+                height: qrSizeMm * PdfPageFormat.mm,
+                drawText: false,
+              ),
+            ),
+            pw.Positioned(
+              top: -badgeSizeMm / 2 * PdfPageFormat.mm,
+              right: -badgeSizeMm / 2 * PdfPageFormat.mm,
+              child: pw.Container(
+                width: badgeSizeMm * PdfPageFormat.mm,
+                height: badgeSizeMm * PdfPageFormat.mm,
+                decoration: pw.BoxDecoration(
+                  borderRadius: pw.BorderRadius.all(
+                    pw.Radius.circular(
+                      (isCompact ? 2 : 2.5) * PdfPageFormat.mm,
+                    ),
+                  ),
+                  image: pw.DecorationImage(image: badgeImage),
+                ),
+              ),
+            ),
+          ],
         ),
         pw.SizedBox(height: 2 * PdfPageFormat.mm),
         if (photoImage != null) ...[
@@ -157,6 +199,25 @@ pw.Widget _ticketCardPdf({
           readableId,
           style: pw.TextStyle(font: monoFont, fontSize: isCompact ? 7 : 9),
         ),
+        pw.SizedBox(height: 0.5 * PdfPageFormat.mm),
+        pw.RichText(
+          text: pw.TextSpan(
+            style: pw.TextStyle(
+              fontSize: isCompact ? 5 : 6,
+              color: PdfColors.grey700,
+            ),
+            children: [
+              pw.TextSpan(text: '$generatedByLabel '),
+              pw.TextSpan(
+                text: appName,
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  color: _indigo,
+                ),
+              ),
+            ],
+          ),
+        ),
         for (final line in visibleFieldLines) ...[
           pw.SizedBox(height: 1 * PdfPageFormat.mm),
           pw.Text(
@@ -175,9 +236,12 @@ Future<pw.Document> buildSingleTicketDocument({
   required Ticket ticket,
   required Beneficiary beneficiary,
   required List<CustomField> customFields,
+  required String generatedByLabel,
+  required String appName,
 }) async {
   final sansFont = await _loadFont('assets/fonts/IBMPlexSans-Variable.ttf');
   final monoFont = await _loadFont('assets/fonts/IBMPlexMono-Regular.ttf');
+  final badgeImage = await _loadBadgeImage();
   final doc = pw.Document(
     theme: pw.ThemeData.withFont(base: sansFont, bold: sansFont),
   );
@@ -196,6 +260,9 @@ Future<pw.Document> buildSingleTicketDocument({
           qrPayload: ticket.qrPayload,
           visibleFieldLines: _visibleFieldLines(beneficiary, customFields),
           monoFont: monoFont,
+          badgeImage: badgeImage,
+          generatedByLabel: generatedByLabel,
+          appName: appName,
         ),
       ),
     ),
@@ -208,12 +275,16 @@ Future<Uint8List> buildSingleTicketPdf({
   required Ticket ticket,
   required Beneficiary beneficiary,
   required List<CustomField> customFields,
+  required String generatedByLabel,
+  required String appName,
 }) async {
   final doc = await buildSingleTicketDocument(
     event: event,
     ticket: ticket,
     beneficiary: beneficiary,
     customFields: customFields,
+    generatedByLabel: generatedByLabel,
+    appName: appName,
   );
   return doc.save();
 }
@@ -223,9 +294,12 @@ Future<pw.Document> buildEventTicketsDocument({
   required List<Ticket> tickets,
   required Map<int, Beneficiary> beneficiariesById,
   required List<CustomField> customFields,
+  required String generatedByLabel,
+  required String appName,
 }) async {
   final sansFont = await _loadFont('assets/fonts/IBMPlexSans-Variable.ttf');
   final monoFont = await _loadFont('assets/fonts/IBMPlexMono-Regular.ttf');
+  final badgeImage = await _loadBadgeImage();
   final doc = pw.Document(
     theme: pw.ThemeData.withFont(base: sansFont, bold: sansFont),
   );
@@ -254,6 +328,9 @@ Future<pw.Document> buildEventTicketsDocument({
                     customFields,
                   ),
                   monoFont: monoFont,
+                  badgeImage: badgeImage,
+                  generatedByLabel: generatedByLabel,
+                  appName: appName,
                 ),
           ],
         ),
@@ -268,12 +345,16 @@ Future<Uint8List> buildEventTicketsPdf({
   required List<Ticket> tickets,
   required Map<int, Beneficiary> beneficiariesById,
   required List<CustomField> customFields,
+  required String generatedByLabel,
+  required String appName,
 }) async {
   final doc = await buildEventTicketsDocument(
     event: event,
     tickets: tickets,
     beneficiariesById: beneficiariesById,
     customFields: customFields,
+    generatedByLabel: generatedByLabel,
+    appName: appName,
   );
   return doc.save();
 }

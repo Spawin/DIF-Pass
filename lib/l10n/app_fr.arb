@@ -79,6 +79,12 @@
     }
   },
   "csvImportFieldsHintNameOnly": "Vous pourrez associer les colonnes de votre fichier au champ Nom.",
+  "csvImportPreviewMoreRows": "+ {count} lignes",
+  "@csvImportPreviewMoreRows": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "ticketsScreenTitle": "Tickets",
   "ticketsTemplateLabel": "Modele de ticket",
   "ticketsTemplateCompact": "Compact",
@@ -121,6 +127,7 @@
   "ticketPreviewShareAction": "Partager le ticket",
   "ticketPreviewShareError": "Impossible de partager le ticket.",
   "ticketPreviewShareSuccess": "Ticket partage.",
+  "ticketPreviewGeneratedByLabel": "Genere par",
   "checkinManualEntryLabel": "Identifiant du ticket",
   "checkinManualEntryAction": "Enregistrer",
   "checkinScreenTitle": "Controle de presence",
