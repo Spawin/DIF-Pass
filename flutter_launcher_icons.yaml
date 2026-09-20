@@ -1,0 +1,13 @@
+# Generates the app launcher icon (Android/iOS) from the brand assets in
+# assets/brand. The current source is a low-resolution moodboard crop
+# (see assets/brand/README.md) - re-run this once a real 512x512+ export
+# exists, the result will look soft at large sizes until then:
+#   fvm dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/brand/01_icone_seule.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#F0F1F5"
+  adaptive_icon_foreground: "assets/brand/02_icone_adaptative_android.png"
+  min_sdk_android: 21

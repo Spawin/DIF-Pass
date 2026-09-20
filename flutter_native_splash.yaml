@@ -1,0 +1,19 @@
+# Generates the native splash screen (Android/iOS) from the brand assets in
+# assets/brand. Re-run after changing this file or swapping in a
+# higher-resolution logo export:
+#   fvm dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#F0F1F5"
+  color_dark: "#1B1F3B"
+  image: assets/brand/01_icone_seule.png
+  image_dark: assets/brand/01_icone_seule.png
+
+  android_12:
+    color: "#F0F1F5"
+    color_dark: "#1B1F3B"
+    image: assets/brand/01_icone_seule.png
+    image_dark: assets/brand/01_icone_seule.png
+
+  android: true
+  ios: true
+  web: false

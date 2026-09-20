@@ -1,0 +1,86 @@
+name: "Build release"
+
+run-name: 'Build release ${{ github.ref_name }} by ${{ github.actor }}'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+
+env:
+  flutter_version: "3.44.7"
+  java_version: "17"
+
+jobs:
+  build:
+    name: Build APK & AAB, create the Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set Up Java with cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: ${{ env.java_version }}
+          cache: 'gradle'
+
+      - name: Set Up Flutter with cache
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.flutter_version }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # See docs/release-playbook.md for how these secrets are produced.
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
+
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=keystore.jks" >> android/key.properties
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Build appBundle
+        run: flutter build appbundle --release
+
+      - name: Extract version from pubspec.yaml
+        id: extract_version
+        run: |
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Check if tag exists
+        uses: mukunku/tag-exists-action@v1.6.0
+        id: check-tag
+        with:
+          tag: "v${{ env.VERSION }}"
+
+      - name: Disambiguate the tag if it already exists
+        if: steps.check-tag.outputs.exists == 'true'
+        run: |
+          new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
+          echo "VERSION=$new_version" >> "$GITHUB_ENV"
+
+      - name: Create the GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+          tag: "v${{ env.VERSION }}"
+          token: ${{ secrets.GITHUB_TOKEN }}

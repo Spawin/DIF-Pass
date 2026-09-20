@@ -1,0 +1,63 @@
+name: "Deploy to Play Store"
+
+run-name: 'Deploy to Play Store (${{ inputs.track }}) - ${{ inputs.release_tag }} by ${{ github.actor }}'
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Tag de la release GitHub dont l'AAB doit etre publie (ex: v1.0.0). Laisser vide/latest pour la derniere release."
+        required: false
+        default: "latest"
+      track:
+        description: "Piste de publication Google Play"
+        required: true
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+        default: internal
+      confirm_production:
+        description: "Si track=production : tape exactement PRODUCTION pour confirmer"
+        required: false
+        default: ""
+
+jobs:
+  deploy:
+    name: Deploy to Play Store
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Confirmer la publication en production
+        if: ${{ inputs.track == 'production' && inputs.confirm_production != 'PRODUCTION' }}
+        run: |
+          echo "::error::track=production requiert confirm_production=PRODUCTION (tape: '${{ inputs.confirm_production }}')"
+          exit 1
+
+      # robinraju/release-downloader v1 (commit pointe par le tag, verifie via
+      # `git ls-remote`)
+      - name: Download AAB from GitHub Release
+        uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ inputs.release_tag == 'latest' && '' || inputs.release_tag }}
+          latest: ${{ inputs.release_tag == 'latest' }}
+          fileName: "app-release.aab"
+          out-file-path: "release-assets"
+
+      # r0adkll/upload-google-play v1 (commit pointe par le tag annote, verifie
+      # via `git ls-remote`). Voir docs/release-playbook.md pour la creation
+      # du compte de service et son enregistrement dans la Play Console.
+      - name: Deploy to Play Store
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: com.difcorporation.difpass
+          releaseFiles: release-assets/app-release.aab
+          track: ${{ inputs.track }}
+          status: completed
