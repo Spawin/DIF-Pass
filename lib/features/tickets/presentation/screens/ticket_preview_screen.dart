@@ -121,6 +121,8 @@ class TicketPreviewScreen extends ConsumerWidget {
         ticket: ticket,
         beneficiary: beneficiary,
         customFields: customFields,
+        generatedByLabel: l10n.ticketPreviewGeneratedByLabel,
+        appName: l10n.appTitle,
       );
       final shared = await Printing.sharePdf(
         bytes: bytes,
@@ -163,8 +165,14 @@ class _TicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isElegant = template == TicketTemplate.elegant;
     final isCompact = template == TicketTemplate.compact;
+    final qrSize = isCompact ? 120.0 : 180.0;
+    final frameBorderWidth = isCompact ? 2.0 : 3.0;
+    final frameRadius = isCompact ? 12.0 : 16.0;
+    final badgeSize = isCompact ? 24.0 : 32.0;
+    final badgeOffset = isCompact ? -8.0 : -12.0;
 
     return Card(
       color: isElegant ? AppColors.indigo.withValues(alpha: 0.05) : null,
@@ -185,7 +193,44 @@ class _TicketCard extends StatelessWidget {
             ],
             Text(eventName, style: Theme.of(context).textTheme.titleMedium),
             SizedBox(height: isCompact ? 8 : 16),
-            QrImageView(data: qrPayload, size: isCompact ? 120 : 180),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(isCompact ? 6 : 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: AppColors.indigo,
+                      width: frameBorderWidth,
+                    ),
+                    borderRadius: BorderRadius.circular(frameRadius),
+                  ),
+                  child: QrImageView(data: qrPayload, size: qrSize),
+                ),
+                Positioned(
+                  top: badgeOffset,
+                  right: badgeOffset,
+                  child: Container(
+                    width: badgeSize,
+                    height: badgeSize,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(isCompact ? 7 : 9),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/brand/icone_seule.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
             SizedBox(height: isCompact ? 8 : 16),
             if (beneficiaryPhoto != null) ...[
               CircleAvatar(
@@ -201,6 +246,27 @@ class _TicketCard extends StatelessWidget {
             Text(
               readableId,
               style: ticketMonoStyle(Theme.of(context).colorScheme),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text.rich(
+                TextSpan(
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.ink.withValues(alpha: 0.45),
+                  ),
+                  children: [
+                    TextSpan(text: '${l10n.ticketPreviewGeneratedByLabel} '),
+                    TextSpan(
+                      text: l10n.appTitle,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.indigo,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             for (final line in visibleFieldLines) ...[
               const SizedBox(height: 4),

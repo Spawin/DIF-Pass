@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../events/domain/custom_field.dart';
 import '../../domain/new_beneficiary.dart';
+
+const _csvPreviewRowCount = 3;
 
 class CsvMappingForm extends StatefulWidget {
   const CsvMappingForm({
@@ -58,9 +61,68 @@ class _CsvMappingFormState extends State<CsvMappingForm> {
         DropdownMenuItem(value: i, child: Text(widget.headers[i])),
     ];
 
+    final previewRows = widget.dataRows.take(_csvPreviewRowCount).toList();
+    final remainingRows = widget.dataRows.length - previewRows.length;
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        Table(
+          border: TableBorder(
+            horizontalInside: BorderSide(
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
+          ),
+          children: [
+            TableRow(
+              decoration: const BoxDecoration(color: AppColors.indigo),
+              children: [
+                for (final header in widget.headers)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
+                    child: Text(
+                      header,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            for (final row in previewRows)
+              TableRow(
+                children: [
+                  for (final value in row)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      child: Text(
+                        value,
+                        style: const TextStyle(
+                          color: AppColors.ink,
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+          ],
+        ),
+        if (remainingRows > 0) ...[
+          const SizedBox(height: 4),
+          Text(
+            l10n.csvImportPreviewMoreRows(remainingRows),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+        const SizedBox(height: 16),
         Text(l10n.csvImportMappingNameLabel, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 8),
         DropdownButton<int?>(

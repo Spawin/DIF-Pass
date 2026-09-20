@@ -64,4 +64,45 @@ void main() {
     expect(captured!.single.customFieldValues, {1: '5'});
     expect(skippedCount, 1);
   });
+
+  testWidgets(
+    'shows a preview of the CSV headers, sample rows, and remaining row count',
+    (tester) async {
+      await tester.pumpWidget(_wrap(CsvMappingForm(
+        headers: const ['Full name', 'Table'],
+        dataRows: const [
+          ['Jane Doe', '5'],
+          ['John Smith', '9'],
+          ['Ana Silva', '2'],
+          ['Extra Person', '1'],
+        ],
+        customFields: const [],
+        onImport: (beneficiaries, skipped) {},
+      )));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Jane Doe'), findsOneWidget);
+      expect(find.text('John Smith'), findsOneWidget);
+      expect(find.text('Ana Silva'), findsOneWidget);
+      expect(find.text('Extra Person'), findsNothing);
+      expect(find.text('+ 1 more rows'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'shows no remaining-rows line when every row fits in the preview',
+    (tester) async {
+      await tester.pumpWidget(_wrap(CsvMappingForm(
+        headers: const ['Full name'],
+        dataRows: const [
+          ['Jane Doe'],
+        ],
+        customFields: const [],
+        onImport: (beneficiaries, skipped) {},
+      )));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('more rows'), findsNothing);
+    },
+  );
 }

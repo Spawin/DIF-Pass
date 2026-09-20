@@ -249,6 +249,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous pourrez associer les colonnes de votre fichier au champ Nom.';
 
   @override
+  String csvImportPreviewMoreRows(int count) {
+    return '+ $count lignes';
+  }
+
+  @override
   String get ticketsScreenTitle => 'Tickets';
 
   @override
@@ -368,6 +373,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ticketPreviewShareSuccess => 'Ticket partage.';
+
+  @override
+  String get ticketPreviewGeneratedByLabel => 'Genere par';
 
   @override
   String get checkinManualEntryLabel => 'Identifiant du ticket';
