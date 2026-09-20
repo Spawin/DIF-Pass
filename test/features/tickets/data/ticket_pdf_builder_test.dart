@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dif_pass/features/beneficiaries/domain/beneficiary.dart';
 import 'package:dif_pass/features/events/domain/custom_field.dart';
@@ -264,5 +265,47 @@ void main() {
 
       expect(_isPdf(bytes), isTrue);
     });
+
+    test(
+      'an undecodable photo on one beneficiary does not abort the export',
+      () async {
+        final good = Beneficiary(
+          id: 1,
+          eventId: 1,
+          name: 'Jane Doe',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+          photo: _testPhotoBytes,
+        );
+        final bad = Beneficiary(
+          id: 2,
+          eventId: 1,
+          name: 'John Smith',
+          customFieldValues: const {},
+          createdAt: DateTime(2026, 1, 1),
+          photo: Uint8List.fromList([1, 2, 3, 4]),
+        );
+        final tickets = [
+          _ticket(),
+          Ticket(
+            id: 2,
+            beneficiaryId: 2,
+            eventId: 1,
+            readableId: '0002',
+            randomPart: 'EFGH',
+            qrPayload: 'EVT1-0002-EFGH',
+            createdAt: DateTime(2026, 1, 1),
+          ),
+        ];
+        final bytes = await buildEventTicketsPdf(
+          event: _event(),
+          tickets: tickets,
+          beneficiariesById: {good.id: good, bad.id: bad},
+          customFields: const [],
+        );
+
+        expect(_isPdf(bytes), isTrue);
+      },
+    );
   });
 }

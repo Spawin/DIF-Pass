@@ -284,7 +284,7 @@ class _CheckInFeedbackOverlay extends StatelessWidget {
       child: ColoredBox(
         color: color.withValues(alpha: 0.85),
         child: Center(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,

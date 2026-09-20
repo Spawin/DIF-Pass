@@ -440,6 +440,12 @@ abstract class AppLocalizations {
   /// **'Add a photo'**
   String get beneficiaryFormPhotoAction;
 
+  /// No description provided for @beneficiaryFormPhotoRemoveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get beneficiaryFormPhotoRemoveAction;
+
   /// No description provided for @beneficiaryFormPhotoSourceCameraAction.
   ///
   /// In en, this message translates to:

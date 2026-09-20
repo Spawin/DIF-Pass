@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/database/database_provider.dart';
@@ -17,4 +19,11 @@ final beneficiariesProvider =
 
 final beneficiaryProvider = FutureProvider.autoDispose.family<Beneficiary, int>((ref, id) {
   return ref.watch(beneficiaryRepositoryProvider).getBeneficiary(id);
+});
+
+/// Loaded lazily per row by the beneficiaries list, which never gets a
+/// photo from [beneficiariesProvider]'s stream (see watchBeneficiaries).
+final beneficiaryPhotoProvider =
+    FutureProvider.autoDispose.family<Uint8List?, int>((ref, id) {
+  return ref.watch(beneficiaryRepositoryProvider).getBeneficiaryPhoto(id);
 });

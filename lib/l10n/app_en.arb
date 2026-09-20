@@ -57,6 +57,7 @@
   "beneficiaryFormTitleEdit": "Edit beneficiary",
   "beneficiaryFormFieldNumberInvalid": "Enter a number",
   "beneficiaryFormPhotoAction": "Add a photo",
+  "beneficiaryFormPhotoRemoveAction": "Remove photo",
   "beneficiaryFormPhotoSourceCameraAction": "Take a photo",
   "beneficiaryFormPhotoSourceGalleryAction": "Choose from gallery",
   "beneficiaryFormLoadError": "Could not load this beneficiary.",

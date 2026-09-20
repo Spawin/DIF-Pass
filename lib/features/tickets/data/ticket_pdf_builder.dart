@@ -81,6 +81,17 @@ pw.Widget _ticketCardPdf({
   final isElegant = template == TicketTemplate.elegant;
   final qrSizeMm = isCompact ? 20.0 : 28.0;
 
+  // An undecodable photo (e.g. from a hand-modified backup) must not abort
+  // the whole export: skip just this card's photo instead of throwing.
+  pw.MemoryImage? photoImage;
+  if (beneficiaryPhoto != null) {
+    try {
+      photoImage = pw.MemoryImage(beneficiaryPhoto);
+    } catch (_) {
+      photoImage = null;
+    }
+  }
+
   return pw.Container(
     constraints: pw.BoxConstraints(
       minWidth: _cardWidthMm(template) * PdfPageFormat.mm,
@@ -123,14 +134,14 @@ pw.Widget _ticketCardPdf({
           drawText: false,
         ),
         pw.SizedBox(height: 2 * PdfPageFormat.mm),
-        if (beneficiaryPhoto != null) ...[
+        if (photoImage != null) ...[
           pw.Container(
             width: (isCompact ? 12 : 16) * PdfPageFormat.mm,
             height: (isCompact ? 12 : 16) * PdfPageFormat.mm,
             decoration: pw.BoxDecoration(
               shape: pw.BoxShape.circle,
               image: pw.DecorationImage(
-                image: pw.MemoryImage(beneficiaryPhoto),
+                image: photoImage,
                 fit: pw.BoxFit.cover,
               ),
             ),

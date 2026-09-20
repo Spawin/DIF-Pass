@@ -179,6 +179,39 @@ void main() {
     expect(beneficiary.photo, newPhoto);
   });
 
+  test('watchBeneficiaries never carries a photo, even when one is set', () async {
+    await repository.createBeneficiary(
+      eventId,
+      NewBeneficiary(
+        name: 'Jane Doe',
+        customFieldValues: const {},
+        photo: Uint8List.fromList([1, 2, 3]),
+      ),
+    );
+
+    final beneficiaries = await repository.watchBeneficiaries(eventId).first;
+    expect(beneficiaries.single.photo, isNull);
+  });
+
+  test('getBeneficiaryPhoto reads the photo lazily, by id', () async {
+    final photo = Uint8List.fromList([1, 2, 3, 4]);
+    final id = await repository.createBeneficiary(
+      eventId,
+      NewBeneficiary(name: 'Jane Doe', customFieldValues: const {}, photo: photo),
+    );
+
+    expect(await repository.getBeneficiaryPhoto(id), photo);
+  });
+
+  test('getBeneficiaryPhoto returns null when no photo is set', () async {
+    final id = await repository.createBeneficiary(
+      eventId,
+      const NewBeneficiary(name: 'Jane Doe', customFieldValues: {}),
+    );
+
+    expect(await repository.getBeneficiaryPhoto(id), isNull);
+  });
+
   test('importBeneficiaries never sets a photo', () async {
     await repository.importBeneficiaries(eventId, const [
       NewBeneficiary(name: 'Jane Doe', customFieldValues: {}),

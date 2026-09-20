@@ -202,6 +202,12 @@ class _BeneficiaryFormScreenState extends ConsumerState<BeneficiaryFormScreen> {
                     icon: const Icon(Icons.add_a_photo_outlined),
                     label: Text(l10n.beneficiaryFormPhotoAction),
                   ),
+                  if (_photo != null)
+                    IconButton(
+                      onPressed: () => setState(() => _photo = null),
+                      icon: const Icon(Icons.close),
+                      tooltip: l10n.beneficiaryFormPhotoRemoveAction,
+                    ),
                 ],
               ),
               const SizedBox(height: 16),

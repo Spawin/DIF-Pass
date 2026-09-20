@@ -330,5 +330,25 @@ void main() {
     expect(beneficiaries, hasLength(1));
     expect(beneficiaries.single.name, 'Ama');
     expect(beneficiaries.single.photo, isNull);
+    expect(beneficiaries.single.syncId, 'b1');
+
+    final events = await db.select(db.events).get();
+    expect(events.single.syncId, 'e1');
+
+    final indexNames = (await db
+            .customSelect(
+              "SELECT name FROM sqlite_master WHERE type = 'index' "
+              "AND name LIKE 'idx_%_sync_id'",
+            )
+            .get())
+        .map((r) => r.data['name'] as String)
+        .toSet();
+    expect(
+      indexNames,
+      containsAll(<String>[
+        'idx_events_sync_id',
+        'idx_beneficiaries_sync_id',
+      ]),
+    );
   });
 }
