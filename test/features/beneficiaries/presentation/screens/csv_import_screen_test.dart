@@ -63,7 +63,8 @@ void main() {
     await tester.pumpWidget(_wrap(const CsvImportScreen(eventId: 1), fakeEvents));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Table number'), findsOneWidget);
+    // Once in the expected-schema preview header, once in the hint sentence.
+    expect(find.textContaining('Table number'), findsNWidgets(2));
   });
 
   testWidgets('mentions only Name when the event has no custom fields', (
@@ -89,5 +90,28 @@ void main() {
       find.text("You'll be able to map your file's columns to the Name field."),
       findsOneWidget,
     );
+  });
+
+  testWidgets('shows the expected-schema preview header before a file is picked', (
+    tester,
+  ) async {
+    final fakeEvents = FakeEventRepository(
+      events: [
+        Event(
+          id: 1,
+          shortCode: 'EVT1',
+          name: 'Gala DIF 2026',
+          date: DateTime(2026, 12, 1),
+          presenceMode: PresenceMode.simple,
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(_wrap(const CsvImportScreen(eventId: 1), fakeEvents));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Expected format'), findsOneWidget);
+    expect(find.text('Name'), findsOneWidget);
   });
 }

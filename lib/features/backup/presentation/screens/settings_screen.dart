@@ -16,6 +16,7 @@ import '../../../../core/database/database_provider.dart';
 import '../../../../core/settings/settings_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/segmented_control_frame.dart';
 import '../providers/backup_providers.dart';
 import '../widgets/import_confirm_dialog.dart';
 
@@ -245,16 +246,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             Text(l10n.settingsLanguageLabel, style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
-            SegmentedButton<String?>(
-              segments: [
-                ButtonSegment(value: null, label: Text(l10n.settingsLanguageAuto)),
-                ButtonSegment(value: 'fr', label: Text(l10n.settingsLanguageFrench)),
-                ButtonSegment(value: 'en', label: Text(l10n.settingsLanguageEnglish)),
-              ],
-              selected: {settings.localeOverride},
-              onSelectionChanged: (selection) => ref
-                  .read(appSettingsProvider.notifier)
-                  .setLocaleOverride(selection.first),
+            SegmentedControlFrame(
+              child: SegmentedButton<String?>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(value: null, label: Text(l10n.settingsLanguageAuto)),
+                  ButtonSegment(value: 'fr', label: Text(l10n.settingsLanguageFrench)),
+                  ButtonSegment(value: 'en', label: Text(l10n.settingsLanguageEnglish)),
+                ],
+                selected: {settings.localeOverride},
+                onSelectionChanged: (selection) => ref
+                    .read(appSettingsProvider.notifier)
+                    .setLocaleOverride(selection.first),
+              ),
             ),
             const SizedBox(height: 32),
             Text(l10n.settingsAuditSectionTitle, style: Theme.of(context).textTheme.titleSmall),

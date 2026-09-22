@@ -8,6 +8,7 @@ import '../../../../core/audit/audit_providers.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
+import '../../../../shared/widgets/segmented_control_frame.dart';
 import '../../../beneficiaries/domain/beneficiary.dart';
 import '../../../beneficiaries/presentation/providers/beneficiary_providers.dart';
 import '../../../checkin/presentation/providers/check_in_providers.dart';
@@ -103,7 +104,7 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
           : Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
                     l10n.ticketsTemplateLabel,
@@ -111,36 +112,39 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
                   ),
                   const SizedBox(height: 8),
                   if (event != null)
-                    SegmentedButton<TicketTemplate>(
-                      segments: [
-                        ButtonSegment(
-                          value: TicketTemplate.compact,
-                          label: Text(l10n.ticketsTemplateCompact),
-                        ),
-                        ButtonSegment(
-                          value: TicketTemplate.standard,
-                          label: Text(l10n.ticketsTemplateStandard),
-                        ),
-                        ButtonSegment(
-                          value: TicketTemplate.elegant,
-                          label: Text(l10n.ticketsTemplateElegant),
-                        ),
-                      ],
-                      selected: {event.ticketTemplate},
-                      onSelectionChanged: (selection) async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        try {
-                          await ref
-                              .read(eventRepositoryProvider)
-                              .updateTicketTemplate(eventId, selection.first);
-                          ref.invalidate(eventProvider(eventId));
-                        } catch (e) {
-                          if (!context.mounted) return;
-                          messenger.showSnackBar(
-                            SnackBar(content: Text(l10n.ticketsTemplateUpdateError)),
-                          );
-                        }
-                      },
+                    SegmentedControlFrame(
+                      child: SegmentedButton<TicketTemplate>(
+                        showSelectedIcon: false,
+                        segments: [
+                          ButtonSegment(
+                            value: TicketTemplate.compact,
+                            label: Text(l10n.ticketsTemplateCompact),
+                          ),
+                          ButtonSegment(
+                            value: TicketTemplate.standard,
+                            label: Text(l10n.ticketsTemplateStandard),
+                          ),
+                          ButtonSegment(
+                            value: TicketTemplate.elegant,
+                            label: Text(l10n.ticketsTemplateElegant),
+                          ),
+                        ],
+                        selected: {event.ticketTemplate},
+                        onSelectionChanged: (selection) async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          try {
+                            await ref
+                                .read(eventRepositoryProvider)
+                                .updateTicketTemplate(eventId, selection.first);
+                            ref.invalidate(eventProvider(eventId));
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            messenger.showSnackBar(
+                              SnackBar(content: Text(l10n.ticketsTemplateUpdateError)),
+                            );
+                          }
+                        },
+                      ),
                     ),
                   const SizedBox(height: 16),
                   FilledButton.icon(

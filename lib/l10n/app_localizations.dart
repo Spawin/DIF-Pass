@@ -548,6 +548,24 @@ abstract class AppLocalizations {
   /// **'+ {count} more rows'**
   String csvImportPreviewMoreRows(int count);
 
+  /// No description provided for @csvImportSchemaPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected format'**
+  String get csvImportSchemaPreviewTitle;
+
+  /// No description provided for @csvImportSchemaNameColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get csvImportSchemaNameColumn;
+
+  /// No description provided for @csvImportLoadingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the file...'**
+  String get csvImportLoadingLabel;
+
   /// No description provided for @ticketsScreenTitle.
   ///
   /// In en, this message translates to:
