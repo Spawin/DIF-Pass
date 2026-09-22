@@ -85,6 +85,9 @@
       "count": {"type": "int"}
     }
   },
+  "csvImportSchemaPreviewTitle": "Format attendu",
+  "csvImportSchemaNameColumn": "Nom",
+  "csvImportLoadingLabel": "Lecture du fichier...",
   "ticketsScreenTitle": "Tickets",
   "ticketsTemplateLabel": "Modele de ticket",
   "ticketsTemplateCompact": "Compact",

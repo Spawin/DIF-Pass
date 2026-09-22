@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/audit/audit_providers.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/segmented_control_frame.dart';
 import '../../domain/custom_field.dart';
 import '../../domain/custom_field_type.dart';
 import '../../domain/presence_mode.dart';
@@ -262,21 +263,24 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             const SizedBox(height: 24),
             Text(l10n.eventFormPresenceModeLabel, style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
-            SegmentedButton<PresenceMode>(
-              segments: [
-                ButtonSegment(
-                  value: PresenceMode.simple,
-                  label: Text(l10n.eventFormPresenceModeSimple),
-                ),
-                ButtonSegment(
-                  value: PresenceMode.multiple,
-                  label: Text(l10n.eventFormPresenceModeMultiple),
-                ),
-              ],
-              selected: {_presenceMode},
-              onSelectionChanged: _presenceModeLocked
-                  ? null
-                  : (selection) => setState(() => _presenceMode = selection.first),
+            SegmentedControlFrame(
+              child: SegmentedButton<PresenceMode>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(
+                    value: PresenceMode.simple,
+                    label: Text(l10n.eventFormPresenceModeSimple),
+                  ),
+                  ButtonSegment(
+                    value: PresenceMode.multiple,
+                    label: Text(l10n.eventFormPresenceModeMultiple),
+                  ),
+                ],
+                selected: {_presenceMode},
+                onSelectionChanged: _presenceModeLocked
+                    ? null
+                    : (selection) => setState(() => _presenceMode = selection.first),
+              ),
             ),
             const SizedBox(height: 24),
             Text(

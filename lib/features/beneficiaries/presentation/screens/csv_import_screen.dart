@@ -7,10 +7,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/audit/audit_providers.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../data/csv_parser.dart';
 import '../../domain/new_beneficiary.dart';
+import '../../../events/domain/custom_field.dart';
 import '../../../events/presentation/providers/event_providers.dart';
 import '../providers/beneficiary_providers.dart';
 import '../widgets/csv_mapping_form.dart';
@@ -29,6 +31,7 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
   List<List<String>>? _dataRows;
   int? _importedCount;
   int? _skippedCount;
+  bool _picking = false;
 
   Future<void> _pickFile() async {
     final l10n = AppLocalizations.of(context)!;
@@ -39,6 +42,7 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
         allowedExtensions: ['csv'],
       );
       if (file == null) return;
+      setState(() => _picking = true);
       final bytes = await file.readAsBytes();
       final content = utf8.decode(bytes, allowMalformed: true);
       final parsed = parseCsvContent(content);
@@ -46,9 +50,11 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
       setState(() {
         _headers = parsed.headers;
         _dataRows = parsed.rows;
+        _picking = false;
       });
     } catch (e) {
       if (!mounted) return;
+      setState(() => _picking = false);
       messenger.showSnackBar(SnackBar(content: Text(l10n.csvImportPickError)));
     }
   }
@@ -125,14 +131,50 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
         ),
       );
     } else {
-      final fieldLabels =
-          customFieldsAsync.valueOrNull?.map((f) => f.label).join(', ') ?? '';
+      final customFields = customFieldsAsync.valueOrNull ?? const <CustomField>[];
+      final fieldLabels = customFields.map((f) => f.label).join(', ');
       body = Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text(
+                l10n.csvImportSchemaPreviewTitle,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              Card(
+                clipBehavior: Clip.antiAlias,
+                margin: EdgeInsets.zero,
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(color: AppColors.indigo),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final column in [
+                        l10n.csvImportSchemaNameColumn,
+                        for (final field in customFields) field.label,
+                      ])
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Text(
+                            column,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               Text(
                 fieldLabels.isEmpty
                     ? l10n.csvImportFieldsHintNameOnly
@@ -142,9 +184,19 @@ class _CsvImportScreenState extends ConsumerState<CsvImportScreen> {
               ),
               const SizedBox(height: 16),
               FilledButton.icon(
-                onPressed: _pickFile,
-                icon: const Icon(Icons.upload_file_outlined),
-                label: Text(l10n.csvImportPickFileAction),
+                onPressed: _picking ? null : _pickFile,
+                icon: _picking
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.upload_file_outlined),
+                label: Text(
+                  _picking
+                      ? l10n.csvImportLoadingLabel
+                      : l10n.csvImportPickFileAction,
+                ),
               ),
             ],
           ),

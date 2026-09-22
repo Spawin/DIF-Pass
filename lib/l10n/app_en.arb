@@ -91,6 +91,9 @@
       "count": {"type": "int"}
     }
   },
+  "csvImportSchemaPreviewTitle": "Expected format",
+  "csvImportSchemaNameColumn": "Name",
+  "csvImportLoadingLabel": "Reading the file...",
   "ticketsScreenTitle": "Tickets",
   "ticketsTemplateLabel": "Ticket template",
   "ticketsTemplateCompact": "Compact",

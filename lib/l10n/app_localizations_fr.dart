@@ -254,6 +254,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get csvImportSchemaPreviewTitle => 'Format attendu';
+
+  @override
+  String get csvImportSchemaNameColumn => 'Nom';
+
+  @override
+  String get csvImportLoadingLabel => 'Lecture du fichier...';
+
+  @override
   String get ticketsScreenTitle => 'Tickets';
 
   @override

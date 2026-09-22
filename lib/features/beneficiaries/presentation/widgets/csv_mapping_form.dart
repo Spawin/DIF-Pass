@@ -67,53 +67,57 @@ class _CsvMappingFormState extends State<CsvMappingForm> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Table(
-          border: TableBorder(
-            horizontalInside: BorderSide(
-              color: Theme.of(context).colorScheme.outlineVariant,
+        Card(
+          clipBehavior: Clip.antiAlias,
+          margin: EdgeInsets.zero,
+          child: Table(
+            border: TableBorder(
+              horizontalInside: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
-          ),
-          children: [
-            TableRow(
-              decoration: const BoxDecoration(color: AppColors.indigo),
-              children: [
-                for (final header in widget.headers)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                    child: Text(
-                      header,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            for (final row in previewRows)
+            children: [
               TableRow(
+                decoration: const BoxDecoration(color: AppColors.indigo),
                 children: [
-                  for (final value in row)
+                  for (final header in widget.headers)
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 6,
+                        horizontal: 10,
+                        vertical: 7,
                       ),
                       child: Text(
-                        value,
+                        header,
                         style: const TextStyle(
-                          color: AppColors.ink,
-                          fontSize: 11.5,
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                 ],
               ),
-          ],
+              for (final row in previewRows)
+                TableRow(
+                  children: [
+                    for (final value in row)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                            color: AppColors.ink,
+                            fontSize: 11.5,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+            ],
+          ),
         ),
         if (remainingRows > 0) ...[
           const SizedBox(height: 4),
@@ -123,19 +127,17 @@ class _CsvMappingFormState extends State<CsvMappingForm> {
           ),
         ],
         const SizedBox(height: 16),
-        Text(l10n.csvImportMappingNameLabel, style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: 8),
-        DropdownButton<int?>(
-          value: _nameColumnIndex,
+        DropdownButtonFormField<int?>(
+          initialValue: _nameColumnIndex,
+          decoration: InputDecoration(labelText: l10n.csvImportMappingNameLabel),
           items: columnOptions,
           onChanged: (value) => setState(() => _nameColumnIndex = value),
         ),
         const SizedBox(height: 16),
         for (final field in widget.customFields) ...[
-          Text(field.label, style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          DropdownButton<int?>(
-            value: _customFieldColumnIndex[field.id],
+          DropdownButtonFormField<int?>(
+            initialValue: _customFieldColumnIndex[field.id],
+            decoration: InputDecoration(labelText: field.label),
             items: columnOptions,
             onChanged: (value) => setState(() => _customFieldColumnIndex[field.id] = value),
           ),
